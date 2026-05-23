@@ -1,0 +1,2086 @@
+{
+  "aoi": "Washington, District of Columbia, USA",
+  "created_at": "2026-05-23T17:15:11.875581+00:00",
+  "working_crs": {
+    "rasters_preferred": "EPSG:26985 for NOAA DEM, EPSG:26918 for DC imagery services",
+    "api_vectors": "EPSG:4326 GeoJSON"
+  },
+  "vertical_datum": "NAVD88 where available",
+  "raster_resolution_m": "1 m where source supports it",
+  "street_source": "OpenStreetMap / Geofabrik, with optional OSMnx GraphML",
+  "lidar_source": "NOAA-hosted DC OCTO 2022 LiDAR and DEM products",
+  "microclimate_model": "SOLWEIG/SOLWEIG-GPU inputs staged; UTCI/Tmrt rasters must be generated from the processed DEM/DSM/canopy/meteorology stack.",
+  "notes": [
+    "The default run downloads one representative COPC LAZ tile, not all 335 raw tiles.",
+    "Run scripts/build_dc_data_bundle.py --download-all-laz to download the full NOAA point-cloud catalog.",
+    "DC land-cover and tree-canopy ImageServer exports are staged as center sample tiles by default."
+  ],
+  "sample_laz_count": 328,
+  "outputs": {
+    "utci": "degrees Celsius, expected in data/processed/solweig_outputs/utci_YYYY-MM-DD_HH.tif",
+    "tmrt": "degrees Celsius, expected in data/processed/solweig_outputs/tmrt_YYYY-MM-DD_HH.tif",
+    "noise": "dBA or normalized edge proxy derived from DDOT AADT/BTS data",
+    "slope": "percent rise derived from DEM",
+    "canopy": "0-1 fraction or canopy height in meters"
+  },
+  "files": [
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\boundary\\dc_boundary.geojson",
+      "source_url": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Administrative_Other_Boundaries_WebMercator/MapServer/10/query",
+      "bytes": 1198515,
+      "description": "Washington DC administrative boundary"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\osm\\district-of-columbia-latest.osm.pbf",
+      "source_url": "https://download.geofabrik.de/north-america/us/district-of-columbia-latest.osm.pbf",
+      "bytes": 20805310,
+      "description": "Geofabrik DC OSM PBF"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\osm\\district-of-columbia-latest-free.shp.zip",
+      "source_url": "https://download.geofabrik.de/north-america/us/district-of-columbia-latest-free.shp.zip",
+      "bytes": 31284928,
+      "description": "Geofabrik DC free shapefile extract"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\traffic_noise\\ddot_traffic_volume_2023.geojson",
+      "source_url": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Transportation_TrafficVolume_WebMercator/MapServer/4/query",
+      "bytes": 13506617,
+      "description": "DDOT 2023 traffic volume lines"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\canopy\\urban_tree_canopy_2020_by_dc_boundary.geojson",
+      "source_url": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Urban_Tree_Canopy/MapServer/4/query",
+      "bytes": 1199953,
+      "description": "DC 2020 urban tree canopy summary by DC boundary"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\landcover\\dc_generalized_landcover_2020_center_tile.tif",
+      "source_url": "https://imagery.dcgis.dc.gov/dcgis/rest/services/UFD/Generalized_Land_Cover_2020/ImageServer",
+      "bytes": 4197011,
+      "description": "DC 2020 generalized land-cover center GeoTIFF tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\canopy\\urban_tree_canopy_2020_center_tile.tif",
+      "source_url": "https://imagery.dcgis.dc.gov/dcgis/rest/services/UFD/Urban_Tree_Canopy_2020/ImageServer",
+      "bytes": 4197011,
+      "description": "DC 2020 urban tree canopy center GeoTIFF tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\DC_WashDC_DEM_2022_EPSG-26985.vrt",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/dem/DC_WashDC_DEM_2022_9838/DC_WashDC_DEM_2022_m9838_EPSG-26985.vrt",
+      "bytes": 1855,
+      "description": "NOAA DEM VRT"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\tileindex_DC_WashDC_DEM_2022.zip",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/dem/DC_WashDC_DEM_2022_9838/tileindex_DC_WashDC_DEM_2022.zip",
+      "bytes": 1224,
+      "description": "NOAA DEM tile index"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2916.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2916.copc.laz",
+      "bytes": 21650974,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2920.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2920.copc.laz",
+      "bytes": 17966464,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3213.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3213.copc.laz",
+      "bytes": 30081702,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2716.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2716.copc.laz",
+      "bytes": 17842624,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2711.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2711.copc.laz",
+      "bytes": 24554419,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3112.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3112.copc.laz",
+      "bytes": 25285041,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2522.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2522.copc.laz",
+      "bytes": 24027042,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3013.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3013.copc.laz",
+      "bytes": 29382855,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2714.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2714.copc.laz",
+      "bytes": 17388685,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2614.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2614.copc.laz",
+      "bytes": 23606579,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2612.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2612.copc.laz",
+      "bytes": 22306059,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3217.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3217.copc.laz",
+      "bytes": 22239607,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2918.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2918.copc.laz",
+      "bytes": 19934911,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3114.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3114.copc.laz",
+      "bytes": 26454903,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2520.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2520.copc.laz",
+      "bytes": 28691760,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2919.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2919.copc.laz",
+      "bytes": 25182170,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3014.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3014.copc.laz",
+      "bytes": 23419863,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2519.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2519.copc.laz",
+      "bytes": 16878950,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2715.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2715.copc.laz",
+      "bytes": 18980862,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2816.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2816.copc.laz",
+      "bytes": 18140087,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3116.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3116.copc.laz",
+      "bytes": 23642938,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2613.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2613.copc.laz",
+      "bytes": 14621354,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2511.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2511.copc.laz",
+      "bytes": 23633692,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3113.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3113.copc.laz",
+      "bytes": 20705704,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3118.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3118.copc.laz",
+      "bytes": 19582077,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2818.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2818.copc.laz",
+      "bytes": 26866545,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2611.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2611.copc.laz",
+      "bytes": 32092731,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2911.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2911.copc.laz",
+      "bytes": 26735589,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2620.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2620.copc.laz",
+      "bytes": 24983517,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2713.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2713.copc.laz",
+      "bytes": 21904626,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2618.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2618.copc.laz",
+      "bytes": 18192299,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2712.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2712.copc.laz",
+      "bytes": 26007821,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2621.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2621.copc.laz",
+      "bytes": 27333311,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2812.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2812.copc.laz",
+      "bytes": 28773985,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2717.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2717.copc.laz",
+      "bytes": 20791474,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3214.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3214.copc.laz",
+      "bytes": 23983795,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2521.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2521.copc.laz",
+      "bytes": 27407421,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2514.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2514.copc.laz",
+      "bytes": 23767366,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3018.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3018.copc.laz",
+      "bytes": 26947059,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2615.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2615.copc.laz",
+      "bytes": 20921066,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2820.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2820.copc.laz",
+      "bytes": 26150642,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2616.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2616.copc.laz",
+      "bytes": 24274706,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2811.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2811.copc.laz",
+      "bytes": 26151568,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2617.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2617.copc.laz",
+      "bytes": 21151044,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3019.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3019.copc.laz",
+      "bytes": 18130822,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3316.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3316.copc.laz",
+      "bytes": 21163248,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3115.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3115.copc.laz",
+      "bytes": 23461152,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3015.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3015.copc.laz",
+      "bytes": 27213466,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2623.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2623.copc.laz",
+      "bytes": 22730490,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2517.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2517.copc.laz",
+      "bytes": 25101853,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2914.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2914.copc.laz",
+      "bytes": 26464583,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2720.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2720.copc.laz",
+      "bytes": 25034268,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2518.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2518.copc.laz",
+      "bytes": 20253634,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2912.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2912.copc.laz",
+      "bytes": 27611343,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2913.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2913.copc.laz",
+      "bytes": 32007423,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3216.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3216.copc.laz",
+      "bytes": 27120819,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2815.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2815.copc.laz",
+      "bytes": 22600645,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2513.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2513.copc.laz",
+      "bytes": 19159736,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2819.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2819.copc.laz",
+      "bytes": 20608020,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2515.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2515.copc.laz",
+      "bytes": 29070069,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2817.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2817.copc.laz",
+      "bytes": 21783055,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2813.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2813.copc.laz",
+      "bytes": 26044215,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3016.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3016.copc.laz",
+      "bytes": 24585533,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2512.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2512.copc.laz",
+      "bytes": 19651599,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3415.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3415.copc.laz",
+      "bytes": 21481864,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2814.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2814.copc.laz",
+      "bytes": 30413810,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2516.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2516.copc.laz",
+      "bytes": 23202929,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3017.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3017.copc.laz",
+      "bytes": 21556614,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2722.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2722.copc.laz",
+      "bytes": 23184177,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3011.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3011.copc.laz",
+      "bytes": 21075110,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2719.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2719.copc.laz",
+      "bytes": 18702463,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2622.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2622.copc.laz",
+      "bytes": 28464249,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3117.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3117.copc.laz",
+      "bytes": 25872983,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2718.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2718.copc.laz",
+      "bytes": 25481434,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3215.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3215.copc.laz",
+      "bytes": 24447048,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2821.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2821.copc.laz",
+      "bytes": 21873830,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3012.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3012.copc.laz",
+      "bytes": 25580619,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2915.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2915.copc.laz",
+      "bytes": 19899971,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3314.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3314.copc.laz",
+      "bytes": 25163491,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2524.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2524.copc.laz",
+      "bytes": 22559790,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2619.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2619.copc.laz",
+      "bytes": 22049960,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2523.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2523.copc.laz",
+      "bytes": 27599234,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3315.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_3315.copc.laz",
+      "bytes": 26320833,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2917.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2917.copc.laz",
+      "bytes": 24966845,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2721.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_3/20220124_2721.copc.laz",
+      "bytes": 29622331,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1912.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_1912.copc.laz",
+      "bytes": 15739481,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1812.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_1812.copc.laz",
+      "bytes": 7182842,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2315.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2315.copc.laz",
+      "bytes": 11052370,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1916.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_1916.copc.laz",
+      "bytes": 23217019,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2218.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2218.copc.laz",
+      "bytes": 24330491,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2114.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2114.copc.laz",
+      "bytes": 19666838,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1816.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_1816.copc.laz",
+      "bytes": 23737030,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2016.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2016.copc.laz",
+      "bytes": 13959927,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2414.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2414.copc.laz",
+      "bytes": 22762873,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2216.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2216.copc.laz",
+      "bytes": 20554114,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2316.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2316.copc.laz",
+      "bytes": 18823668,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2212.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2212.copc.laz",
+      "bytes": 18831776,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2417.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2417.copc.laz",
+      "bytes": 21663793,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1913.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_1913.copc.laz",
+      "bytes": 7864048,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1815.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_1815.copc.laz",
+      "bytes": 10272780,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2211.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2211.copc.laz",
+      "bytes": 12376222,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2018.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2018.copc.laz",
+      "bytes": 23881286,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2318.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2318.copc.laz",
+      "bytes": 20834066,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2115.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2115.copc.laz",
+      "bytes": 20153135,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2215.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2215.copc.laz",
+      "bytes": 18805570,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2017.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2017.copc.laz",
+      "bytes": 24943378,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2213.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2213.copc.laz",
+      "bytes": 24140354,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2119.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2119.copc.laz",
+      "bytes": 23120629,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2013.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2013.copc.laz",
+      "bytes": 12619645,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2217.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2217.copc.laz",
+      "bytes": 21176317,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1814.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_1814.copc.laz",
+      "bytes": 10361636,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2015.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2015.copc.laz",
+      "bytes": 18211928,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2219.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2219.copc.laz",
+      "bytes": 20326903,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2112.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2112.copc.laz",
+      "bytes": 13446105,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2116.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2116.copc.laz",
+      "bytes": 24244879,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2113.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2113.copc.laz",
+      "bytes": 14028225,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2014.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2014.copc.laz",
+      "bytes": 13876865,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1717.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_1717.copc.laz",
+      "bytes": 25104522,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2416.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2416.copc.laz",
+      "bytes": 26383113,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2111.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2111.copc.laz",
+      "bytes": 19337216,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2418.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2418.copc.laz",
+      "bytes": 20463946,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2012.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2012.copc.laz",
+      "bytes": 11569342,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2314.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2314.copc.laz",
+      "bytes": 23677416,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2415.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2415.copc.laz",
+      "bytes": 27530285,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1919.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_1919.copc.laz",
+      "bytes": 25487658,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2311.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2311.copc.laz",
+      "bytes": 15720003,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2118.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2118.copc.laz",
+      "bytes": 23914070,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2413.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2413.copc.laz",
+      "bytes": 25065325,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1819.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_1819.copc.laz",
+      "bytes": 32344938,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1914.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_1914.copc.laz",
+      "bytes": 6705432,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1817.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_1817.copc.laz",
+      "bytes": 24427676,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1813.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_1813.copc.laz",
+      "bytes": 11712181,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2313.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2313.copc.laz",
+      "bytes": 20798831,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1716.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_1716.copc.laz",
+      "bytes": 14383134,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2412.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2412.copc.laz",
+      "bytes": 21551155,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1917.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_1917.copc.laz",
+      "bytes": 22067084,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1719.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_1719.copc.laz",
+      "bytes": 29021084,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2011.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2011.copc.laz",
+      "bytes": 13232033,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1915.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_1915.copc.laz",
+      "bytes": 21125854,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1714.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_1714.copc.laz",
+      "bytes": 23893724,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2019.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2019.copc.laz",
+      "bytes": 23727960,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1718.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_1718.copc.laz",
+      "bytes": 30107182,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2319.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2319.copc.laz",
+      "bytes": 25490155,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1818.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_1818.copc.laz",
+      "bytes": 28272715,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2214.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2214.copc.laz",
+      "bytes": 21257017,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2317.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2317.copc.laz",
+      "bytes": 22530349,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2419.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2419.copc.laz",
+      "bytes": 19348422,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2411.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2411.copc.laz",
+      "bytes": 19890098,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2117.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2117.copc.laz",
+      "bytes": 20337770,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1715.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_1715.copc.laz",
+      "bytes": 15802992,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1918.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_1918.copc.laz",
+      "bytes": 29934288,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2312.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_2312.copc.laz",
+      "bytes": 15676433,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1911.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_1/20220124_1911.copc.laz",
+      "bytes": 15045617,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2220.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2220.copc.laz",
+      "bytes": 13293656,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1219.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1219.copc.laz",
+      "bytes": 31071343,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1930.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1930.copc.laz",
+      "bytes": 24422557,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2023.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2023.copc.laz",
+      "bytes": 25591568,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1218.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1218.copc.laz",
+      "bytes": 27083740,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2225.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2225.copc.laz",
+      "bytes": 26019428,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2421.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2421.copc.laz",
+      "bytes": 23566518,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1625.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1625.copc.laz",
+      "bytes": 27162529,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1617.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1617.copc.laz",
+      "bytes": 14201733,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1623.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1623.copc.laz",
+      "bytes": 28581409,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2324.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2324.copc.laz",
+      "bytes": 23150498,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1923.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1923.copc.laz",
+      "bytes": 30829623,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1728.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1728.copc.laz",
+      "bytes": 31372775,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1517.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1517.copc.laz",
+      "bytes": 23591397,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1829.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1829.copc.laz",
+      "bytes": 27742117,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1924.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1924.copc.laz",
+      "bytes": 28578116,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1722.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1722.copc.laz",
+      "bytes": 26659219,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1626.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1626.copc.laz",
+      "bytes": 31390711,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1618.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1618.copc.laz",
+      "bytes": 27756974,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2127.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2127.copc.laz",
+      "bytes": 27769931,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1418.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1418.copc.laz",
+      "bytes": 26557876,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1120.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1120.copc.laz",
+      "bytes": 31828770,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2124.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2124.copc.laz",
+      "bytes": 27661867,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1317.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1317.copc.laz",
+      "bytes": 25247948,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1321.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1321.copc.laz",
+      "bytes": 36842902,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2323.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2323.copc.laz",
+      "bytes": 24859547,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1323.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1323.copc.laz",
+      "bytes": 30184077,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2122.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2122.copc.laz",
+      "bytes": 24086507,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1518.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1518.copc.laz",
+      "bytes": 27109097,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1920.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1920.copc.laz",
+      "bytes": 26764937,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1727.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1727.copc.laz",
+      "bytes": 26515034,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1820.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1820.copc.laz",
+      "bytes": 26057300,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1823.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1823.copc.laz",
+      "bytes": 30197622,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2120.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2120.copc.laz",
+      "bytes": 22547618,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1927.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1927.copc.laz",
+      "bytes": 28402424,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1822.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1822.copc.laz",
+      "bytes": 32793222,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2222.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2222.copc.laz",
+      "bytes": 21638003,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1723.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1723.copc.laz",
+      "bytes": 31636507,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1620.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1620.copc.laz",
+      "bytes": 27398604,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1424.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1424.copc.laz",
+      "bytes": 27289685,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1824.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1824.copc.laz",
+      "bytes": 31029115,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1522.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1522.copc.laz",
+      "bytes": 29842616,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1121.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1121.copc.laz",
+      "bytes": 27901108,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1926.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1926.copc.laz",
+      "bytes": 30952588,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1421.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1421.copc.laz",
+      "bytes": 28165520,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2223.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2223.copc.laz",
+      "bytes": 26924098,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1921.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1921.copc.laz",
+      "bytes": 29303966,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2325.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2325.copc.laz",
+      "bytes": 25807511,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1720.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1720.copc.laz",
+      "bytes": 32964896,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2221.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2221.copc.laz",
+      "bytes": 22306063,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1721.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1721.copc.laz",
+      "bytes": 30723064,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1420.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1420.copc.laz",
+      "bytes": 37669702,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2320.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2320.copc.laz",
+      "bytes": 21240366,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2121.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2121.copc.laz",
+      "bytes": 26203892,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1521.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1521.copc.laz",
+      "bytes": 29089534,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1821.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1821.copc.laz",
+      "bytes": 28381082,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1223.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1223.copc.laz",
+      "bytes": 32108178,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1928.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1928.copc.laz",
+      "bytes": 30100933,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1319.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1319.copc.laz",
+      "bytes": 31468066,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1417.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1417.copc.laz",
+      "bytes": 26263540,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1526.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1526.copc.laz",
+      "bytes": 26520251,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2125.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2125.copc.laz",
+      "bytes": 22507322,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2224.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2224.copc.laz",
+      "bytes": 23383269,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1621.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1621.copc.laz",
+      "bytes": 32224308,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1627.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1627.copc.laz",
+      "bytes": 31414679,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1726.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1726.copc.laz",
+      "bytes": 29048598,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1423.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1423.copc.laz",
+      "bytes": 35097862,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1221.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1221.copc.laz",
+      "bytes": 26698197,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2126.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2126.copc.laz",
+      "bytes": 24956661,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1922.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1922.copc.laz",
+      "bytes": 26030313,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2024.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2024.copc.laz",
+      "bytes": 22582776,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2424.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2424.copc.laz",
+      "bytes": 25513096,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2029.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2029.copc.laz",
+      "bytes": 19582987,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2422.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2422.copc.laz",
+      "bytes": 22781899,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1616.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1616.copc.laz",
+      "bytes": 24976033,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2025.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2025.copc.laz",
+      "bytes": 28766758,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1925.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1925.copc.laz",
+      "bytes": 24807626,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2420.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2420.copc.laz",
+      "bytes": 21462600,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1725.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1725.copc.laz",
+      "bytes": 30099891,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1524.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1524.copc.laz",
+      "bytes": 22233490,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2321.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2321.copc.laz",
+      "bytes": 22697033,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1828.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1828.copc.laz",
+      "bytes": 28140529,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1523.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1523.copc.laz",
+      "bytes": 22624695,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1929.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1929.copc.laz",
+      "bytes": 30068407,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1122.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1122.copc.laz",
+      "bytes": 24066763,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2423.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2423.copc.laz",
+      "bytes": 21556594,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1324.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1324.copc.laz",
+      "bytes": 35850768,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2425.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2425.copc.laz",
+      "bytes": 20917360,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2027.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2027.copc.laz",
+      "bytes": 25236690,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2326.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2326.copc.laz",
+      "bytes": 24674807,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2227.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2227.copc.laz",
+      "bytes": 25828151,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1222.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1222.copc.laz",
+      "bytes": 25379323,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1320.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1320.copc.laz",
+      "bytes": 27573115,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1322.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1322.copc.laz",
+      "bytes": 35874887,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1425.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1425.copc.laz",
+      "bytes": 24607171,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1619.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1619.copc.laz",
+      "bytes": 21737143,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1724.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1724.copc.laz",
+      "bytes": 30299096,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1220.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1220.copc.laz",
+      "bytes": 30465321,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2026.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2026.copc.laz",
+      "bytes": 24247667,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1422.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1422.copc.laz",
+      "bytes": 27451397,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1825.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1825.copc.laz",
+      "bytes": 28944817,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2020.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2020.copc.laz",
+      "bytes": 25560813,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1519.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1519.copc.laz",
+      "bytes": 35310519,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1827.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1827.copc.laz",
+      "bytes": 32414676,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2021.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2021.copc.laz",
+      "bytes": 23323979,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2123.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2123.copc.laz",
+      "bytes": 23313772,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1622.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1622.copc.laz",
+      "bytes": 26807678,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2028.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2028.copc.laz",
+      "bytes": 30505033,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1419.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1419.copc.laz",
+      "bytes": 25894814,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2022.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2022.copc.laz",
+      "bytes": 27303486,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1318.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1318.copc.laz",
+      "bytes": 19661895,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1525.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1525.copc.laz",
+      "bytes": 30079124,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1826.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1826.copc.laz",
+      "bytes": 26256925,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2128.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2128.copc.laz",
+      "bytes": 20833869,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1520.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1520.copc.laz",
+      "bytes": 29688561,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1624.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_1624.copc.laz",
+      "bytes": 29303660,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2322.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2322.copc.laz",
+      "bytes": 26066368,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2226.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_4/20220124_2226.copc.laz",
+      "bytes": 27660472,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2004.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2004.copc.laz",
+      "bytes": 8381520,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2203.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2203.copc.laz",
+      "bytes": 19797590,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2405.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2405.copc.laz",
+      "bytes": 26137763,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2001.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2001.copc.laz",
+      "bytes": 8571544,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2608.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2608.copc.laz",
+      "bytes": 30560631,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2106.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2106.copc.laz",
+      "bytes": 15687159,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1908.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_1908.copc.laz",
+      "bytes": 15868322,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2708.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2708.copc.laz",
+      "bytes": 25428211,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2510.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2510.copc.laz",
+      "bytes": 25577975,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2407.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2407.copc.laz",
+      "bytes": 23181849,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2410.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2410.copc.laz",
+      "bytes": 23733600,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2204.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2204.copc.laz",
+      "bytes": 27432105,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2309.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2309.copc.laz",
+      "bytes": 24484793,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2206.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2206.copc.laz",
+      "bytes": 23463497,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2109.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2109.copc.laz",
+      "bytes": 10694638,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2409.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2409.copc.laz",
+      "bytes": 22784371,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2002.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2002.copc.laz",
+      "bytes": 12107432,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2103.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2103.copc.laz",
+      "bytes": 15357755,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2006.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2006.copc.laz",
+      "bytes": 18522097,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2210.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2210.copc.laz",
+      "bytes": 16748051,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2709.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2709.copc.laz",
+      "bytes": 23616743,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2209.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2209.copc.laz",
+      "bytes": 19286331,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2607.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2607.copc.laz",
+      "bytes": 24385554,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2308.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2308.copc.laz",
+      "bytes": 23740648,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2809.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2809.copc.laz",
+      "bytes": 28028044,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2110.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2110.copc.laz",
+      "bytes": 11275325,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2408.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2408.copc.laz",
+      "bytes": 25102839,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2208.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2208.copc.laz",
+      "bytes": 16096852,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2010.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2010.copc.laz",
+      "bytes": 9790557,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2810.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2810.copc.laz",
+      "bytes": 25254212,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2107.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2107.copc.laz",
+      "bytes": 13452120,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2104.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2104.copc.laz",
+      "bytes": 13753448,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2003.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2003.copc.laz",
+      "bytes": 10544883,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2506.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2506.copc.laz",
+      "bytes": 29388056,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2406.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2406.copc.laz",
+      "bytes": 17572170,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2205.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2205.copc.laz",
+      "bytes": 18281392,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2108.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2108.copc.laz",
+      "bytes": 13657940,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2305.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2305.copc.laz",
+      "bytes": 26112862,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2910.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2910.copc.laz",
+      "bytes": 25353811,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2008.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2008.copc.laz",
+      "bytes": 11162056,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2307.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2307.copc.laz",
+      "bytes": 20139457,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1907.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_1907.copc.laz",
+      "bytes": 24423826,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2610.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2610.copc.laz",
+      "bytes": 25698393,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2102.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2102.copc.laz",
+      "bytes": 12285074,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2508.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2508.copc.laz",
+      "bytes": 21991579,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2509.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2509.copc.laz",
+      "bytes": 26166978,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2005.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2005.copc.laz",
+      "bytes": 18874828,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2304.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2304.copc.laz",
+      "bytes": 24882695,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2105.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2105.copc.laz",
+      "bytes": 17942759,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2306.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2306.copc.laz",
+      "bytes": 24400731,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2609.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2609.copc.laz",
+      "bytes": 24085647,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2310.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2310.copc.laz",
+      "bytes": 17928244,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2007.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2007.copc.laz",
+      "bytes": 10801464,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2009.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2009.copc.laz",
+      "bytes": 15190852,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2507.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2507.copc.laz",
+      "bytes": 27409201,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2207.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2207.copc.laz",
+      "bytes": 24062428,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2710.copc.laz",
+      "source_url": "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/laz/geoid18/9837/block_2/20220124_2710.copc.laz",
+      "bytes": 27154526,
+      "description": "NOAA 2022 DC OCTO raw COPC LAZ tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\processed\\rasters\\dem_1m.tif",
+      "source_url": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\dem_2022_tiles\\DTM_2022_1m.tif",
+      "bytes": 589752151,
+      "description": "NOAA 2022 DTM staged as processed DEM"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\processed\\rasters\\landcover_1m_center_tile.tif",
+      "source_url": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\landcover\\dc_generalized_landcover_2020_center_tile.tif",
+      "bytes": 4197011,
+      "description": "DC 2020 generalized land-cover center tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\processed\\rasters\\canopy_1m_center_tile.tif",
+      "source_url": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\canopy\\urban_tree_canopy_2020_center_tile.tif",
+      "bytes": 4197011,
+      "description": "DC 2020 urban tree canopy center tile"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\processed\\solweig_inputs\\dem_1m.tif",
+      "source_url": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\dem_2022_tiles\\DTM_2022_1m.tif",
+      "bytes": 589752151,
+      "description": "NOAA 2022 DTM staged as SOLWEIG DEM input"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\processed\\solweig_inputs\\landcover_1m_center_tile.tif",
+      "source_url": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\landcover\\dc_generalized_landcover_2020_center_tile.tif",
+      "bytes": 4197011,
+      "description": "DC 2020 generalized land-cover tile staged as SOLWEIG land-cover input"
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\processed\\solweig_inputs\\trees_cdsm_1m_center_tile.tif",
+      "source_url": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\canopy\\urban_tree_canopy_2020_center_tile.tif",
+      "bytes": 4197011,
+      "description": "DC 2020 canopy tile staged as SOLWEIG vegetation input"
+    }
+  ]
+}

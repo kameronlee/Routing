@@ -1,0 +1,22 @@
+fastapi>=0.115
+laspy[lazrs]>=2.5
+networkx>=3.2
+pydantic>=2.7
+rasterio>=1.3
+requests>=2.32
+shapely>=2.0
+uvicorn[standard]>=0.30
+
+# Development and tests
+httpx>=0.27
+pytest>=8.0
+
+# Optional real OSM ingestion stack. The backend falls back to synthetic graphs
+# only when ROUTING_ALLOW_SYNTHETIC_GRAPH=1 is explicitly enabled.
+# osmnx>=1.9
+# geopandas>=0.14
+# pyproj>=3.6
+
+# Optional SOLWEIG execution stack. On Windows, GDAL Python bindings may need a
+# prebuilt wheel or conda-forge install in addition to solweig-gpu.
+# solweig-gpu>=1.2.22

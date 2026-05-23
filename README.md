@@ -1,70 +1,225 @@
-Implementing a Query‑Conditioned Radiative–Perceptual Utility Field
+# Query-Conditioned Radiative-Perceptual Routing Backend
 
-A query‑conditioned radiative–perceptual utility field aims to represent every street segment by a vector of physical and perceptual features and lets users specify their preferences (e.g., coolness vs. scenicness). A routing engine then finds paths that maximize the user’s utility subject to distance or time constraints. The idea requires merging high‑resolution micro‑climate modelling with perceptual metrics such as visible greenery, scenic quality and noise. Below is a detailed plan for building such a system.
+This project is a Python backend for walking and cycling routes optimized for
+micro-climate comfort, shade, scenicness, quietness and slope. The runtime is
+configured for strict real-data routing: it uses local staged DC datasets and
+fails loudly when a required real layer is missing.
 
-1. Data acquisition and preprocessing
-Pedestrian street network. Use OpenStreetMap via OSMnx to download the pedestrian network for the city. This gives nodes, edges, geometry and road attributes. OSMnx has built‑in functions for cleaning networks and converting them into graph structures.
-3‑D urban geometry. Obtain high‑resolution digital surface models (DSM) and digital elevation models (DEM). In the U.S., the USGS 3DEP LiDAR program offers open DSM/DEM data. Use local building footprint data (city or county open GIS) for building heights when available. Assemble a tree canopy model by combining LiDAR with overhead imagery (e.g. NAIP, Sentinel‑2) to delineate vegetation height and density.
-Meteorological forcing. Collect hourly weather data for air temperature, relative humidity, wind speed, solar irradiance and atmospheric pressure. The National Solar Radiation Database (NSRDB) provides solar radiation, while local weather stations supply temperature and humidity.
-Land‑cover and albedo data. Acquire land‑cover maps to assign surface type (asphalt, grass, water, etc.) and reflectivity values. Sentinel‑2 or national land‑cover databases (e.g., NLCD) can provide this information.
-Street‑level imagery and scenic data. Download street‑view images (Google Street View, Mapillary) for each road segment. For subjective scenicness or greenery, compute metrics such as Green View Index using deep‑learning models. Where available, use datasets like ScenicOrNot or Place Pulse to calibrate scenic perception. The pleasant pedestrian routing system used OSM features (parks, squares, trees, shops) to let users decide how much green or social activity they want along a route
-.
-Noise exposure and traffic volume. Combine OpenStreetMap, socio‑economic data and open GPS trajectory data to estimate traffic volumes and noise levels. The HeiGIT quiet‑route project derives traffic‑related variables and uses a noise model to estimate noise exposure; it then proposes a routing algorithm that minimizes noise while respecting a distance constraint. Adopt similar methods to attach a noise metric to each edge.
-Ancillary context layers. Include layers for slope (derived from DEM), proximity to water bodies (cooling effect), and points of interest (parks, cafés, benches). Integrate free datasets such as municipal tree inventories where available.
-2. Radiative micro‑climate modelling
-High‑resolution UTCI mapping. Use the SOLWEIG‑GPU model (Solar and LongWave Environmental Irradiance Geometry) to compute Universal Thermal Climate Index (UTCI) across the study area. SOLWEIG‑GPU calculates sky view factor, mean radiant temperature and UTCI at pedestrian height using DSM, DEM, tree canopy and meteorological inputs. The GPU‑accelerated version can create 2‑m resolution UTCI rasters for city‑scale domains.
-Workflow. Divide the city into tiles and prepare input layers: (i) building DSM, (ii) DEM, (iii) tree‑height DSM, and (iv) land‑cover/albedo. Provide hourly meteorological data. SOLWEIG‑GPU computes radiative fluxes (direct and diffuse short‑wave, long‑wave radiation) and generates a UTCI value for each grid cell. Running this for different hours produces time‑dependent heat maps.
-Radiative features for edges. Overlay the street network onto the UTCI raster. Densify each road polyline (e.g. sample every 4 m) and extract the UTCI value at each point. For each edge, compute:
-Mean, minimum and maximum UTCI.
-Heat dose: integrate UTCI above a comfort threshold (e.g. UTCI > 26 °C) over the edge length to represent cumulative heat exposure.
-Shade fraction: proportion of points where UTCI is below a coolness percentile (e.g. lower 10 %).
-Residual correction with mobile sensing. Deploy low‑cost sensors (or use community sensors) to collect pedestrian‑level air temperature, humidity and globe temperature along routes. Use these measurements to compute UTCI via tools like RayMan and calibrate the SOLWEIG‑derived heat field. The Dresden micro‑climate mapping project showed how mobile devices can map UTCI and identify hotspots. Fit a residual model (e.g. Gaussian process regression) to correct systematic bias in the model.
-3. Perceptual metrics
-Scenicness / greenery. Use deep‑learning models on street‑view images to predict visible greenery and scenicness ratings. The pleasant pedestrian routing system allows users to set how much green space and social activity they desire along a route
-. Adopt a similar feature set: number of parks, tree‑lined streets, café density, water views. Normalize each feature to [0, 1].
-Noise exposure. Following HeiGIT’s quiet‑route approach, estimate traffic volumes from OSM, socio‑economic and GPS data and apply a noise model to derive noise levels. Assign each street segment a noise score.
-Other perceptual factors. Compute additional scores such as: slope steepness (from DEM), safety (crime statistics or lighting), accessibility (sidewalk width, curb ramps), and visibility (open vs. closed spaces). These become additional dimensions in the perceptual field.
-4. Feature vector construction
+## What Is Included
 
-For each street edge e, build a feature vector z_e(t) that depends on time t (hour of day) and includes:
+- `data_ingestion.py`: OSMnx/GraphML street graph loading and LiDAR DEM elevation sampling.
+- `raster_data.py`: real GeoTIFF discovery/sampling for DEM and SOLWEIG outputs.
+- `real_features.py`: joins LiDAR canopy height, optional land-cover and DDOT AADT traffic data onto route edges.
+- `microclimate_model.py`: geometry densification and UTCI raster sampling.
+- `perception_model.py`: slope helpers and development fallback scoring utilities.
+- `preferences.py`: user preference dataclass plus descriptor-to-weight mapping.
+- `route_engine.py`: edge feature extraction, scalar utility cost and resource-constrained routing.
+- `api.py`: FastAPI app with `/health`, `/data/status`, `/route` and `/utci`.
+- `scripts/build_dc_data_bundle.py`: Washington, D.C. public-data downloader.
+- `scripts/build_lidar_products.py`: rasterizes classified NOAA COPC LAZ tiles into DSM, building DSM and tree CDSM.
+- `scripts/build_weather_forcing.py`: downloads real hourly weather/solar forcing for SOLWEIG inputs.
+- `tests/`: unit and integration tests, including explicit development fallback tests.
 
-Distance and travel time.
-Radiative metrics: mean UTCI, heat dose, shade fraction at time t (radiative features).
-Perceptual metrics: scenicness/greenery score, noise level, slope, POI density, safety index.
-Uncertainty estimates: variance from residual model or data sparsity.
+## Install
 
-Normalize or rescale features to comparable ranges. This vector forms the basis of the utility field.
+Use Python 3.10 or newer.
 
-5. Query‑conditioned utility function
-User preference vector. Represent a user’s priorities (e.g., coolness vs. scenicness vs. quietness) by a weight vector w with elements corresponding to each feature in z_e. For example, w_cool emphasises low heat dose, w_scenic emphasises high scenicness, and w_noise emphasises low noise.
-Hyper‑network or meta‑model. Instead of manually assigning weights, train a hyper‑network that maps a compact user descriptor (heat sensitivity, desire for greenery, noise aversion, mobility mode) to the weight vector. Hyper‑network approaches for personalised route optimisation have achieved high accuracy and mAP in recommending scenic travel itineraries. Use crowd‑sourced route preferences or agent‑based simulations to train this model.
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+python -m pip install -U pip
+python -m pip install -e ".[dev]"
+```
 
-Utility calculation. For a query (origin, destination, context, preference), compute the cost of traversing edge e at time t as:
+For real OSM downloads, install the optional OSM stack:
 
-cost(e)=w⋅z
-e
-	​
+```bash
+python -m pip install -e ".[dev,geo]"
+```
 
-(t)+β⋅uncertainty(e)
+For SOLWEIG-GPU execution:
 
-where β penalizes high uncertainty. For multi‑objective scenarios, you may adopt a resource‑constrained shortest‑path formulation: first compute the baseline shortest path length d*, then find the route that maximizes utility subject to distance ≤ (1 + δ)·d* (where δ is the allowed detour ratio).
+```bash
+python -m pip install -e ".[solweig]"
+```
 
-6. Route optimisation
-Graph preparation. Create a time‑expanded graph if necessary (e.g., separate nodes for each hour). For each edge, compute the time‑dependent feature vector z_e(t).
-Search algorithm. Use a multi‑objective A* or bi‑objective Dijkstra algorithm that can incorporate utility and distance simultaneously. When using the resource‑constrained model, apply algorithms designed for resource‑constrained shortest paths to ensure the result stays within the distance budget.
-Pareto frontier and user choice. Generate multiple candidate routes representing different trade‑offs (e.g., slightly longer but much cooler vs. shortest but less scenic). Present these on a map with colour coding and summary statistics. Provide the user with slider or natural language interface to refine their preference vector.
-7. Natural‑language interface and user interaction
-Implement a hierarchical large‑language‑model (LLM) interface similar to RouteLLM, where a manager agent parses natural‑language queries (e.g., “Find me a shaded route with few hills and nice views”) and sub‑agents resolve constraints, retrieve POIs and assign weight vectors.
-Provide an interactive map (e.g., CesiumJS or Leaflet) that displays candidate routes with colour‑coded heat/stress levels. Show details such as mean UTCI, scenicness score, shade percentage and noise level.
-8. Evaluation and calibration
-Field validation. Use GPS‑linked micro‑climate measurements (temperature, humidity, globe temperature) to compare predicted UTCI and heat dose against observed values. Identify biases and iteratively refine the radiative model with residual corrections.
-User studies. Conduct surveys or pairwise preference tests where participants choose between routes generated by your system and by baseline methods (shortest path or simple shade heuristic). Evaluate whether users perceive the “coolest” routes as more comfortable and whether scenic or quiet routes align with subjective perceptions.
-Impact assessment. Analyse the reduction in heat dose or noise exposure for various user groups (e.g., elderly, cyclists) and evaluate how small infrastructure interventions (e.g., planting trees along 1.5 % of streets) can reduce network‑wide heat exposure, as shown in the New York cycling study.
-9. Iterative improvements and deployment
-Scalability: design the pipeline to work at city scale by leveraging GPU acceleration for SOLWEIG and vectorised operations for feature extraction. Use caching for pre‑computed fields and incremental updates as new data (weather, construction) arrives.
-Adaptability: ensure that the hyper‑network can incorporate new objectives (air quality, safety, energy expenditure) without retraining the base model. Extend the feature vector accordingly.
-Open source and reproducibility: follow open data standards and publish code and datasets when possible. Document the methodology to allow replication in other cities.
-Summary
+On this Windows/Python 3.12 workspace, `solweig-gpu` also needed GDAL Python
+bindings from a prebuilt wheel:
 
-The query‑conditioned radiative–perceptual utility field merges physical micro‑climate modelling with human perception to enable personalised, time‑aware routing. High‑resolution UTCI maps generated by SOLWEIG‑GPU provide radiative features, while perceptual features like scenicness, greenery, noise and slope are computed from street‑view imagery and socio‑economic data
-. Each street edge receives a feature vector capturing these attributes. A hyper‑network translates user preferences into a weight vector that scores edges, and a resource‑constrained path‑finding algorithm finds routes that maximise user utility without large detours. Crowdsourced sensor data and user feedback calibrate and validate the model. By unifying radiative and perceptual information in a single framework, the system can answer queries like “cool and quiet” or “shady and scenic” without needing separate algorithms for each scenario.
+```bash
+python -m pip install https://wheelhouse.openquake.org/v3/windows/py312/gdal-3.10.2-cp312-cp312-win_amd64.whl
+```
+
+The API no longer uses synthetic data unless you explicitly enable development
+fallbacks with environment variables.
+
+## Build The Washington, D.C. Data Bundle
+
+The repository now includes a repeatable downloader for the DC real-data bundle:
+
+```bash
+python scripts/build_dc_data_bundle.py
+```
+
+The default run downloads/stages:
+
+- DC administrative boundary from DCGIS.
+- Geofabrik DC OSM PBF and shapefile extracts.
+- OSMnx walking GraphML for DC.
+- DDOT 2023 traffic volume GeoJSON.
+- DC 2020 tree-canopy summary and center raster tile.
+- DC 2020 generalized land-cover center raster tile.
+- NOAA-hosted DC OCTO 2022 full-city 1 m DEM.
+- NOAA LiDAR URL list, tile index metadata and one representative COPC LAZ tile.
+
+The full NOAA point-cloud catalog is intentionally opt-in because it is
+multi-GB:
+
+```bash
+python scripts/build_dc_data_bundle.py --download-all-laz
+```
+
+After downloading the full point-cloud catalog, generate the LiDAR-derived
+SOLWEIG/routing rasters:
+
+```bash
+python scripts/build_lidar_products.py
+```
+
+This builds:
+
+- `data/processed/solweig_inputs/dsm_1m.tif`
+- `data/processed/solweig_inputs/building_dsm_1m.tif`
+- `data/processed/solweig_inputs/trees_cdsm_1m.tif`
+- `data/processed/rasters/canopy_height_1m.tif`
+
+For weather forcing:
+
+```bash
+python scripts/build_weather_forcing.py --start-date 2026-05-23 --end-date 2026-05-23
+```
+
+To run SOLWEIG-GPU after the optional SOLWEIG stack is installed:
+
+```bash
+python scripts/run_solweig_gpu.py ^
+  --date 2026-05-23 ^
+  --met-file data\processed\solweig_inputs\met_forcing_2026-05-23_2026-05-23.txt ^
+  --work-dir data\processed\solweig_gpu_work ^
+  --tile-size 1000 ^
+  --publish
+```
+
+For a quick real-data smoke test before a long production run:
+
+```bash
+python scripts/run_solweig_gpu.py ^
+  --date 2026-05-23 ^
+  --met-file data\processed\solweig_inputs\met_forcing_2026-05-23_2026-05-23.txt ^
+  --work-dir data\processed\solweig_gpu_smoke ^
+  --subset-size-m 128 ^
+  --tile-size 128 ^
+  --clean-work-dir
+```
+
+The smoke output stays under `data/processed/solweig_gpu_smoke` and is not
+published to the API's strict routing UTCI directory.
+
+The manifest is written to `data/metadata/manifest.json`.
+
+## Run The API
+
+```bash
+uvicorn routing_backend.api:app --reload
+```
+
+On Windows, this repository also includes a file-backed launcher that works well
+when the service is started from tooling without a normal console:
+
+```bash
+python scripts/run_dev_server.py
+```
+
+Open:
+
+- `http://127.0.0.1:8000/health`
+- `http://127.0.0.1:8000/data/status`
+- `http://127.0.0.1:8000/docs`
+- `http://127.0.0.1:8000/utci`
+
+Example route request:
+
+```bash
+curl -X POST http://127.0.0.1:8000/route ^
+  -H "Content-Type: application/json" ^
+  -d "{\"origin\":{\"lat\":38.8805,\"lon\":-77.0920},\"destination\":{\"lat\":38.8828,\"lon\":-77.0896},\"departure_time\":\"2026-07-01T14:00:00\",\"descriptors\":[\"heat sensitive\",\"noise averse\"],\"detour_ratio\":0.3}"
+```
+
+You can also request an OSMnx place when the optional stack and network are
+available:
+
+```json
+{
+  "origin": {"lat": 38.8895, "lon": -77.0353},
+  "destination": {"lat": 38.8977, "lon": -77.0365},
+  "city": "Washington, District of Columbia, USA",
+  "mode": "walk",
+  "descriptors": ["heat sensitive", "scenic"],
+  "detour_ratio": 0.25
+}
+```
+
+## Configuration
+
+Configuration is read from environment variables:
+
+- `ROUTING_DEFAULT_CITY`: optional OSMnx place name used when requests omit `city`.
+- `ROUTING_NETWORK_TYPE`: OSMnx network type, default `walk`.
+- `ROUTING_DATA_DIR`: local data bundle directory, default `./data`.
+- `ROUTING_PREFER_LOCAL_DATA`: set to `0` to ignore local GraphML/rasters.
+- `ROUTING_ROUTE_CLIP_BUFFER_M`: route corridor buffer around origin/destination, default `1500`.
+- `ROUTING_ALLOW_SYNTHETIC_GRAPH`: development-only escape hatch; set to `1` to allow the test grid.
+- `ROUTING_ALLOW_SYNTHETIC_MICROCLIMATE`: development-only escape hatch; set to `1` to allow placeholder UTCI.
+
+No external API keys are hard-coded.
+
+## Testing
+
+```bash
+pytest
+```
+
+Most tests use tiny in-memory fixtures, and development fallback tests are
+explicitly marked through settings. Runtime defaults remain strict-real-data.
+
+## Data Pipeline Notes
+
+The backend requires real UTCI rasters in
+`data/processed/solweig_outputs/utci_YYYY-MM-DD_HH.tif` and samples them along
+edges/routes. If no UTCI raster exists, `/route` and `/utci` return a 503 with
+the missing layer instead of fabricating heat values.
+
+Current all-real routing requirements:
+
+- `data/processed/streets/dc_walk_graph.graphml`
+- `data/processed/rasters/dem_1m.tif`
+- `data/processed/rasters/canopy_height_1m.tif` or another real tree-canopy raster
+- `data/raw/traffic_noise/ddot_traffic_volume_2023.geojson`
+- `data/processed/solweig_outputs/utci_YYYY-MM-DD_HH.tif`
+
+`GET /data/status` reports whether these are available. At the moment, the DC
+bundle is blocked only on real SOLWEIG/SOLWEIG-GPU UTCI output rasters.
+The SOLWEIG-GPU runner has been validated on a real clipped LiDAR subset; full
+1 m DC production runs are compute-heavy on CPU-only machines.
+
+Scenic and quiet scores now join real route-edge samples from LiDAR canopy
+height, optional land-cover rasters and DDOT AADT traffic lines. Missing
+LiDAR/canopy or traffic coverage raises an API error in strict mode.
+
+The routing algorithm first computes the shortest-path distance `d*`, then runs
+a label-setting constrained search to minimize weighted radiative-perceptual
+cost while enforcing:
+
+```text
+route_distance <= (1 + detour_ratio) * d*
+```

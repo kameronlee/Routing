@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "query-conditioned-routing-backend"
+version = "0.1.0"
+description = "FastAPI backend for query-conditioned radiative and perceptual pedestrian routing."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Routing contributors" }]
+dependencies = [
+    "fastapi>=0.115",
+    "laspy[lazrs]>=2.5",
+    "networkx>=3.2",
+    "pydantic>=2.7",
+    "rasterio>=1.3",
+    "requests>=2.32",
+    "shapely>=2.0",
+    "uvicorn[standard]>=0.30",
+]
+
+[project.optional-dependencies]
+dev = [
+    "httpx>=0.27",
+    "pytest>=8.0",
+]
+osm = [
+    "geopandas>=0.14",
+    "osmnx>=1.9",
+    "pyproj>=3.6",
+    "rasterio>=1.3",
+    "shapely>=2.0",
+]
+
+geo = [
+    "geopandas>=0.14",
+    "osmnx>=1.9",
+    "pyproj>=3.6",
+    "rasterio>=1.3",
+    "requests>=2.32",
+    "shapely>=2.0",
+]
+solweig = [
+    "solweig-gpu>=1.2.22",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q -p no:cacheprovider"

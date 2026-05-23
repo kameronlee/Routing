@@ -1,0 +1,18 @@
+[
+  "https://coast.noaa.gov/dataviewer/#/lidar/where:id=9838/details/9838",
+  "https://www.gnu.org/software/wget/manual/wget.html",
+  "https://docs.microsoft.com/en-us/windows/wsl/install-win10",
+  "https://ugetdm.com",
+  "https://chs.coast.noaa.gov/htdata/raster5/elevation/DC_WashDC_DEM_2022_9838/urllist9838.txt",
+  "https://geozoneblog.wordpress.com/2019/05/01/bulk-lidar-download-on-digital-coast/",
+  "https://www.fisheries.noaa.gov/inport/item/69939",
+  "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/dem/DC_WashDC_DEM_2022_9838/dc2022_wash_dc_dem_m9838_met.xml",
+  "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/dem/DC_WashDC_DEM_2022_9838/dc2022_wash_dc_dem_m9838_met_forHumans.html",
+  "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/dem/DC_WashDC_DEM_2022_9838/tileindex_DC_WashDC_DEM_2022.zip",
+  "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/dem/DC_WashDC_DEM_2022_9838/urllist9838.txt",
+  "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/dem/DC_WashDC_DEM_2022_9838/DC_WashDC_DEM_2022_m9838_EPSG-26985.vrt",
+  "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/dem/DC_WashDC_DEM_2022_9838/stac/catalog.json",
+  "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/dem/DC_WashDC_DEM_2022_9838/stac/noaa_item_collection_m9838.json",
+  "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/dem/DC_WashDC_DEM_2022_9838/stac/collection.json",
+  "https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/dem/DC_WashDC_DEM_2022_9838/DTM_2022_1m.tif"
+]

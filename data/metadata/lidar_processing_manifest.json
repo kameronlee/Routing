@@ -1,0 +1,2648 @@
+{
+  "created_at": "2026-05-23T18:44:20.871083+00:00",
+  "classification_mapping": {
+    "building": 6,
+    "vegetation": [
+      3,
+      4,
+      5
+    ],
+    "excluded_surface_classes": [
+      7,
+      18
+    ]
+  },
+  "outputs": {
+    "dsm": "C:\\Users\\kamer\\Downloads\\Routing\\data\\processed\\solweig_inputs\\dsm_1m.tif",
+    "building_dsm": "C:\\Users\\kamer\\Downloads\\Routing\\data\\processed\\solweig_inputs\\building_dsm_1m.tif",
+    "trees_cdsm": "C:\\Users\\kamer\\Downloads\\Routing\\data\\processed\\solweig_inputs\\trees_cdsm_1m.tif",
+    "canopy_height": "C:\\Users\\kamer\\Downloads\\Routing\\data\\processed\\rasters\\canopy_height_1m.tif"
+  },
+  "tiles_processed": 328,
+  "results": [
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2916.copc.laz",
+      "chunks": 6,
+      "points_seen": 5390485,
+      "points_used": 5390485,
+      "building_points": 842119,
+      "vegetation_points": 271782
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1120.copc.laz",
+      "chunks": 7,
+      "points_seen": 6102250,
+      "points_used": 6102133,
+      "building_points": 363736,
+      "vegetation_points": 1777289
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1121.copc.laz",
+      "chunks": 6,
+      "points_seen": 5262325,
+      "points_used": 5262325,
+      "building_points": 78939,
+      "vegetation_points": 1539592
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1122.copc.laz",
+      "chunks": 5,
+      "points_seen": 4678114,
+      "points_used": 4678112,
+      "building_points": 294308,
+      "vegetation_points": 1297994
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1218.copc.laz",
+      "chunks": 6,
+      "points_seen": 5170221,
+      "points_used": 5170101,
+      "building_points": 223202,
+      "vegetation_points": 1496719
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1219.copc.laz",
+      "chunks": 6,
+      "points_seen": 5944682,
+      "points_used": 5944675,
+      "building_points": 144532,
+      "vegetation_points": 1736256
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1220.copc.laz",
+      "chunks": 6,
+      "points_seen": 5973481,
+      "points_used": 5973481,
+      "building_points": 393622,
+      "vegetation_points": 1655096
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1221.copc.laz",
+      "chunks": 6,
+      "points_seen": 5192935,
+      "points_used": 5192935,
+      "building_points": 596692,
+      "vegetation_points": 1602116
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1222.copc.laz",
+      "chunks": 5,
+      "points_seen": 4982065,
+      "points_used": 4982065,
+      "building_points": 330017,
+      "vegetation_points": 1154359
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1223.copc.laz",
+      "chunks": 6,
+      "points_seen": 5763983,
+      "points_used": 5763971,
+      "building_points": 510178,
+      "vegetation_points": 1764637
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1317.copc.laz",
+      "chunks": 5,
+      "points_seen": 4773632,
+      "points_used": 4773525,
+      "building_points": 406821,
+      "vegetation_points": 1315169
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1318.copc.laz",
+      "chunks": 4,
+      "points_seen": 3917971,
+      "points_used": 3917971,
+      "building_points": 72768,
+      "vegetation_points": 1097245
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1319.copc.laz",
+      "chunks": 7,
+      "points_seen": 6191146,
+      "points_used": 6191146,
+      "building_points": 567737,
+      "vegetation_points": 1746960
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1320.copc.laz",
+      "chunks": 6,
+      "points_seen": 5208573,
+      "points_used": 5208573,
+      "building_points": 580322,
+      "vegetation_points": 1718083
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1321.copc.laz",
+      "chunks": 7,
+      "points_seen": 6585507,
+      "points_used": 6585507,
+      "building_points": 698738,
+      "vegetation_points": 2365484
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1322.copc.laz",
+      "chunks": 7,
+      "points_seen": 6460924,
+      "points_used": 6460924,
+      "building_points": 831386,
+      "vegetation_points": 2021304
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1323.copc.laz",
+      "chunks": 6,
+      "points_seen": 5607414,
+      "points_used": 5607414,
+      "building_points": 824208,
+      "vegetation_points": 1525554
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1324.copc.laz",
+      "chunks": 7,
+      "points_seen": 6627638,
+      "points_used": 6627638,
+      "building_points": 998896,
+      "vegetation_points": 1870858
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1417.copc.laz",
+      "chunks": 6,
+      "points_seen": 5100514,
+      "points_used": 5100409,
+      "building_points": 103258,
+      "vegetation_points": 1394086
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1418.copc.laz",
+      "chunks": 6,
+      "points_seen": 5288392,
+      "points_used": 5288392,
+      "building_points": 679665,
+      "vegetation_points": 1330565
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1419.copc.laz",
+      "chunks": 6,
+      "points_seen": 5024542,
+      "points_used": 5024542,
+      "building_points": 500953,
+      "vegetation_points": 1360857
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1420.copc.laz",
+      "chunks": 7,
+      "points_seen": 6613789,
+      "points_used": 6613789,
+      "building_points": 536734,
+      "vegetation_points": 2226926
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1421.copc.laz",
+      "chunks": 6,
+      "points_seen": 5677287,
+      "points_used": 5677287,
+      "building_points": 847743,
+      "vegetation_points": 1453026
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1422.copc.laz",
+      "chunks": 6,
+      "points_seen": 5602662,
+      "points_used": 5602662,
+      "building_points": 832708,
+      "vegetation_points": 1327709
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1423.copc.laz",
+      "chunks": 7,
+      "points_seen": 6512698,
+      "points_used": 6512698,
+      "building_points": 1019697,
+      "vegetation_points": 1626970
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1424.copc.laz",
+      "chunks": 6,
+      "points_seen": 5159368,
+      "points_used": 5159368,
+      "building_points": 801309,
+      "vegetation_points": 1220886
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1425.copc.laz",
+      "chunks": 6,
+      "points_seen": 5188574,
+      "points_used": 5188555,
+      "building_points": 1139276,
+      "vegetation_points": 1000713
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1517.copc.laz",
+      "chunks": 5,
+      "points_seen": 4618554,
+      "points_used": 4618496,
+      "building_points": 261970,
+      "vegetation_points": 1223217
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1518.copc.laz",
+      "chunks": 6,
+      "points_seen": 5237084,
+      "points_used": 5237084,
+      "building_points": 678336,
+      "vegetation_points": 1314114
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1519.copc.laz",
+      "chunks": 7,
+      "points_seen": 6544071,
+      "points_used": 6544071,
+      "building_points": 699383,
+      "vegetation_points": 1747724
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1520.copc.laz",
+      "chunks": 6,
+      "points_seen": 5775064,
+      "points_used": 5775064,
+      "building_points": 710849,
+      "vegetation_points": 1455574
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1521.copc.laz",
+      "chunks": 6,
+      "points_seen": 5728617,
+      "points_used": 5728617,
+      "building_points": 747861,
+      "vegetation_points": 1390426
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1522.copc.laz",
+      "chunks": 7,
+      "points_seen": 6166539,
+      "points_used": 6166539,
+      "building_points": 811733,
+      "vegetation_points": 1464639
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1523.copc.laz",
+      "chunks": 5,
+      "points_seen": 4907978,
+      "points_used": 4907978,
+      "building_points": 989590,
+      "vegetation_points": 852749
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1524.copc.laz",
+      "chunks": 5,
+      "points_seen": 4800461,
+      "points_used": 4800461,
+      "building_points": 840611,
+      "vegetation_points": 794066
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1525.copc.laz",
+      "chunks": 6,
+      "points_seen": 5909293,
+      "points_used": 5909293,
+      "building_points": 1055608,
+      "vegetation_points": 1522446
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1526.copc.laz",
+      "chunks": 6,
+      "points_seen": 5184881,
+      "points_used": 5184865,
+      "building_points": 612739,
+      "vegetation_points": 1412539
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1616.copc.laz",
+      "chunks": 6,
+      "points_seen": 5552496,
+      "points_used": 5552413,
+      "building_points": 1218376,
+      "vegetation_points": 831456
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1617.copc.laz",
+      "chunks": 4,
+      "points_seen": 3208627,
+      "points_used": 3208627,
+      "building_points": 597866,
+      "vegetation_points": 477280
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1618.copc.laz",
+      "chunks": 6,
+      "points_seen": 5637668,
+      "points_used": 5637668,
+      "building_points": 1366154,
+      "vegetation_points": 1041639
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1619.copc.laz",
+      "chunks": 5,
+      "points_seen": 4649323,
+      "points_used": 4649323,
+      "building_points": 896345,
+      "vegetation_points": 614773
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1620.copc.laz",
+      "chunks": 6,
+      "points_seen": 5484287,
+      "points_used": 5484287,
+      "building_points": 1001004,
+      "vegetation_points": 1100232
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1621.copc.laz",
+      "chunks": 7,
+      "points_seen": 6225742,
+      "points_used": 6225742,
+      "building_points": 1286610,
+      "vegetation_points": 1309571
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1622.copc.laz",
+      "chunks": 6,
+      "points_seen": 5194475,
+      "points_used": 5194475,
+      "building_points": 797255,
+      "vegetation_points": 1240225
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1623.copc.laz",
+      "chunks": 6,
+      "points_seen": 5333955,
+      "points_used": 5333955,
+      "building_points": 927035,
+      "vegetation_points": 1437640
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1624.copc.laz",
+      "chunks": 6,
+      "points_seen": 5738326,
+      "points_used": 5738326,
+      "building_points": 968477,
+      "vegetation_points": 1392758
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1625.copc.laz",
+      "chunks": 6,
+      "points_seen": 5072429,
+      "points_used": 5072429,
+      "building_points": 1028766,
+      "vegetation_points": 1202321
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1626.copc.laz",
+      "chunks": 6,
+      "points_seen": 5911096,
+      "points_used": 5911096,
+      "building_points": 966788,
+      "vegetation_points": 1428292
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1627.copc.laz",
+      "chunks": 6,
+      "points_seen": 5765685,
+      "points_used": 5765685,
+      "building_points": 841850,
+      "vegetation_points": 1646901
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1714.copc.laz",
+      "chunks": 6,
+      "points_seen": 5463077,
+      "points_used": 5462954,
+      "building_points": 41049,
+      "vegetation_points": 849908
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1715.copc.laz",
+      "chunks": 4,
+      "points_seen": 3327308,
+      "points_used": 3327306,
+      "building_points": 597,
+      "vegetation_points": 709781
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1716.copc.laz",
+      "chunks": 4,
+      "points_seen": 3029045,
+      "points_used": 3029045,
+      "building_points": 17294,
+      "vegetation_points": 698383
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1717.copc.laz",
+      "chunks": 6,
+      "points_seen": 5397984,
+      "points_used": 5397984,
+      "building_points": 2147880,
+      "vegetation_points": 510021
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1718.copc.laz",
+      "chunks": 6,
+      "points_seen": 5660114,
+      "points_used": 5660114,
+      "building_points": 1047399,
+      "vegetation_points": 1501794
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1719.copc.laz",
+      "chunks": 6,
+      "points_seen": 5359697,
+      "points_used": 5359697,
+      "building_points": 267091,
+      "vegetation_points": 1513269
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1720.copc.laz",
+      "chunks": 7,
+      "points_seen": 6242966,
+      "points_used": 6242966,
+      "building_points": 791308,
+      "vegetation_points": 1847521
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1721.copc.laz",
+      "chunks": 6,
+      "points_seen": 5649518,
+      "points_used": 5649518,
+      "building_points": 890921,
+      "vegetation_points": 1541364
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1722.copc.laz",
+      "chunks": 6,
+      "points_seen": 5422683,
+      "points_used": 5422683,
+      "building_points": 908104,
+      "vegetation_points": 1270491
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1723.copc.laz",
+      "chunks": 7,
+      "points_seen": 6099081,
+      "points_used": 6099081,
+      "building_points": 809479,
+      "vegetation_points": 1725402
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1724.copc.laz",
+      "chunks": 6,
+      "points_seen": 5709643,
+      "points_used": 5709643,
+      "building_points": 462967,
+      "vegetation_points": 1654737
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1725.copc.laz",
+      "chunks": 6,
+      "points_seen": 5703155,
+      "points_used": 5703155,
+      "building_points": 891194,
+      "vegetation_points": 1362237
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1726.copc.laz",
+      "chunks": 6,
+      "points_seen": 5485992,
+      "points_used": 5485992,
+      "building_points": 779906,
+      "vegetation_points": 1348529
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1727.copc.laz",
+      "chunks": 6,
+      "points_seen": 5167434,
+      "points_used": 5167434,
+      "building_points": 622375,
+      "vegetation_points": 1375007
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1728.copc.laz",
+      "chunks": 7,
+      "points_seen": 6170837,
+      "points_used": 6170837,
+      "building_points": 738961,
+      "vegetation_points": 1630749
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1812.copc.laz",
+      "chunks": 2,
+      "points_seen": 1895676,
+      "points_used": 1895642,
+      "building_points": 74696,
+      "vegetation_points": 99500
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1813.copc.laz",
+      "chunks": 3,
+      "points_seen": 2901390,
+      "points_used": 2901329,
+      "building_points": 36635,
+      "vegetation_points": 274748
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1814.copc.laz",
+      "chunks": 3,
+      "points_seen": 2568836,
+      "points_used": 2568836,
+      "building_points": 18397,
+      "vegetation_points": 225830
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1815.copc.laz",
+      "chunks": 3,
+      "points_seen": 2676474,
+      "points_used": 2676474,
+      "building_points": 124585,
+      "vegetation_points": 213680
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1816.copc.laz",
+      "chunks": 6,
+      "points_seen": 5229954,
+      "points_used": 5229954,
+      "building_points": 1437040,
+      "vegetation_points": 551813
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1817.copc.laz",
+      "chunks": 6,
+      "points_seen": 5290330,
+      "points_used": 5290330,
+      "building_points": 1863331,
+      "vegetation_points": 466412
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1818.copc.laz",
+      "chunks": 6,
+      "points_seen": 5542162,
+      "points_used": 5542162,
+      "building_points": 849319,
+      "vegetation_points": 1246266
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1819.copc.laz",
+      "chunks": 7,
+      "points_seen": 6022222,
+      "points_used": 6022222,
+      "building_points": 814534,
+      "vegetation_points": 1735392
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1820.copc.laz",
+      "chunks": 6,
+      "points_seen": 5078307,
+      "points_used": 5078307,
+      "building_points": 949993,
+      "vegetation_points": 1138892
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1821.copc.laz",
+      "chunks": 6,
+      "points_seen": 5435730,
+      "points_used": 5435730,
+      "building_points": 553798,
+      "vegetation_points": 1501344
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1822.copc.laz",
+      "chunks": 7,
+      "points_seen": 6062401,
+      "points_used": 6062401,
+      "building_points": 191716,
+      "vegetation_points": 1930863
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1823.copc.laz",
+      "chunks": 6,
+      "points_seen": 5600342,
+      "points_used": 5600342,
+      "building_points": 219980,
+      "vegetation_points": 1668631
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1824.copc.laz",
+      "chunks": 7,
+      "points_seen": 6215045,
+      "points_used": 6215045,
+      "building_points": 87419,
+      "vegetation_points": 1561814
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1825.copc.laz",
+      "chunks": 6,
+      "points_seen": 5732076,
+      "points_used": 5732076,
+      "building_points": 192563,
+      "vegetation_points": 1378365
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1826.copc.laz",
+      "chunks": 6,
+      "points_seen": 5154159,
+      "points_used": 5154159,
+      "building_points": 293294,
+      "vegetation_points": 1219336
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1827.copc.laz",
+      "chunks": 7,
+      "points_seen": 6201450,
+      "points_used": 6201450,
+      "building_points": 394173,
+      "vegetation_points": 1542158
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1828.copc.laz",
+      "chunks": 6,
+      "points_seen": 5396211,
+      "points_used": 5396211,
+      "building_points": 247763,
+      "vegetation_points": 1386107
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1829.copc.laz",
+      "chunks": 6,
+      "points_seen": 5426009,
+      "points_used": 5426000,
+      "building_points": 591253,
+      "vegetation_points": 1275494
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1907.copc.laz",
+      "chunks": 6,
+      "points_seen": 5184461,
+      "points_used": 5184389,
+      "building_points": 167731,
+      "vegetation_points": 823894
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1908.copc.laz",
+      "chunks": 5,
+      "points_seen": 4003967,
+      "points_used": 4003954,
+      "building_points": 215995,
+      "vegetation_points": 167421
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1911.copc.laz",
+      "chunks": 4,
+      "points_seen": 3781980,
+      "points_used": 3781882,
+      "building_points": 63088,
+      "vegetation_points": 383675
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1912.copc.laz",
+      "chunks": 4,
+      "points_seen": 3737198,
+      "points_used": 3737198,
+      "building_points": 55043,
+      "vegetation_points": 436775
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1913.copc.laz",
+      "chunks": 3,
+      "points_seen": 2077581,
+      "points_used": 2077581,
+      "building_points": 323,
+      "vegetation_points": 119964
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1914.copc.laz",
+      "chunks": 2,
+      "points_seen": 1723705,
+      "points_used": 1723705,
+      "building_points": 7008,
+      "vegetation_points": 201041
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1915.copc.laz",
+      "chunks": 5,
+      "points_seen": 4735638,
+      "points_used": 4735638,
+      "building_points": 165329,
+      "vegetation_points": 566819
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1916.copc.laz",
+      "chunks": 6,
+      "points_seen": 5255300,
+      "points_used": 5255300,
+      "building_points": 2387370,
+      "vegetation_points": 307381
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1917.copc.laz",
+      "chunks": 6,
+      "points_seen": 5089216,
+      "points_used": 5089216,
+      "building_points": 2779951,
+      "vegetation_points": 132728
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1918.copc.laz",
+      "chunks": 6,
+      "points_seen": 5840393,
+      "points_used": 5840393,
+      "building_points": 2287177,
+      "vegetation_points": 550563
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1919.copc.laz",
+      "chunks": 6,
+      "points_seen": 5141338,
+      "points_used": 5141338,
+      "building_points": 2110581,
+      "vegetation_points": 493712
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1920.copc.laz",
+      "chunks": 6,
+      "points_seen": 5272043,
+      "points_used": 5272043,
+      "building_points": 1141281,
+      "vegetation_points": 1084124
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1921.copc.laz",
+      "chunks": 6,
+      "points_seen": 5574809,
+      "points_used": 5574809,
+      "building_points": 1083237,
+      "vegetation_points": 1278626
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1922.copc.laz",
+      "chunks": 5,
+      "points_seen": 4942607,
+      "points_used": 4942607,
+      "building_points": 444180,
+      "vegetation_points": 1281307
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1923.copc.laz",
+      "chunks": 6,
+      "points_seen": 5930505,
+      "points_used": 5930505,
+      "building_points": 280494,
+      "vegetation_points": 1580021
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1924.copc.laz",
+      "chunks": 6,
+      "points_seen": 5614850,
+      "points_used": 5614850,
+      "building_points": 1789,
+      "vegetation_points": 1368511
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1925.copc.laz",
+      "chunks": 5,
+      "points_seen": 4914912,
+      "points_used": 4914912,
+      "building_points": 9623,
+      "vegetation_points": 1080630
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1926.copc.laz",
+      "chunks": 7,
+      "points_seen": 6167290,
+      "points_used": 6167290,
+      "building_points": 0,
+      "vegetation_points": 1393839
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1927.copc.laz",
+      "chunks": 6,
+      "points_seen": 5302571,
+      "points_used": 5302571,
+      "building_points": 268,
+      "vegetation_points": 1339008
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1928.copc.laz",
+      "chunks": 6,
+      "points_seen": 5566157,
+      "points_used": 5566157,
+      "building_points": 108743,
+      "vegetation_points": 1511378
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1929.copc.laz",
+      "chunks": 7,
+      "points_seen": 6018383,
+      "points_used": 6018383,
+      "building_points": 721796,
+      "vegetation_points": 1514716
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_1930.copc.laz",
+      "chunks": 5,
+      "points_seen": 4871028,
+      "points_used": 4871008,
+      "building_points": 614609,
+      "vegetation_points": 974123
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2001.copc.laz",
+      "chunks": 2,
+      "points_seen": 1957546,
+      "points_used": 1957503,
+      "building_points": 0,
+      "vegetation_points": 0
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2002.copc.laz",
+      "chunks": 3,
+      "points_seen": 2869765,
+      "points_used": 2869755,
+      "building_points": 1040,
+      "vegetation_points": 10591
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2003.copc.laz",
+      "chunks": 3,
+      "points_seen": 2488345,
+      "points_used": 2488345,
+      "building_points": 93471,
+      "vegetation_points": 21605
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2004.copc.laz",
+      "chunks": 2,
+      "points_seen": 1921925,
+      "points_used": 1921918,
+      "building_points": 57910,
+      "vegetation_points": 35741
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2005.copc.laz",
+      "chunks": 5,
+      "points_seen": 4257250,
+      "points_used": 4257227,
+      "building_points": 393974,
+      "vegetation_points": 126190
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2006.copc.laz",
+      "chunks": 4,
+      "points_seen": 3847963,
+      "points_used": 3847963,
+      "building_points": 14327,
+      "vegetation_points": 651680
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2007.copc.laz",
+      "chunks": 3,
+      "points_seen": 2320027,
+      "points_used": 2320027,
+      "building_points": 0,
+      "vegetation_points": 132137
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2008.copc.laz",
+      "chunks": 3,
+      "points_seen": 2921228,
+      "points_used": 2921228,
+      "building_points": 2774,
+      "vegetation_points": 0
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2009.copc.laz",
+      "chunks": 5,
+      "points_seen": 4140124,
+      "points_used": 4140124,
+      "building_points": 6128,
+      "vegetation_points": 87
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2010.copc.laz",
+      "chunks": 3,
+      "points_seen": 2796034,
+      "points_used": 2796030,
+      "building_points": 956,
+      "vegetation_points": 153
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2011.copc.laz",
+      "chunks": 4,
+      "points_seen": 3195633,
+      "points_used": 3195633,
+      "building_points": 8297,
+      "vegetation_points": 2647
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2012.copc.laz",
+      "chunks": 3,
+      "points_seen": 2580276,
+      "points_used": 2580276,
+      "building_points": 0,
+      "vegetation_points": 23475
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2013.copc.laz",
+      "chunks": 4,
+      "points_seen": 3037964,
+      "points_used": 3037964,
+      "building_points": 131918,
+      "vegetation_points": 252109
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2014.copc.laz",
+      "chunks": 4,
+      "points_seen": 3319913,
+      "points_used": 3319913,
+      "building_points": 281406,
+      "vegetation_points": 405068
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2015.copc.laz",
+      "chunks": 5,
+      "points_seen": 4923659,
+      "points_used": 4923659,
+      "building_points": 587430,
+      "vegetation_points": 352815
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2016.copc.laz",
+      "chunks": 4,
+      "points_seen": 3805386,
+      "points_used": 3805386,
+      "building_points": 872425,
+      "vegetation_points": 122412
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2017.copc.laz",
+      "chunks": 6,
+      "points_seen": 5571937,
+      "points_used": 5571937,
+      "building_points": 2608749,
+      "vegetation_points": 248199
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2018.copc.laz",
+      "chunks": 5,
+      "points_seen": 4932897,
+      "points_used": 4932897,
+      "building_points": 1959861,
+      "vegetation_points": 410446
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2019.copc.laz",
+      "chunks": 5,
+      "points_seen": 4919847,
+      "points_used": 4919847,
+      "building_points": 1778226,
+      "vegetation_points": 482548
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2020.copc.laz",
+      "chunks": 6,
+      "points_seen": 5296416,
+      "points_used": 5296416,
+      "building_points": 2015629,
+      "vegetation_points": 479107
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2021.copc.laz",
+      "chunks": 5,
+      "points_seen": 4744095,
+      "points_used": 4744095,
+      "building_points": 1711038,
+      "vegetation_points": 435719
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2022.copc.laz",
+      "chunks": 6,
+      "points_seen": 5556650,
+      "points_used": 5556650,
+      "building_points": 1175808,
+      "vegetation_points": 787400
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2023.copc.laz",
+      "chunks": 6,
+      "points_seen": 5202985,
+      "points_used": 5202985,
+      "building_points": 1145641,
+      "vegetation_points": 782430
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2024.copc.laz",
+      "chunks": 5,
+      "points_seen": 4752891,
+      "points_used": 4752891,
+      "building_points": 758850,
+      "vegetation_points": 641693
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2025.copc.laz",
+      "chunks": 6,
+      "points_seen": 5769600,
+      "points_used": 5769600,
+      "building_points": 941270,
+      "vegetation_points": 989231
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2026.copc.laz",
+      "chunks": 6,
+      "points_seen": 5017793,
+      "points_used": 5017793,
+      "building_points": 687534,
+      "vegetation_points": 842624
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2027.copc.laz",
+      "chunks": 6,
+      "points_seen": 5147525,
+      "points_used": 5147525,
+      "building_points": 494005,
+      "vegetation_points": 1141964
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2028.copc.laz",
+      "chunks": 6,
+      "points_seen": 5923576,
+      "points_used": 5923576,
+      "building_points": 867810,
+      "vegetation_points": 1372820
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2029.copc.laz",
+      "chunks": 5,
+      "points_seen": 4196642,
+      "points_used": 4196624,
+      "building_points": 968776,
+      "vegetation_points": 641622
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2102.copc.laz",
+      "chunks": 3,
+      "points_seen": 2782511,
+      "points_used": 2782414,
+      "building_points": 2,
+      "vegetation_points": 371709
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2103.copc.laz",
+      "chunks": 4,
+      "points_seen": 3281805,
+      "points_used": 3281805,
+      "building_points": 0,
+      "vegetation_points": 590879
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2104.copc.laz",
+      "chunks": 4,
+      "points_seen": 3128236,
+      "points_used": 3128236,
+      "building_points": 75538,
+      "vegetation_points": 105525
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2105.copc.laz",
+      "chunks": 5,
+      "points_seen": 4098623,
+      "points_used": 4098623,
+      "building_points": 788406,
+      "vegetation_points": 53798
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2106.copc.laz",
+      "chunks": 4,
+      "points_seen": 3988213,
+      "points_used": 3988213,
+      "building_points": 702659,
+      "vegetation_points": 245956
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2107.copc.laz",
+      "chunks": 4,
+      "points_seen": 3321868,
+      "points_used": 3321868,
+      "building_points": 199782,
+      "vegetation_points": 99830
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2108.copc.laz",
+      "chunks": 4,
+      "points_seen": 3292986,
+      "points_used": 3292986,
+      "building_points": 184873,
+      "vegetation_points": 55652
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2109.copc.laz",
+      "chunks": 3,
+      "points_seen": 2389460,
+      "points_used": 2389460,
+      "building_points": 4166,
+      "vegetation_points": 8908
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2110.copc.laz",
+      "chunks": 3,
+      "points_seen": 2342014,
+      "points_used": 2342014,
+      "building_points": 0,
+      "vegetation_points": 4433
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2111.copc.laz",
+      "chunks": 5,
+      "points_seen": 4134446,
+      "points_used": 4134446,
+      "building_points": 2219,
+      "vegetation_points": 365651
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2112.copc.laz",
+      "chunks": 4,
+      "points_seen": 3381189,
+      "points_used": 3381189,
+      "building_points": 93,
+      "vegetation_points": 343174
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2113.copc.laz",
+      "chunks": 4,
+      "points_seen": 3675604,
+      "points_used": 3675604,
+      "building_points": 309627,
+      "vegetation_points": 233340
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2114.copc.laz",
+      "chunks": 5,
+      "points_seen": 4549089,
+      "points_used": 4549089,
+      "building_points": 1409810,
+      "vegetation_points": 224031
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2115.copc.laz",
+      "chunks": 5,
+      "points_seen": 4761099,
+      "points_used": 4761099,
+      "building_points": 1051389,
+      "vegetation_points": 466431
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2116.copc.laz",
+      "chunks": 6,
+      "points_seen": 5514744,
+      "points_used": 5514744,
+      "building_points": 3062353,
+      "vegetation_points": 161454
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2117.copc.laz",
+      "chunks": 5,
+      "points_seen": 4639056,
+      "points_used": 4639056,
+      "building_points": 2128907,
+      "vegetation_points": 181316
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2118.copc.laz",
+      "chunks": 5,
+      "points_seen": 4971763,
+      "points_used": 4971763,
+      "building_points": 1506724,
+      "vegetation_points": 396725
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2119.copc.laz",
+      "chunks": 6,
+      "points_seen": 5179251,
+      "points_used": 5179251,
+      "building_points": 1742632,
+      "vegetation_points": 245589
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2120.copc.laz",
+      "chunks": 5,
+      "points_seen": 4646448,
+      "points_used": 4646448,
+      "building_points": 1490598,
+      "vegetation_points": 416745
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2121.copc.laz",
+      "chunks": 6,
+      "points_seen": 5192985,
+      "points_used": 5192985,
+      "building_points": 1826239,
+      "vegetation_points": 380088
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2122.copc.laz",
+      "chunks": 6,
+      "points_seen": 5026799,
+      "points_used": 5026799,
+      "building_points": 1388924,
+      "vegetation_points": 375868
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2123.copc.laz",
+      "chunks": 5,
+      "points_seen": 4598082,
+      "points_used": 4598082,
+      "building_points": 1103973,
+      "vegetation_points": 500466
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2124.copc.laz",
+      "chunks": 6,
+      "points_seen": 5693248,
+      "points_used": 5693248,
+      "building_points": 1537596,
+      "vegetation_points": 469213
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2125.copc.laz",
+      "chunks": 5,
+      "points_seen": 4903199,
+      "points_used": 4903199,
+      "building_points": 1064413,
+      "vegetation_points": 492609
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2126.copc.laz",
+      "chunks": 6,
+      "points_seen": 5026064,
+      "points_used": 5026064,
+      "building_points": 1003485,
+      "vegetation_points": 623407
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2127.copc.laz",
+      "chunks": 6,
+      "points_seen": 5721345,
+      "points_used": 5721345,
+      "building_points": 1014742,
+      "vegetation_points": 876930
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2128.copc.laz",
+      "chunks": 5,
+      "points_seen": 4448897,
+      "points_used": 4448884,
+      "building_points": 932820,
+      "vegetation_points": 597718
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2203.copc.laz",
+      "chunks": 5,
+      "points_seen": 4307779,
+      "points_used": 4307588,
+      "building_points": 291,
+      "vegetation_points": 793498
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2204.copc.laz",
+      "chunks": 6,
+      "points_seen": 5667756,
+      "points_used": 5667756,
+      "building_points": 76709,
+      "vegetation_points": 1263387
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2205.copc.laz",
+      "chunks": 5,
+      "points_seen": 4487279,
+      "points_used": 4487279,
+      "building_points": 498887,
+      "vegetation_points": 391010
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2206.copc.laz",
+      "chunks": 6,
+      "points_seen": 5284694,
+      "points_used": 5284694,
+      "building_points": 517951,
+      "vegetation_points": 829873
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2207.copc.laz",
+      "chunks": 6,
+      "points_seen": 5682868,
+      "points_used": 5682868,
+      "building_points": 441800,
+      "vegetation_points": 888482
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2208.copc.laz",
+      "chunks": 5,
+      "points_seen": 4055376,
+      "points_used": 4055376,
+      "building_points": 546090,
+      "vegetation_points": 242451
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2209.copc.laz",
+      "chunks": 5,
+      "points_seen": 4709561,
+      "points_used": 4709561,
+      "building_points": 623038,
+      "vegetation_points": 197745
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2210.copc.laz",
+      "chunks": 5,
+      "points_seen": 4471935,
+      "points_used": 4471935,
+      "building_points": 336715,
+      "vegetation_points": 19202
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2211.copc.laz",
+      "chunks": 3,
+      "points_seen": 2836039,
+      "points_used": 2836039,
+      "building_points": 223205,
+      "vegetation_points": 93218
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2212.copc.laz",
+      "chunks": 5,
+      "points_seen": 4504131,
+      "points_used": 4504131,
+      "building_points": 661193,
+      "vegetation_points": 378042
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2213.copc.laz",
+      "chunks": 6,
+      "points_seen": 5333211,
+      "points_used": 5333211,
+      "building_points": 1269426,
+      "vegetation_points": 484771
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2214.copc.laz",
+      "chunks": 5,
+      "points_seen": 4932696,
+      "points_used": 4932696,
+      "building_points": 1292771,
+      "vegetation_points": 509643
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2215.copc.laz",
+      "chunks": 5,
+      "points_seen": 4713781,
+      "points_used": 4713781,
+      "building_points": 790428,
+      "vegetation_points": 288986
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2216.copc.laz",
+      "chunks": 5,
+      "points_seen": 4803056,
+      "points_used": 4803056,
+      "building_points": 1832872,
+      "vegetation_points": 250756
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2217.copc.laz",
+      "chunks": 5,
+      "points_seen": 4792297,
+      "points_used": 4792297,
+      "building_points": 1657827,
+      "vegetation_points": 250430
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2218.copc.laz",
+      "chunks": 6,
+      "points_seen": 5213916,
+      "points_used": 5213916,
+      "building_points": 1568617,
+      "vegetation_points": 447226
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2219.copc.laz",
+      "chunks": 5,
+      "points_seen": 4345617,
+      "points_used": 4345617,
+      "building_points": 1394402,
+      "vegetation_points": 351957
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2220.copc.laz",
+      "chunks": 4,
+      "points_seen": 3449018,
+      "points_used": 3449018,
+      "building_points": 581569,
+      "vegetation_points": 189704
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2221.copc.laz",
+      "chunks": 6,
+      "points_seen": 5092840,
+      "points_used": 5092840,
+      "building_points": 373596,
+      "vegetation_points": 743293
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2222.copc.laz",
+      "chunks": 5,
+      "points_seen": 4582951,
+      "points_used": 4582951,
+      "building_points": 816426,
+      "vegetation_points": 582385
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2223.copc.laz",
+      "chunks": 6,
+      "points_seen": 5676089,
+      "points_used": 5676089,
+      "building_points": 1073000,
+      "vegetation_points": 687108
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2224.copc.laz",
+      "chunks": 5,
+      "points_seen": 4600149,
+      "points_used": 4600149,
+      "building_points": 1190048,
+      "vegetation_points": 389673
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2225.copc.laz",
+      "chunks": 6,
+      "points_seen": 5162202,
+      "points_used": 5162202,
+      "building_points": 937471,
+      "vegetation_points": 710829
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2226.copc.laz",
+      "chunks": 6,
+      "points_seen": 5703556,
+      "points_used": 5703556,
+      "building_points": 941679,
+      "vegetation_points": 757515
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2227.copc.laz",
+      "chunks": 5,
+      "points_seen": 4976465,
+      "points_used": 4976358,
+      "building_points": 789080,
+      "vegetation_points": 1186833
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2304.copc.laz",
+      "chunks": 6,
+      "points_seen": 5100805,
+      "points_used": 5100649,
+      "building_points": 297110,
+      "vegetation_points": 1099057
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2305.copc.laz",
+      "chunks": 6,
+      "points_seen": 5660008,
+      "points_used": 5660008,
+      "building_points": 302290,
+      "vegetation_points": 1205273
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2306.copc.laz",
+      "chunks": 6,
+      "points_seen": 5521954,
+      "points_used": 5521954,
+      "building_points": 871387,
+      "vegetation_points": 602397
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2307.copc.laz",
+      "chunks": 5,
+      "points_seen": 4437199,
+      "points_used": 4437199,
+      "building_points": 588733,
+      "vegetation_points": 629460
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2308.copc.laz",
+      "chunks": 6,
+      "points_seen": 5495917,
+      "points_used": 5495917,
+      "building_points": 473124,
+      "vegetation_points": 889362
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2309.copc.laz",
+      "chunks": 6,
+      "points_seen": 5504055,
+      "points_used": 5504055,
+      "building_points": 411821,
+      "vegetation_points": 865158
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2310.copc.laz",
+      "chunks": 5,
+      "points_seen": 4405798,
+      "points_used": 4405798,
+      "building_points": 367428,
+      "vegetation_points": 385891
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2311.copc.laz",
+      "chunks": 5,
+      "points_seen": 4082965,
+      "points_used": 4082965,
+      "building_points": 348127,
+      "vegetation_points": 122353
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2312.copc.laz",
+      "chunks": 4,
+      "points_seen": 3711452,
+      "points_used": 3711452,
+      "building_points": 406960,
+      "vegetation_points": 108306
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2313.copc.laz",
+      "chunks": 5,
+      "points_seen": 4774321,
+      "points_used": 4774321,
+      "building_points": 1672798,
+      "vegetation_points": 170920
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2314.copc.laz",
+      "chunks": 6,
+      "points_seen": 5339588,
+      "points_used": 5339588,
+      "building_points": 1076266,
+      "vegetation_points": 502667
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2315.copc.laz",
+      "chunks": 4,
+      "points_seen": 3052816,
+      "points_used": 3052816,
+      "building_points": 228556,
+      "vegetation_points": 89067
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2316.copc.laz",
+      "chunks": 5,
+      "points_seen": 4564822,
+      "points_used": 4564822,
+      "building_points": 1493498,
+      "vegetation_points": 187832
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2317.copc.laz",
+      "chunks": 6,
+      "points_seen": 5055420,
+      "points_used": 5055420,
+      "building_points": 1965197,
+      "vegetation_points": 157873
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2318.copc.laz",
+      "chunks": 5,
+      "points_seen": 4638796,
+      "points_used": 4638796,
+      "building_points": 1539963,
+      "vegetation_points": 268433
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2319.copc.laz",
+      "chunks": 6,
+      "points_seen": 5500852,
+      "points_used": 5500852,
+      "building_points": 1330093,
+      "vegetation_points": 602539
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2320.copc.laz",
+      "chunks": 5,
+      "points_seen": 4983939,
+      "points_used": 4983939,
+      "building_points": 860884,
+      "vegetation_points": 477532
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2321.copc.laz",
+      "chunks": 5,
+      "points_seen": 4946562,
+      "points_used": 4946562,
+      "building_points": 247753,
+      "vegetation_points": 876873
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2322.copc.laz",
+      "chunks": 6,
+      "points_seen": 5737747,
+      "points_used": 5737747,
+      "building_points": 620944,
+      "vegetation_points": 778961
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2323.copc.laz",
+      "chunks": 6,
+      "points_seen": 5034722,
+      "points_used": 5034722,
+      "building_points": 309706,
+      "vegetation_points": 1028029
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2324.copc.laz",
+      "chunks": 5,
+      "points_seen": 4957560,
+      "points_used": 4957560,
+      "building_points": 803300,
+      "vegetation_points": 671689
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2325.copc.laz",
+      "chunks": 6,
+      "points_seen": 5605851,
+      "points_used": 5605851,
+      "building_points": 1180628,
+      "vegetation_points": 603682
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2326.copc.laz",
+      "chunks": 5,
+      "points_seen": 4887383,
+      "points_used": 4887297,
+      "building_points": 802100,
+      "vegetation_points": 935065
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2405.copc.laz",
+      "chunks": 7,
+      "points_seen": 6033790,
+      "points_used": 6033740,
+      "building_points": 881985,
+      "vegetation_points": 790880
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2406.copc.laz",
+      "chunks": 5,
+      "points_seen": 4103515,
+      "points_used": 4103515,
+      "building_points": 615193,
+      "vegetation_points": 399353
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2407.copc.laz",
+      "chunks": 6,
+      "points_seen": 5092858,
+      "points_used": 5092858,
+      "building_points": 661793,
+      "vegetation_points": 581162
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2408.copc.laz",
+      "chunks": 6,
+      "points_seen": 5652187,
+      "points_used": 5652187,
+      "building_points": 988801,
+      "vegetation_points": 536601
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2409.copc.laz",
+      "chunks": 5,
+      "points_seen": 4729401,
+      "points_used": 4729401,
+      "building_points": 751168,
+      "vegetation_points": 599689
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2410.copc.laz",
+      "chunks": 6,
+      "points_seen": 5535263,
+      "points_used": 5535263,
+      "building_points": 636366,
+      "vegetation_points": 737170
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2411.copc.laz",
+      "chunks": 5,
+      "points_seen": 4842031,
+      "points_used": 4842031,
+      "building_points": 482425,
+      "vegetation_points": 333436
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2412.copc.laz",
+      "chunks": 5,
+      "points_seen": 4631250,
+      "points_used": 4631250,
+      "building_points": 65179,
+      "vegetation_points": 834260
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2413.copc.laz",
+      "chunks": 6,
+      "points_seen": 5488383,
+      "points_used": 5488383,
+      "building_points": 1887793,
+      "vegetation_points": 433496
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2414.copc.laz",
+      "chunks": 5,
+      "points_seen": 4647038,
+      "points_used": 4647038,
+      "building_points": 1275015,
+      "vegetation_points": 535903
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2415.copc.laz",
+      "chunks": 6,
+      "points_seen": 5025318,
+      "points_used": 5025318,
+      "building_points": 1620063,
+      "vegetation_points": 895357
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2416.copc.laz",
+      "chunks": 6,
+      "points_seen": 5342679,
+      "points_used": 5342679,
+      "building_points": 1943409,
+      "vegetation_points": 464960
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2417.copc.laz",
+      "chunks": 5,
+      "points_seen": 4756499,
+      "points_used": 4756499,
+      "building_points": 1361146,
+      "vegetation_points": 354347
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2418.copc.laz",
+      "chunks": 6,
+      "points_seen": 5180871,
+      "points_used": 5180871,
+      "building_points": 1009324,
+      "vegetation_points": 187292
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2419.copc.laz",
+      "chunks": 5,
+      "points_seen": 4779184,
+      "points_used": 4779184,
+      "building_points": 1388187,
+      "vegetation_points": 182701
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2420.copc.laz",
+      "chunks": 5,
+      "points_seen": 4614008,
+      "points_used": 4614008,
+      "building_points": 1048203,
+      "vegetation_points": 376914
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2421.copc.laz",
+      "chunks": 6,
+      "points_seen": 5443078,
+      "points_used": 5443078,
+      "building_points": 1058339,
+      "vegetation_points": 469692
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2422.copc.laz",
+      "chunks": 5,
+      "points_seen": 4941496,
+      "points_used": 4941496,
+      "building_points": 776468,
+      "vegetation_points": 654224
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2423.copc.laz",
+      "chunks": 6,
+      "points_seen": 5074161,
+      "points_used": 5074161,
+      "building_points": 662700,
+      "vegetation_points": 499129
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2424.copc.laz",
+      "chunks": 6,
+      "points_seen": 5464323,
+      "points_used": 5464323,
+      "building_points": 1038073,
+      "vegetation_points": 384566
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2425.copc.laz",
+      "chunks": 5,
+      "points_seen": 4540686,
+      "points_used": 4540622,
+      "building_points": 783108,
+      "vegetation_points": 445347
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2506.copc.laz",
+      "chunks": 6,
+      "points_seen": 5761712,
+      "points_used": 5761554,
+      "building_points": 538649,
+      "vegetation_points": 1130455
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2507.copc.laz",
+      "chunks": 6,
+      "points_seen": 5747051,
+      "points_used": 5747051,
+      "building_points": 823938,
+      "vegetation_points": 839932
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2508.copc.laz",
+      "chunks": 5,
+      "points_seen": 4824957,
+      "points_used": 4824957,
+      "building_points": 419262,
+      "vegetation_points": 813484
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2509.copc.laz",
+      "chunks": 6,
+      "points_seen": 5888070,
+      "points_used": 5888070,
+      "building_points": 788786,
+      "vegetation_points": 733669
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2510.copc.laz",
+      "chunks": 6,
+      "points_seen": 5377464,
+      "points_used": 5377464,
+      "building_points": 771073,
+      "vegetation_points": 875408
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2511.copc.laz",
+      "chunks": 5,
+      "points_seen": 4980698,
+      "points_used": 4980698,
+      "building_points": 992762,
+      "vegetation_points": 653063
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2512.copc.laz",
+      "chunks": 5,
+      "points_seen": 4498681,
+      "points_used": 4498681,
+      "building_points": 641534,
+      "vegetation_points": 285408
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2513.copc.laz",
+      "chunks": 5,
+      "points_seen": 4514521,
+      "points_used": 4514521,
+      "building_points": 587824,
+      "vegetation_points": 310569
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2514.copc.laz",
+      "chunks": 5,
+      "points_seen": 4939835,
+      "points_used": 4939835,
+      "building_points": 1446251,
+      "vegetation_points": 525896
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2515.copc.laz",
+      "chunks": 6,
+      "points_seen": 5381929,
+      "points_used": 5381929,
+      "building_points": 1565632,
+      "vegetation_points": 719174
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2516.copc.laz",
+      "chunks": 5,
+      "points_seen": 4616019,
+      "points_used": 4616019,
+      "building_points": 1518585,
+      "vegetation_points": 379478
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2517.copc.laz",
+      "chunks": 6,
+      "points_seen": 5450024,
+      "points_used": 5450024,
+      "building_points": 1481488,
+      "vegetation_points": 398081
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2518.copc.laz",
+      "chunks": 5,
+      "points_seen": 4848712,
+      "points_used": 4848712,
+      "building_points": 1076005,
+      "vegetation_points": 197543
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2519.copc.laz",
+      "chunks": 5,
+      "points_seen": 4265395,
+      "points_used": 4265395,
+      "building_points": 955845,
+      "vegetation_points": 174149
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2520.copc.laz",
+      "chunks": 6,
+      "points_seen": 5857522,
+      "points_used": 5857522,
+      "building_points": 1068695,
+      "vegetation_points": 698384
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2521.copc.laz",
+      "chunks": 6,
+      "points_seen": 5256667,
+      "points_used": 5256667,
+      "building_points": 756552,
+      "vegetation_points": 997911
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2522.copc.laz",
+      "chunks": 5,
+      "points_seen": 4924995,
+      "points_used": 4924995,
+      "building_points": 805570,
+      "vegetation_points": 748411
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2523.copc.laz",
+      "chunks": 6,
+      "points_seen": 5775239,
+      "points_used": 5775239,
+      "building_points": 772045,
+      "vegetation_points": 741369
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2524.copc.laz",
+      "chunks": 5,
+      "points_seen": 4598196,
+      "points_used": 4598138,
+      "building_points": 523690,
+      "vegetation_points": 708826
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2607.copc.laz",
+      "chunks": 5,
+      "points_seen": 4988666,
+      "points_used": 4988542,
+      "building_points": 91085,
+      "vegetation_points": 1215331
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2608.copc.laz",
+      "chunks": 7,
+      "points_seen": 6212059,
+      "points_used": 6212059,
+      "building_points": 268315,
+      "vegetation_points": 1479753
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2609.copc.laz",
+      "chunks": 6,
+      "points_seen": 5390937,
+      "points_used": 5390937,
+      "building_points": 973339,
+      "vegetation_points": 571619
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2610.copc.laz",
+      "chunks": 6,
+      "points_seen": 5273434,
+      "points_used": 5273434,
+      "building_points": 538018,
+      "vegetation_points": 974167
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2611.copc.laz",
+      "chunks": 7,
+      "points_seen": 6293370,
+      "points_used": 6293370,
+      "building_points": 496114,
+      "vegetation_points": 1477396
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2612.copc.laz",
+      "chunks": 5,
+      "points_seen": 4866725,
+      "points_used": 4866725,
+      "building_points": 1081988,
+      "vegetation_points": 461278
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2613.copc.laz",
+      "chunks": 4,
+      "points_seen": 3650864,
+      "points_used": 3650864,
+      "building_points": 219104,
+      "vegetation_points": 310150
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2614.copc.laz",
+      "chunks": 6,
+      "points_seen": 5016706,
+      "points_used": 5016706,
+      "building_points": 962376,
+      "vegetation_points": 572407
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2615.copc.laz",
+      "chunks": 5,
+      "points_seen": 4756174,
+      "points_used": 4756174,
+      "building_points": 1015608,
+      "vegetation_points": 326279
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2616.copc.laz",
+      "chunks": 6,
+      "points_seen": 5362205,
+      "points_used": 5362205,
+      "building_points": 1469743,
+      "vegetation_points": 338593
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2617.copc.laz",
+      "chunks": 5,
+      "points_seen": 4791239,
+      "points_used": 4791239,
+      "building_points": 1150769,
+      "vegetation_points": 361543
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2618.copc.laz",
+      "chunks": 5,
+      "points_seen": 4520450,
+      "points_used": 4520450,
+      "building_points": 414148,
+      "vegetation_points": 361932
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2619.copc.laz",
+      "chunks": 6,
+      "points_seen": 5089988,
+      "points_used": 5089988,
+      "building_points": 793472,
+      "vegetation_points": 409038
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2620.copc.laz",
+      "chunks": 6,
+      "points_seen": 5167342,
+      "points_used": 5167342,
+      "building_points": 776781,
+      "vegetation_points": 674234
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2621.copc.laz",
+      "chunks": 6,
+      "points_seen": 5446116,
+      "points_used": 5446116,
+      "building_points": 907806,
+      "vegetation_points": 753195
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2622.copc.laz",
+      "chunks": 6,
+      "points_seen": 5768794,
+      "points_used": 5768794,
+      "building_points": 844293,
+      "vegetation_points": 871247
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2623.copc.laz",
+      "chunks": 5,
+      "points_seen": 4607238,
+      "points_used": 4607219,
+      "building_points": 417095,
+      "vegetation_points": 832147
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2708.copc.laz",
+      "chunks": 6,
+      "points_seen": 5528852,
+      "points_used": 5528724,
+      "building_points": 513239,
+      "vegetation_points": 917825
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2709.copc.laz",
+      "chunks": 6,
+      "points_seen": 5067304,
+      "points_used": 5067304,
+      "building_points": 506581,
+      "vegetation_points": 873520
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2710.copc.laz",
+      "chunks": 6,
+      "points_seen": 5738127,
+      "points_used": 5738127,
+      "building_points": 938949,
+      "vegetation_points": 689960
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2711.copc.laz",
+      "chunks": 6,
+      "points_seen": 5182817,
+      "points_used": 5182817,
+      "building_points": 694703,
+      "vegetation_points": 924394
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2712.copc.laz",
+      "chunks": 6,
+      "points_seen": 5275746,
+      "points_used": 5275746,
+      "building_points": 688073,
+      "vegetation_points": 988007
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2713.copc.laz",
+      "chunks": 5,
+      "points_seen": 4918697,
+      "points_used": 4918697,
+      "building_points": 619120,
+      "vegetation_points": 566842
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2714.copc.laz",
+      "chunks": 4,
+      "points_seen": 3907493,
+      "points_used": 3907493,
+      "building_points": 124853,
+      "vegetation_points": 682296
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2715.copc.laz",
+      "chunks": 5,
+      "points_seen": 4777869,
+      "points_used": 4777869,
+      "building_points": 260130,
+      "vegetation_points": 320360
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2716.copc.laz",
+      "chunks": 5,
+      "points_seen": 4439996,
+      "points_used": 4439996,
+      "building_points": 429391,
+      "vegetation_points": 345896
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2717.copc.laz",
+      "chunks": 5,
+      "points_seen": 4754734,
+      "points_used": 4754734,
+      "building_points": 454101,
+      "vegetation_points": 726087
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2718.copc.laz",
+      "chunks": 6,
+      "points_seen": 5749323,
+      "points_used": 5749323,
+      "building_points": 244805,
+      "vegetation_points": 997981
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2719.copc.laz",
+      "chunks": 5,
+      "points_seen": 4421179,
+      "points_used": 4421179,
+      "building_points": 1081817,
+      "vegetation_points": 351565
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2720.copc.laz",
+      "chunks": 6,
+      "points_seen": 5059871,
+      "points_used": 5059871,
+      "building_points": 843362,
+      "vegetation_points": 618795
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2721.copc.laz",
+      "chunks": 6,
+      "points_seen": 5701743,
+      "points_used": 5701743,
+      "building_points": 892731,
+      "vegetation_points": 779723
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2722.copc.laz",
+      "chunks": 5,
+      "points_seen": 4644794,
+      "points_used": 4644725,
+      "building_points": 589898,
+      "vegetation_points": 864445
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2809.copc.laz",
+      "chunks": 6,
+      "points_seen": 5972037,
+      "points_used": 5971934,
+      "building_points": 572153,
+      "vegetation_points": 1190868
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2810.copc.laz",
+      "chunks": 5,
+      "points_seen": 4995064,
+      "points_used": 4995064,
+      "building_points": 428752,
+      "vegetation_points": 1141111
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2811.copc.laz",
+      "chunks": 6,
+      "points_seen": 5221554,
+      "points_used": 5221554,
+      "building_points": 592876,
+      "vegetation_points": 948358
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2812.copc.laz",
+      "chunks": 6,
+      "points_seen": 5676134,
+      "points_used": 5676134,
+      "building_points": 466299,
+      "vegetation_points": 1240925
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2813.copc.laz",
+      "chunks": 6,
+      "points_seen": 5009617,
+      "points_used": 5009617,
+      "building_points": 443884,
+      "vegetation_points": 1042569
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2814.copc.laz",
+      "chunks": 7,
+      "points_seen": 6166502,
+      "points_used": 6166502,
+      "building_points": 403446,
+      "vegetation_points": 1389009
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2815.copc.laz",
+      "chunks": 5,
+      "points_seen": 4887487,
+      "points_used": 4887487,
+      "building_points": 478584,
+      "vegetation_points": 676380
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2816.copc.laz",
+      "chunks": 5,
+      "points_seen": 4096502,
+      "points_used": 4096502,
+      "building_points": 204360,
+      "vegetation_points": 451249
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2817.copc.laz",
+      "chunks": 5,
+      "points_seen": 4673464,
+      "points_used": 4673464,
+      "building_points": 82993,
+      "vegetation_points": 1088258
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2818.copc.laz",
+      "chunks": 6,
+      "points_seen": 5485984,
+      "points_used": 5485984,
+      "building_points": 0,
+      "vegetation_points": 1609062
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2819.copc.laz",
+      "chunks": 5,
+      "points_seen": 4710408,
+      "points_used": 4710408,
+      "building_points": 790580,
+      "vegetation_points": 566994
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2820.copc.laz",
+      "chunks": 6,
+      "points_seen": 5642063,
+      "points_used": 5642063,
+      "building_points": 784909,
+      "vegetation_points": 677618
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2821.copc.laz",
+      "chunks": 5,
+      "points_seen": 4400739,
+      "points_used": 4400720,
+      "building_points": 705446,
+      "vegetation_points": 641232
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2910.copc.laz",
+      "chunks": 6,
+      "points_seen": 5478272,
+      "points_used": 5478129,
+      "building_points": 263040,
+      "vegetation_points": 1274662
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2911.copc.laz",
+      "chunks": 6,
+      "points_seen": 5357154,
+      "points_used": 5357154,
+      "building_points": 754942,
+      "vegetation_points": 1038759
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2912.copc.laz",
+      "chunks": 6,
+      "points_seen": 5533609,
+      "points_used": 5533609,
+      "building_points": 490099,
+      "vegetation_points": 1341777
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2913.copc.laz",
+      "chunks": 7,
+      "points_seen": 6131851,
+      "points_used": 6131851,
+      "building_points": 151977,
+      "vegetation_points": 1684140
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2914.copc.laz",
+      "chunks": 6,
+      "points_seen": 5789805,
+      "points_used": 5789805,
+      "building_points": 550502,
+      "vegetation_points": 1018336
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2915.copc.laz",
+      "chunks": 5,
+      "points_seen": 4583611,
+      "points_used": 4583611,
+      "building_points": 785839,
+      "vegetation_points": 344932
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2917.copc.laz",
+      "chunks": 6,
+      "points_seen": 5281679,
+      "points_used": 5281679,
+      "building_points": 439906,
+      "vegetation_points": 1071305
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2918.copc.laz",
+      "chunks": 5,
+      "points_seen": 4286131,
+      "points_used": 4286131,
+      "building_points": 0,
+      "vegetation_points": 986209
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2919.copc.laz",
+      "chunks": 6,
+      "points_seen": 5479446,
+      "points_used": 5479446,
+      "building_points": 520531,
+      "vegetation_points": 833783
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_2920.copc.laz",
+      "chunks": 5,
+      "points_seen": 4207239,
+      "points_used": 4207183,
+      "building_points": 326930,
+      "vegetation_points": 468565
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3011.copc.laz",
+      "chunks": 5,
+      "points_seen": 4979634,
+      "points_used": 4979525,
+      "building_points": 147241,
+      "vegetation_points": 843859
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3012.copc.laz",
+      "chunks": 6,
+      "points_seen": 5337305,
+      "points_used": 5337305,
+      "building_points": 769605,
+      "vegetation_points": 773694
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3013.copc.laz",
+      "chunks": 6,
+      "points_seen": 5626707,
+      "points_used": 5626707,
+      "building_points": 256342,
+      "vegetation_points": 1441864
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3014.copc.laz",
+      "chunks": 5,
+      "points_seen": 4754084,
+      "points_used": 4754084,
+      "building_points": 472617,
+      "vegetation_points": 751616
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3015.copc.laz",
+      "chunks": 6,
+      "points_seen": 5925596,
+      "points_used": 5925596,
+      "building_points": 682271,
+      "vegetation_points": 1047020
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3016.copc.laz",
+      "chunks": 6,
+      "points_seen": 5105771,
+      "points_used": 5105771,
+      "building_points": 615364,
+      "vegetation_points": 838499
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3017.copc.laz",
+      "chunks": 5,
+      "points_seen": 4914266,
+      "points_used": 4914266,
+      "building_points": 503209,
+      "vegetation_points": 525226
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3018.copc.laz",
+      "chunks": 6,
+      "points_seen": 5368510,
+      "points_used": 5368510,
+      "building_points": 291655,
+      "vegetation_points": 1050477
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3019.copc.laz",
+      "chunks": 4,
+      "points_seen": 3881039,
+      "points_used": 3880999,
+      "building_points": 20818,
+      "vegetation_points": 843384
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3112.copc.laz",
+      "chunks": 6,
+      "points_seen": 5316638,
+      "points_used": 5316502,
+      "building_points": 649403,
+      "vegetation_points": 826994
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3113.copc.laz",
+      "chunks": 5,
+      "points_seen": 4595307,
+      "points_used": 4595307,
+      "building_points": 747315,
+      "vegetation_points": 509096
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3114.copc.laz",
+      "chunks": 6,
+      "points_seen": 5658519,
+      "points_used": 5658519,
+      "building_points": 876563,
+      "vegetation_points": 722080
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3115.copc.laz",
+      "chunks": 5,
+      "points_seen": 4922352,
+      "points_used": 4922352,
+      "building_points": 770215,
+      "vegetation_points": 542369
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3116.copc.laz",
+      "chunks": 5,
+      "points_seen": 4897318,
+      "points_used": 4897318,
+      "building_points": 704630,
+      "vegetation_points": 571128
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3117.copc.laz",
+      "chunks": 6,
+      "points_seen": 5742165,
+      "points_used": 5742165,
+      "building_points": 990862,
+      "vegetation_points": 558993
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3118.copc.laz",
+      "chunks": 5,
+      "points_seen": 4309776,
+      "points_used": 4309746,
+      "building_points": 597614,
+      "vegetation_points": 372277
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3213.copc.laz",
+      "chunks": 6,
+      "points_seen": 5959687,
+      "points_used": 5959541,
+      "building_points": 865475,
+      "vegetation_points": 984664
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3214.copc.laz",
+      "chunks": 5,
+      "points_seen": 4909236,
+      "points_used": 4909236,
+      "building_points": 741978,
+      "vegetation_points": 793308
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3215.copc.laz",
+      "chunks": 5,
+      "points_seen": 4955616,
+      "points_used": 4955616,
+      "building_points": 879380,
+      "vegetation_points": 488234
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3216.copc.laz",
+      "chunks": 6,
+      "points_seen": 5643551,
+      "points_used": 5643551,
+      "building_points": 880341,
+      "vegetation_points": 592067
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3217.copc.laz",
+      "chunks": 5,
+      "points_seen": 4481554,
+      "points_used": 4481482,
+      "building_points": 598746,
+      "vegetation_points": 649698
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3314.copc.laz",
+      "chunks": 6,
+      "points_seen": 5010120,
+      "points_used": 5009960,
+      "building_points": 591938,
+      "vegetation_points": 938379
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3315.copc.laz",
+      "chunks": 6,
+      "points_seen": 5754288,
+      "points_used": 5754288,
+      "building_points": 494531,
+      "vegetation_points": 747843
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3316.copc.laz",
+      "chunks": 5,
+      "points_seen": 4446743,
+      "points_used": 4446727,
+      "building_points": 553385,
+      "vegetation_points": 567217
+    },
+    {
+      "path": "C:\\Users\\kamer\\Downloads\\Routing\\data\\raw\\lidar\\laz\\20220124_3415.copc.laz",
+      "chunks": 5,
+      "points_seen": 4551482,
+      "points_used": 4551368,
+      "building_points": 395565,
+      "vegetation_points": 846505
+    }
+  ]
+}

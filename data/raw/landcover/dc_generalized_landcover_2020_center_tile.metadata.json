@@ -1,0 +1,131 @@
+{
+  "currentVersion": 11.5,
+  "serviceDescription": "These data represent generalized land cover in Washington, DC. The data were derived using remote sensing technologies on satellite imagery from the Pleiades satellite, flown in 2020 and 2020 DC LiDAR.",
+  "name": "UFD/Generalized_Land_Cover_2020",
+  "description": "These data represent generalized land cover in Washington, DC. The data were derived using remote sensing technologies on satellite imagery from the Pleiades satellite, flown in 2020 and 2020 DC LiDAR.",
+  "extent": {
+    "xmin": 316168.5,
+    "ymin": 4295533.5,
+    "xmax": 334523.5,
+    "ymax": 4318405.5,
+    "spatialReference": {
+      "wkid": 26918,
+      "latestWkid": 26918
+    }
+  },
+  "initialExtent": {
+    "xmin": 316168.5,
+    "ymin": 4295533.5,
+    "xmax": 334523.5,
+    "ymax": 4318405.5,
+    "spatialReference": {
+      "wkid": 26918,
+      "latestWkid": 26918
+    }
+  },
+  "fullExtent": {
+    "xmin": 316168.5,
+    "ymin": 4295533.5,
+    "xmax": 334523.5,
+    "ymax": 4318405.5,
+    "spatialReference": {
+      "wkid": 26918,
+      "latestWkid": 26918
+    }
+  },
+  "sortableFields": "",
+  "bandCount": 1,
+  "pixelType": "U8",
+  "minValues": [
+    1
+  ],
+  "maxValues": [
+    50
+  ],
+  "meanValues": [
+    13.102873616239
+  ],
+  "stdvValues": [
+    10.069659458726
+  ],
+  "serviceProperties": "<ImageServer><ImageServiceProperties><MosaicMethod>Center</MosaicMethod><MosaicOperator>First</MosaicOperator><SortAscending>true</SortAscending><LockImageID></LockImageID><TileOrderField></TileOrderField><TileOrderBase>0</TileOrderBase><AvgImageSpacingX>0.000000</AvgImageSpacingX><AvgImageSpacingY>0.000000</AvgImageSpacingY><ViewPointX>0.0</ViewPointX><ViewPointY>0.0</ViewPointY><ViewPointDefShiftX>0.0</ViewPointDefShiftX><ViewPointDefShiftY>0.0</ViewPointDefShiftY><CompressionMethod>None</CompressionMethod><CompressionQuality>75</CompressionQuality><CompressionTolerance>0.010000</CompressionTolerance><SamplingMethod>Bilinear</SamplingMethod></ImageServiceProperties></ImageServer>",
+  "allowedFields": "",
+  "hasMultidimensions": false,
+  "pixelSizeX": 1,
+  "pixelSizeY": 1,
+  "meanPixelSize": 1,
+  "datasetFormat": "TIFF",
+  "uncompressedSize": 419815560,
+  "blockWidth": 128,
+  "blockHeight": 128,
+  "compressionType": "LZW",
+  "bandNames": [
+    "Band_1"
+  ],
+  "allowCopy": true,
+  "allowAnalysis": true,
+  "itemAccess": false,
+  "inspectionCapabilities": "",
+  "noDataValue": 255,
+  "noDataValues": [
+    255
+  ],
+  "minPixelSize": 0,
+  "maxPixelSize": 0,
+  "copyrightText": "Created by PlanIT Geo, LLC, Arvada, Colorado. For use by the District Department of Transportation Urban Forestry Division.",
+  "serviceDataType": "esriImageServiceDataTypeGeneric",
+  "serviceSourceType": "esriImageServiceSourceTypeDataset",
+  "objectIdField": "",
+  "fields": [],
+  "capabilities": "Mensuration,Image,Metadata",
+  "defaultMosaicMethod": "Center",
+  "allowedMosaicMethods": "",
+  "sortField": "",
+  "sortValue": null,
+  "sortAscending": true,
+  "mosaicOperator": "First",
+  "defaultCompressionQuality": 75,
+  "defaultResamplingMethod": "Bilinear",
+  "maxImageHeight": 4100,
+  "maxImageWidth": 15000,
+  "allowRasterFunction": true,
+  "rasterFunctionInfos": [
+    {
+      "name": "None",
+      "description": "",
+      "help": ""
+    }
+  ],
+  "rasterTypeInfos": [
+    {
+      "name": "Raster Dataset",
+      "description": "Supports all ArcGIS Raster Datasets",
+      "help": ""
+    }
+  ],
+  "mensurationCapabilities": "Basic",
+  "hasHistograms": true,
+  "hasColormap": true,
+  "hasRasterAttributeTable": true,
+  "minScale": 0,
+  "maxScale": 0,
+  "exportTilesAllowed": false,
+  "supportsStatistics": false,
+  "supportsAdvancedQueries": false,
+  "editFieldsInfo": null,
+  "ownershipBasedAccessControlForRasters": null,
+  "allowComputeTiePoints": false,
+  "useStandardizedQueries": true,
+  "advancedQueryCapabilities": {
+    "useStandardizedQueries": true,
+    "supportsStatistics": false,
+    "supportsOrderBy": false,
+    "supportsDistinct": false,
+    "supportsPagination": false
+  },
+  "spatialReference": {
+    "wkid": 26918,
+    "latestWkid": 26918
+  },
+  "resampling": false
+}

@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.pytest_tmp/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+devserver.log
+devserver.err.log
+*.log
+cache/
+data/raw/**/*.tmp
+data/processed/**/*.tmp

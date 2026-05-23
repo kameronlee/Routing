@@ -1,0 +1,17 @@
+<VRTDataset rasterXSize="19200" rasterYSize="24000">
+  <SRS dataAxisToSRSAxisMapping="1,2,3">COMPD_CS["NAD83 / Maryland + NAVD88 height",PROJCS["NAD83 / Maryland",GEOGCS["NAD83",DATUM["North_American_Datum_1983",SPHEROID["GRS 1980",6378137,298.257222101,AUTHORITY["EPSG","7019"]],AUTHORITY["EPSG","6269"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4269"]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["latitude_of_origin",37.6666666666667],PARAMETER["central_meridian",-77],PARAMETER["standard_parallel_1",39.45],PARAMETER["standard_parallel_2",38.3],PARAMETER["false_easting",400000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","26985"]],VERT_CS["NAVD88 height",VERT_DATUM["North American Vertical Datum 1988",2005,AUTHORITY["EPSG","5103"]],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Gravity-related height",UP],AUTHORITY["EPSG","5703"]]]</SRS>
+  <GeoTransform>  3.8940000000000000e+05,  1.0000000000000000e+00,  0.0000000000000000e+00,  1.4820000000000000e+05,  0.0000000000000000e+00, -1.0000000000000000e+00</GeoTransform>
+  <VRTRasterBand dataType="Float32" band="1">
+    <NoDataValue>-9999</NoDataValue>
+    <ColorInterp>Gray</ColorInterp>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">DTM_2022_1m.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="19200" RasterYSize="24000" DataType="Float32" BlockXSize="512" BlockYSize="512" />
+      <SrcRect xOff="0" yOff="0" xSize="19200" ySize="24000" />
+      <DstRect xOff="0" yOff="0" xSize="19200" ySize="24000" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <OverviewList resampling="nearest">2 4 8 16 32 64 128</OverviewList>
+</VRTDataset>
