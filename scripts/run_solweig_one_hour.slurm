@@ -7,8 +7,8 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=28
-#SBATCH --gres=gpu:H100.80gb:1
-#SBATCH --mem=497GB
+#SBATCH --gres=gpu:h100.80gb:1
+#SBATCH --mem=497G
 #SBATCH --time=0-08:00:00
 #SBATCH --export=ALL
 

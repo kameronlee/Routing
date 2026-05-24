@@ -131,6 +131,13 @@ On Hopper, submit a one-hour production UTCI run with the included Slurm script:
 sbatch scripts/run_solweig_one_hour.slurm
 ```
 
+If Hopper rejects the H100 request or the H100 queue is unavailable, use the
+A100 80GB fallback:
+
+```bash
+sbatch scripts/run_solweig_one_hour_a100.slurm
+```
+
 The script defaults to `SOLWEIG_DATE=2026-05-23` and `SOLWEIG_HOUR=14`.
 Override them at submit time when generating another hour:
 
