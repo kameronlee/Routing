@@ -125,6 +125,19 @@ python scripts/run_solweig_gpu.py ^
 The smoke output stays under `data/processed/solweig_gpu_smoke` and is not
 published to the API's strict routing UTCI directory.
 
+On Hopper, submit a one-hour production UTCI run with the included Slurm script:
+
+```bash
+sbatch scripts/run_solweig_one_hour.slurm
+```
+
+The script defaults to `SOLWEIG_DATE=2026-05-23` and `SOLWEIG_HOUR=14`.
+Override them at submit time when generating another hour:
+
+```bash
+sbatch --export=ALL,SOLWEIG_DATE=2026-05-23,SOLWEIG_HOUR=15 scripts/run_solweig_one_hour.slurm
+```
+
 The manifest is written to `data/metadata/manifest.json`.
 
 ## Run The API
