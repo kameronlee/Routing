@@ -1,0 +1,19 @@
+{
+  "nodes": [
+    {"id": "dc1", "lon": -77.0064, "lat": 38.8971, "region": "dc"},
+    {"id": "dc2", "lon": -77.0015, "lat": 38.8920, "region": "dc"},
+    {"id": "dc3", "lon": -76.9956, "lat": 38.8842, "region": "dc"},
+    {"id": "dc4", "lon": -77.0030, "lat": 38.8800, "region": "dc"},
+    {"id": "dc5", "lon": -77.0075, "lat": 38.8730, "region": "dc"},
+    {"id": "dc6", "lon": -77.0120, "lat": 38.8860, "region": "dc"}
+  ],
+  "edges": [
+    {"id": "dc-e1", "from": "dc1", "to": "dc2", "distance_m": 740, "slope": 0.01, "shade": 0.18, "vegetation": 0.12, "baseline_heat": 88, "tract_id": "dc_hot_core"},
+    {"id": "dc-e2", "from": "dc2", "to": "dc3", "distance_m": 1010, "slope": 0.02, "shade": 0.22, "vegetation": 0.15, "baseline_heat": 86, "tract_id": "dc_market"},
+    {"id": "dc-e3", "from": "dc1", "to": "dc6", "distance_m": 1340, "slope": 0.00, "shade": 0.62, "vegetation": 0.68, "baseline_heat": 71, "tract_id": "dc_greenway"},
+    {"id": "dc-e4", "from": "dc6", "to": "dc3", "distance_m": 1250, "slope": 0.01, "shade": 0.71, "vegetation": 0.70, "baseline_heat": 69, "tract_id": "dc_market"},
+    {"id": "dc-e5", "from": "dc3", "to": "dc4", "distance_m": 820, "slope": 0.01, "shade": 0.30, "vegetation": 0.20, "baseline_heat": 84, "tract_id": "dc_market"},
+    {"id": "dc-e6", "from": "dc4", "to": "dc5", "distance_m": 910, "slope": 0.01, "shade": 0.12, "vegetation": 0.08, "baseline_heat": 92, "tract_id": "dc_riverfront"},
+    {"id": "dc-e7", "from": "dc6", "to": "dc4", "distance_m": 970, "slope": 0.03, "shade": 0.44, "vegetation": 0.33, "baseline_heat": 78, "tract_id": "dc_market"}
+  ]
+}

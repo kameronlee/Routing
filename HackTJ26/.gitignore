@@ -1,0 +1,18 @@
+# Python Backend Virtual Environments and Caches
+venv/
+__pycache__/
+*.pyc
+
+# Local Data Cache
+cache/
+
+# Environment Variables
+.env
+*.env
+
+# OS Configs
+.DS_Store
+
+# Frontend Expo & Node Caches (Redundancy check)
+frontend/node_modules/
+frontend/.expo/

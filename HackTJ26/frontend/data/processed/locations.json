@@ -1,0 +1,39 @@
+{
+  "regions": [
+    {
+      "id": "dc",
+      "label": "Washington, D.C.",
+      "center": [-77.0119, 38.8898]
+    }
+  ],
+  "locations": [
+    {
+      "id": "union_station",
+      "label": "Union Station",
+      "address": "50 Massachusetts Ave NE, Washington, DC",
+      "region": "dc",
+      "coordinates": [-77.0064, 38.8971]
+    },
+    {
+      "id": "eastern_market",
+      "label": "Eastern Market",
+      "address": "225 7th St SE, Washington, DC",
+      "region": "dc",
+      "coordinates": [-76.9956, 38.8842]
+    },
+    {
+      "id": "lenfant_plaza",
+      "label": "L'Enfant Plaza",
+      "address": "430 10th St SW, Washington, DC",
+      "region": "dc",
+      "coordinates": [-77.0120, 38.8860]
+    },
+    {
+      "id": "nationals_park",
+      "label": "Nationals Park",
+      "address": "1500 South Capitol St SE, Washington, DC",
+      "region": "dc",
+      "coordinates": [-77.0075, 38.8730]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {"type": "Feature", "properties": {"id": "h1", "heat": 88, "region": "dc"}, "geometry": {"type": "Point", "coordinates": [-77.005, 38.895]}},
+    {"type": "Feature", "properties": {"id": "h2", "heat": 84, "region": "dc"}, "geometry": {"type": "Point", "coordinates": [-77.000, 38.889]}},
+    {"type": "Feature", "properties": {"id": "h3", "heat": 72, "region": "dc"}, "geometry": {"type": "Point", "coordinates": [-77.010, 38.886]}},
+    {"type": "Feature", "properties": {"id": "h4", "heat": 90, "region": "dc"}, "geometry": {"type": "Point", "coordinates": [-77.006, 38.874]}},
+    {"type": "Feature", "properties": {"id": "h5", "heat": 78, "region": "dc"}, "geometry": {"type": "Point", "coordinates": [-77.013, 38.887]}},
+    {"type": "Feature", "properties": {"id": "h6", "heat": 81, "region": "dc"}, "geometry": {"type": "Point", "coordinates": [-77.002, 38.881]}}
+  ]
+}
