@@ -120,12 +120,44 @@ def _output_times(selected_date: date, met_file: Path) -> list[tuple[int, str]]:
     return [(index + 1, f"{selected_date.isoformat()}_{hour:02d}") for index, hour in enumerate(hours)]
 
 
-def publish_solweig_outputs(work_dir: Path, output_dir: Path, selected_date: date, met_file: Path) -> list[Path]:
-    """Merge SOLWEIG tile outputs and publish one GeoTIFF per metfile hour."""
+def _published_geotiff_profile(source_profile: dict, *, height: int, width: int, transform) -> dict:
+    """Return a valid tiled GeoTIFF profile for merged SOLWEIG outputs."""
 
-    tile_paths = sorted((work_dir / "output_folder").glob("*/UTCI_*.tif"))
+    profile = source_profile.copy()
+    profile.update(
+        count=1,
+        height=height,
+        width=width,
+        transform=transform,
+        compress="deflate",
+        predictor=3,
+        tiled=True,
+        blockxsize=512,
+        blockysize=512,
+        BIGTIFF="YES",
+    )
+    return profile
+
+
+def _publish_raster_family(
+    work_dir: Path,
+    output_dir: Path,
+    selected_date: date,
+    met_file: Path,
+    *,
+    tile_prefix: str,
+    output_prefix: str,
+    required: bool,
+) -> list[Path]:
+    """Merge a SOLWEIG tile output family and publish one GeoTIFF per metfile hour."""
+
+    tile_paths = sorted((work_dir / "output_folder").glob(f"*/{tile_prefix}_*.tif"))
     if not tile_paths:
-        raise FileNotFoundError(f"No SOLWEIG UTCI tile outputs found under {work_dir / 'output_folder'}")
+        if required:
+            raise FileNotFoundError(
+                f"No SOLWEIG {tile_prefix} tile outputs found under {work_dir / 'output_folder'}"
+            )
+        return []
 
     output_dir.mkdir(parents=True, exist_ok=True)
     written: list[Path] = []
@@ -134,18 +166,13 @@ def publish_solweig_outputs(work_dir: Path, output_dir: Path, selected_date: dat
         datasets = [rasterio.open(path) for path in tile_paths]
         try:
             mosaic, transform = merge(datasets, indexes=band_index)
-            profile = datasets[0].profile.copy()
-            profile.update(
-                count=1,
+            profile = _published_geotiff_profile(
+                datasets[0].profile,
                 height=mosaic.shape[1],
                 width=mosaic.shape[2],
                 transform=transform,
-                compress="deflate",
-                predictor=3,
-                tiled=True,
-                BIGTIFF="YES",
             )
-            destination = output_dir / f"utci_{timestamp}.tif"
+            destination = output_dir / f"{output_prefix}_{timestamp}.tif"
             with rasterio.open(destination, "w", **profile) as output:
                 output.write(mosaic[0], 1)
             written.append(destination)
@@ -153,6 +180,100 @@ def publish_solweig_outputs(work_dir: Path, output_dir: Path, selected_date: dat
             for dataset in datasets:
                 dataset.close()
     return written
+
+
+def publish_solweig_outputs(work_dir: Path, output_dir: Path, selected_date: date, met_file: Path) -> list[Path]:
+    """Merge SOLWEIG tile outputs and publish one GeoTIFF per metfile hour."""
+
+    written = _publish_raster_family(
+        work_dir,
+        output_dir,
+        selected_date,
+        met_file,
+        tile_prefix="UTCI",
+        output_prefix="utci",
+        required=True,
+    )
+    written.extend(
+        _publish_raster_family(
+            work_dir,
+            output_dir,
+            selected_date,
+            met_file,
+            tile_prefix="Shadow",
+            output_prefix="shadow",
+            required=False,
+        )
+    )
+    return written
+
+
+def _assign_shifted_bush(
+    tempbush,
+    bush,
+    xp1,
+    xp2,
+    yp1,
+    yp2,
+    xc1,
+    xc2,
+    yc1,
+    yc2,
+    dz,
+) -> None:
+    """Assign a shifted bush-shadow window, clipping empty edge slices."""
+
+    dst_x0 = max(int(xp1) - 1, 0)
+    dst_y0 = max(int(yp1) - 1, 0)
+    dst_x1 = min(int(xp2), int(tempbush.shape[0]))
+    dst_y1 = min(int(yp2), int(tempbush.shape[1]))
+
+    src_x0 = max(int(xc1) - 1, 0)
+    src_y0 = max(int(yc1) - 1, 0)
+    src_x1 = min(int(xc2), int(bush.shape[0]))
+    src_y1 = min(int(yc2), int(bush.shape[1]))
+
+    x_len = min(dst_x1 - dst_x0, src_x1 - src_x0)
+    y_len = min(dst_y1 - dst_y0, src_y1 - src_y0)
+    if x_len <= 0 or y_len <= 0:
+        return
+
+    tempbush[dst_x0 : dst_x0 + x_len, dst_y0 : dst_y0 + y_len] = (
+        bush[src_x0 : src_x0 + x_len, src_y0 : src_y0 + y_len] - dz
+    )
+
+
+def _patch_solweig_shadow_bush_slices(shadow_module) -> None:
+    """Patch SOLWEIG-GPU's bush-shadow assignment for edge tiles."""
+
+    if getattr(shadow_module.shadow, "_routing_bush_slice_patch", False):
+        return
+
+    import inspect
+
+    source = inspect.getsource(shadow_module.shadow)
+    buggy_assignment = (
+        "tempbush[int(xp1)-1:int(xp2), int(yp1)-1:int(yp2)] = "
+        "bush[int(xc1)-1:int(xc2), int(yc1)-1:int(yc2)] - dz"
+    )
+    if buggy_assignment not in source:
+        return
+
+    patched_source = source.replace(
+        buggy_assignment,
+        "_assign_shifted_bush(tempbush, bush, xp1, xp2, yp1, yp2, xc1, xc2, yc1, yc2, dz)",
+    )
+    shadow_module.__dict__["_assign_shifted_bush"] = _assign_shifted_bush
+    exec(
+        compile(
+            patched_source,
+            f"{getattr(shadow_module, '__file__', 'solweig_gpu.shadow')}:routing-bush-slice-patch",
+            "exec",
+        ),
+        shadow_module.__dict__,
+    )
+    shadow_module.shadow._routing_bush_slice_patch = True
+    print("Applied SOLWEIG-GPU bush shadow edge-slice patch")
 
 
 def run_solweig(
@@ -170,9 +291,12 @@ def run_solweig(
 
     try:
         from solweig_gpu import thermal_comfort
+        import solweig_gpu.shadow as shadow_module
         import solweig_gpu.sun_position as sun_module
     except ImportError as exc:
         raise RuntimeError("Install the optional SOLWEIG stack with `pip install -e .[solweig]`.") from exc
+
+    _patch_solweig_shadow_bush_slices(shadow_module)
 
     original_loadtxt = np.loadtxt
     original_sun_position = sun_module.sun_position

@@ -3,7 +3,7 @@ import numpy as np
 import rasterio
 from rasterio.transform import from_origin
 
-from routing_backend.api import Settings, create_app
+from routing_backend.api import Settings, build_data_status, create_app
 
 
 def test_health_endpoint() -> None:
@@ -42,6 +42,9 @@ def test_route_endpoint_returns_candidate() -> None:
     payload = response.json()
     assert payload["graph_source"] == "synthetic"
     assert len(payload["candidates"]) >= 1
+    assert payload["origin_snap_distance_m"] >= 0
+    assert payload["destination_snap_distance_m"] >= 0
+    assert isinstance(payload["warnings"], list)
     candidate = payload["candidates"][0]
     assert candidate["distance_m"] > 0
     assert 0 <= candidate["shade_fraction"] <= 1
@@ -88,6 +91,16 @@ def test_data_status_endpoint_reports_missing_bundle(tmp_path) -> None:
     assert payload["dem_exists"] is False
     assert payload["strict_real_ready"] is False
     assert "SOLWEIG UTCI raster" in payload["missing_required_layers"]
+
+
+def test_build_data_status_reports_missing_bundle(tmp_path) -> None:
+    status = build_data_status(Settings(data_dir=tmp_path))
+
+    assert status.manifest_exists is False
+    assert status.graph_exists is False
+    assert status.dem_exists is False
+    assert status.strict_real_ready is False
+    assert "SOLWEIG UTCI raster" in status.missing_required_layers
 
 
 def test_route_can_require_real_utci(tmp_path) -> None:

@@ -9,8 +9,8 @@ fails loudly when a required real layer is missing.
 
 - `data_ingestion.py`: OSMnx/GraphML street graph loading and LiDAR DEM elevation sampling.
 - `raster_data.py`: real GeoTIFF discovery/sampling for DEM and SOLWEIG outputs.
-- `real_features.py`: joins LiDAR canopy height, optional land-cover and DDOT AADT traffic data onto route edges.
-- `microclimate_model.py`: geometry densification and UTCI raster sampling.
+- `real_features.py`: joins LiDAR canopy/building height, optional land-cover and DDOT AADT traffic data onto route edges.
+- `microclimate_model.py`: geometry densification, UTCI raster sampling and solar azimuth/altitude helpers.
 - `perception_model.py`: slope helpers and development fallback scoring utilities.
 - `preferences.py`: user preference dataclass plus descriptor-to-weight mapping.
 - `route_engine.py`: edge feature extraction, scalar utility cost and resource-constrained routing.
@@ -167,6 +167,21 @@ Open:
 - `http://127.0.0.1:8000/docs`
 - `http://127.0.0.1:8000/utci`
 
+## Run The Expo App
+
+From `HackTJ26/frontend`, Expo also starts the FastAPI routing backend through
+`metro.config.js`, so the usual command brings up both services:
+
+```bash
+npx expo start
+```
+
+The backend launcher uses `scripts/run_dev_server.py`, binds FastAPI to
+`0.0.0.0:8000` by default, and writes logs to `devserver.log` and
+`devserver.err.log`. Set `EXPO_ROUTING_BACKEND_AUTOSTART=0` or
+`EXPO_SKIP_ROUTING_BACKEND=1` to opt out, and set `ROUTING_BACKEND_PYTHON` if
+Expo should use a specific Python interpreter.
+
 Example route request:
 
 ```bash
@@ -197,9 +212,12 @@ Configuration is read from environment variables:
 - `ROUTING_NETWORK_TYPE`: OSMnx network type, default `walk`.
 - `ROUTING_DATA_DIR`: local data bundle directory, default `./data`.
 - `ROUTING_PREFER_LOCAL_DATA`: set to `0` to ignore local GraphML/rasters.
-- `ROUTING_ROUTE_CLIP_BUFFER_M`: route corridor buffer around origin/destination, default `1500`.
+- `ROUTING_ROUTE_CLIP_BUFFER_M`: route corridor buffer around origin/destination, default `500`.
+- `ROUTING_EDGE_SAMPLE_SPACING_M`: route feature sampling interval in metres, default `60`.
+- `ROUTING_PRELOAD_LOCAL_GRAPH`: set to `0` to skip loading the local graph/DEM at startup.
 - `ROUTING_ALLOW_SYNTHETIC_GRAPH`: development-only escape hatch; set to `1` to allow the test grid.
 - `ROUTING_ALLOW_SYNTHETIC_MICROCLIMATE`: development-only escape hatch; set to `1` to allow placeholder UTCI.
+- `ROUTING_CORS_ORIGINS`: comma-separated allowed browser origins for Expo/web clients, default `*`.
 
 No external API keys are hard-coded.
 
@@ -235,6 +253,10 @@ The SOLWEIG-GPU runner has been validated on a real clipped LiDAR subset; full
 Scenic and quiet scores now join real route-edge samples from LiDAR canopy
 height, optional land-cover rasters and DDOT AADT traffic lines. Missing
 LiDAR/canopy or traffic coverage raises an API error in strict mode.
+When a SOLWEIG direct-shadow raster is present, it is used as the route shade
+source. Otherwise the backend falls back to a solar azimuth/altitude estimate
+that combines departure time, edge bearing, street width and joined canopy or
+building heights.
 
 The routing algorithm first computes the shortest-path distance `d*`, then runs
 a label-setting constrained search to minimize weighted radiative-perceptual

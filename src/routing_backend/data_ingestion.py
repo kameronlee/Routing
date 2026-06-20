@@ -220,6 +220,49 @@ def clip_graph_to_route_area(
     return nx.MultiDiGraph(clipped)
 
 
+def clip_graph_to_detour_corridor(
+    graph: nx.MultiDiGraph,
+    origin_node: Any,
+    destination_node: Any,
+    *,
+    maximum_distance_m: float,
+    margin_m: float = 50.0,
+    minimum_nodes: int = 20,
+) -> nx.MultiDiGraph:
+    """Clip a graph to nodes that can still fit inside the detour budget."""
+
+    if origin_node not in graph or destination_node not in graph:
+        return graph
+
+    origin_data = graph.nodes[origin_node]
+    destination_data = graph.nodes[destination_node]
+    if not {"y", "x"} <= origin_data.keys() or not {"y", "x"} <= destination_data.keys():
+        return graph
+
+    origin = (float(origin_data["y"]), float(origin_data["x"]))
+    destination = (float(destination_data["y"]), float(destination_data["x"]))
+    lower_bound_limit_m = maximum_distance_m + margin_m
+
+    nodes = []
+    for node, data in graph.nodes(data=True):
+        if "y" not in data or "x" not in data:
+            continue
+        coordinate = (float(data["y"]), float(data["x"]))
+        lower_bound_m = haversine_distance_m(origin, coordinate) + haversine_distance_m(coordinate, destination)
+        if lower_bound_m <= lower_bound_limit_m:
+            nodes.append(node)
+
+    if origin_node not in nodes or destination_node not in nodes or len(nodes) < minimum_nodes:
+        return graph
+
+    clipped = graph.subgraph(nodes).copy()
+    clipped.graph.update(graph.graph)
+    clipped.graph["detour_corridor_node_count"] = len(nodes)
+    clipped.graph["detour_corridor_maximum_distance_m"] = maximum_distance_m
+    clipped.graph["detour_corridor_margin_m"] = margin_m
+    return nx.MultiDiGraph(clipped)
+
+
 def nearest_node(graph: nx.MultiDiGraph, coordinate: Coordinate) -> Any:
     """Find the nearest graph node to a ``(lat, lon)`` coordinate."""
 

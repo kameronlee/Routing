@@ -45,17 +45,23 @@ def _write_traffic(path) -> None:
 
 def test_real_feature_context_uses_lidar_canopy_height_without_landcover(tmp_path) -> None:
     canopy_path = tmp_path / "canopy_height_1m.tif"
+    building_path = tmp_path / "building_height_1m.tif"
     traffic_path = tmp_path / "traffic.geojson"
+    utci_path = tmp_path / "utci.tif"
     _write_raster(canopy_path, np.array([[8.0, 4.0], [3.0, 0.0]], dtype=np.float32))
+    _write_raster(building_path, np.full((2, 2), 15.0, dtype=np.float32))
+    _write_raster(utci_path, np.full((2, 2), 30.0, dtype=np.float32))
     _write_traffic(traffic_path)
 
     context = RealFeatureContext(
         RealFeaturePaths(
-            utci_raster=tmp_path / "unused_utci.tif",
+            utci_raster=utci_path,
+            shadow_raster=None,
             canopy_height_rasters=(canopy_path,),
             canopy_class_rasters=(),
             landcover_rasters=(),
             traffic_geojson=traffic_path,
+            building_height_rasters=(building_path,),
         )
     )
     try:
@@ -65,6 +71,7 @@ def test_real_feature_context_uses_lidar_canopy_height_without_landcover(tmp_pat
 
     assert attrs["tree_canopy_fraction"] > 0
     assert attrs["canopy_height_mean_m"] > 0
+    assert attrs["building_height_mean_m"] == 15.0
     assert attrs["landcover_green_fraction"] == 0
     assert attrs["scenic_score"] > 0
     assert 0 <= attrs["noise_score"] <= 1

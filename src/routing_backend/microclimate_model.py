@@ -30,6 +30,14 @@ class MicroclimateStats:
     sample_count: int
 
 
+@dataclass(frozen=True)
+class SolarPosition:
+    """Solar altitude and azimuth in degrees for a route sample point."""
+
+    altitude_deg: float
+    azimuth_deg: float
+
+
 def hour_from_time(value: datetime | float | int | None) -> float:
     """Return fractional local hour from a datetime or numeric hour."""
 
@@ -38,6 +46,95 @@ def hour_from_time(value: datetime | float | int | None) -> float:
     if isinstance(value, datetime):
         return value.hour + value.minute / 60 + value.second / 3600
     return float(value) % 24
+
+
+def _coerce_datetime(value: datetime | float | int | None) -> datetime:
+    if isinstance(value, datetime):
+        return value
+    now = datetime.now()
+    if value is None:
+        return now
+    hour = float(value) % 24
+    whole_hour = int(hour)
+    minute = int((hour - whole_hour) * 60)
+    second = int(round((((hour - whole_hour) * 60) - minute) * 60))
+    if second == 60:
+        minute += 1
+        second = 0
+    if minute == 60:
+        whole_hour = (whole_hour + 1) % 24
+        minute = 0
+    return now.replace(hour=whole_hour, minute=minute, second=second, microsecond=0)
+
+
+def solar_position(coordinate: Coordinate, departure_time: datetime | float | int | None) -> SolarPosition:
+    """Approximate solar altitude and azimuth for shade-orientation fallback.
+
+    The implementation follows the NOAA fractional-year approximation. Aware
+    datetimes use their UTC offset; naive datetimes are treated as server-local
+    civil time, falling back to the nearest longitude time zone if needed.
+    """
+
+    latitude, longitude = coordinate
+    dt = _coerce_datetime(departure_time)
+    if dt.tzinfo is not None and dt.utcoffset() is not None:
+        timezone_offset_hours = dt.utcoffset().total_seconds() / 3600.0
+    else:
+        local_offset = dt.astimezone().utcoffset()
+        timezone_offset_hours = (
+            local_offset.total_seconds() / 3600.0
+            if local_offset is not None
+            else round(longitude / 15.0)
+        )
+
+    fractional_hour = dt.hour + dt.minute / 60.0 + dt.second / 3600.0
+    day_of_year = dt.timetuple().tm_yday
+    gamma = 2.0 * math.pi / 365.0 * (day_of_year - 1 + (fractional_hour - 12.0) / 24.0)
+    equation_of_time_min = 229.18 * (
+        0.000075
+        + 0.001868 * math.cos(gamma)
+        - 0.032077 * math.sin(gamma)
+        - 0.014615 * math.cos(2.0 * gamma)
+        - 0.040849 * math.sin(2.0 * gamma)
+    )
+    declination_rad = (
+        0.006918
+        - 0.399912 * math.cos(gamma)
+        + 0.070257 * math.sin(gamma)
+        - 0.006758 * math.cos(2.0 * gamma)
+        + 0.000907 * math.sin(2.0 * gamma)
+        - 0.002697 * math.cos(3.0 * gamma)
+        + 0.00148 * math.sin(3.0 * gamma)
+    )
+
+    time_offset_min = equation_of_time_min + 4.0 * longitude - 60.0 * timezone_offset_hours
+    true_solar_time_min = (fractional_hour * 60.0 + time_offset_min) % 1440.0
+    hour_angle_deg = true_solar_time_min / 4.0 - 180.0
+    if hour_angle_deg < -180.0:
+        hour_angle_deg += 360.0
+
+    latitude_rad = math.radians(latitude)
+    hour_angle_rad = math.radians(hour_angle_deg)
+    cos_zenith = (
+        math.sin(latitude_rad) * math.sin(declination_rad)
+        + math.cos(latitude_rad) * math.cos(declination_rad) * math.cos(hour_angle_rad)
+    )
+    cos_zenith = max(-1.0, min(1.0, cos_zenith))
+    zenith_rad = math.acos(cos_zenith)
+    altitude_deg = 90.0 - math.degrees(zenith_rad)
+
+    sin_zenith = math.sin(zenith_rad)
+    if abs(sin_zenith) < 1e-9:
+        azimuth_deg = 180.0
+    else:
+        azimuth_cos = (
+            math.sin(latitude_rad) * math.cos(zenith_rad) - math.sin(declination_rad)
+        ) / (math.cos(latitude_rad) * sin_zenith)
+        azimuth_cos = max(-1.0, min(1.0, azimuth_cos))
+        azimuth = math.degrees(math.acos(azimuth_cos))
+        azimuth_deg = (azimuth + 180.0) % 360.0 if hour_angle_deg > 0.0 else (540.0 - azimuth) % 360.0
+
+    return SolarPosition(altitude_deg=altitude_deg, azimuth_deg=azimuth_deg)
 
 
 def get_utci_raster(x: float, y: float, hour: datetime | float | int | None) -> float:

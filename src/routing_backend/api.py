@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from datetime import datetime
 import json
@@ -10,25 +11,39 @@ from pathlib import Path
 from typing import Literal
 
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from routing_backend.data_ingestion import (
     apply_node_elevations_from_dem,
     build_synthetic_graph,
+    clip_graph_to_detour_corridor,
     clip_graph_to_route_area,
     download_osm_graph,
     load_street_graph,
     nearest_node,
 )
 from routing_backend.microclimate_model import Coordinate
+from routing_backend.microclimate_model import haversine_distance_m
 from routing_backend.preferences import Preference, preference_from_descriptors
 from routing_backend.raster_data import default_data_dir, default_dem_path, find_time_raster, sample_raster_values
 from routing_backend.real_features import RealDataMissingError, RealFeatureContext, discover_real_feature_paths
 from routing_backend.route_engine import (
     RouteCandidate,
+    baseline_shortest_path_distance,
     build_feature_graph,
+    length_shortest_route_candidate,
     resource_constrained_routes,
 )
+
+
+def _cors_origins_from_env(value: str | None) -> tuple[str, ...]:
+    """Parse a comma-separated CORS origin list for browser-based Expo clients."""
+
+    if not value:
+        return ("*",)
+    origins = tuple(origin.strip() for origin in value.split(",") if origin.strip())
+    return origins or ("*",)
 
 
 @dataclass(frozen=True)
@@ -39,9 +54,14 @@ class Settings:
     default_network_type: str = "walk"
     data_dir: Path = default_data_dir()
     prefer_local_data: bool = True
-    route_clip_buffer_m: float = 1_500.0
+    route_clip_buffer_m: float = 500.0
+    detour_corridor_margin_m: float = 50.0
+    edge_sample_spacing_m: float = 60.0
+    snap_warning_threshold_m: float = 50.0
     allow_synthetic_graph: bool = False
     allow_synthetic_microclimate: bool = False
+    cors_origins: tuple[str, ...] = ("*",)
+    preload_local_graph: bool = True
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -52,9 +72,14 @@ class Settings:
             default_network_type=os.getenv("ROUTING_NETWORK_TYPE", "walk"),
             data_dir=Path(os.getenv("ROUTING_DATA_DIR", str(default_data_dir()))),
             prefer_local_data=os.getenv("ROUTING_PREFER_LOCAL_DATA", "1") != "0",
-            route_clip_buffer_m=float(os.getenv("ROUTING_ROUTE_CLIP_BUFFER_M", "1500")),
+            route_clip_buffer_m=float(os.getenv("ROUTING_ROUTE_CLIP_BUFFER_M", "500")),
+            detour_corridor_margin_m=float(os.getenv("ROUTING_DETOUR_CORRIDOR_MARGIN_M", "50")),
+            edge_sample_spacing_m=float(os.getenv("ROUTING_EDGE_SAMPLE_SPACING_M", "60")),
+            snap_warning_threshold_m=float(os.getenv("ROUTING_SNAP_WARNING_THRESHOLD_M", "50")),
             allow_synthetic_graph=os.getenv("ROUTING_ALLOW_SYNTHETIC_GRAPH", "0") == "1",
             allow_synthetic_microclimate=os.getenv("ROUTING_ALLOW_SYNTHETIC_MICROCLIMATE", "0") == "1",
+            cors_origins=_cors_origins_from_env(os.getenv("ROUTING_CORS_ORIGINS")),
+            preload_local_graph=os.getenv("ROUTING_PRELOAD_LOCAL_GRAPH", "1") != "0",
         )
 
 
@@ -95,6 +120,10 @@ class RouteRequest(BaseModel):
         description="Optional OSMnx place name used only when no local graph is available.",
     )
     mode: Literal["walk", "bike", "cycle", "cycling"] = Field("walk", description="Travel mode.")
+    objective: Literal["comfort", "shortest"] = Field(
+        "comfort",
+        description="Use comfort for radiative-perceptual routing or shortest for a true length-shortest baseline.",
+    )
     descriptors: list[str] = Field(
         default_factory=list,
         description='High-level preference descriptors such as "heat sensitive" or "noise averse".',
@@ -132,6 +161,10 @@ class RouteResponse(BaseModel):
     graph_source: str
     origin_node: str
     destination_node: str
+    origin_snap_distance_m: float
+    destination_snap_distance_m: float
+    removed_no_utci_edges: int = 0
+    warnings: list[str] = Field(default_factory=list)
     candidates: list[RouteCandidateResponse]
 
 
@@ -154,6 +187,7 @@ class DataStatusResponse(BaseModel):
     graph_exists: bool
     dem_exists: bool
     utci_raster: str | None
+    shadow_raster: str | None = None
     graph_path: str | None
     dem_path: str | None
     manifest_aoi: str | None = None
@@ -163,6 +197,7 @@ class DataStatusResponse(BaseModel):
     lidar_tiles_downloaded: int = 0
     lidar_tiles_processed: int | None = None
     traffic_exists: bool = False
+    direct_shadow_ready: bool = False
     strict_real_ready: bool = False
     missing_required_layers: list[str] = Field(default_factory=list)
 
@@ -221,10 +256,142 @@ def _load_cached_graph(app: FastAPI, graph_path: Path):
     return cache[key]
 
 
+def _load_cached_elevated_graph(app: FastAPI, graph_path: Path, dem_path: Path):
+    cache = getattr(app.state, "elevated_graph_cache", {})
+    key = f"{graph_path}|{dem_path}"
+    if key not in cache:
+        cache[key] = apply_node_elevations_from_dem(_load_cached_graph(app, graph_path), dem_path)
+        app.state.elevated_graph_cache = cache
+    return cache[key]
+
+
+def _preload_local_graph(app: FastAPI, settings: Settings) -> None:
+    if not settings.prefer_local_data:
+        return
+    graph_path = _local_graph_path(settings, "walk")
+    dem_path = default_dem_path(settings.data_dir)
+    if graph_path is not None and dem_path is not None:
+        _load_cached_elevated_graph(app, graph_path, dem_path)
+
+
+def _node_coordinate(graph, node) -> Coordinate:
+    data = graph.nodes[node]
+    return float(data["y"]), float(data["x"])
+
+
+def _snap_warnings(
+    *,
+    origin_snap_distance_m: float,
+    destination_snap_distance_m: float,
+    threshold_m: float,
+) -> list[str]:
+    warnings: list[str] = []
+    if origin_snap_distance_m > threshold_m:
+        warnings.append(f"Origin snapped {origin_snap_distance_m:.1f} m to the nearest graph node.")
+    if destination_snap_distance_m > threshold_m:
+        warnings.append(f"Destination snapped {destination_snap_distance_m:.1f} m to the nearest graph node.")
+    return warnings
+
+
+def _is_shortest_request(request: RouteRequest) -> bool:
+    descriptors = {descriptor.strip().lower() for descriptor in request.descriptors}
+    return request.objective == "shortest" or bool(descriptors & {"shortest", "fastest"})
+
+
+def build_data_status(settings: Settings | None = None) -> DataStatusResponse:
+    """Report which local real-data bundle assets are available."""
+
+    app_settings = settings or Settings.from_env()
+    graph_path = _local_graph_path(app_settings, "walk")
+    dem_path = default_dem_path(app_settings.data_dir)
+    utci_raster = find_time_raster(app_settings.data_dir, "utci", datetime.now())
+    shadow_raster = find_time_raster(app_settings.data_dir, "shadow", datetime.now())
+    traffic_path = app_settings.data_dir / "raw" / "traffic_noise" / "ddot_traffic_volume_2023.geojson"
+    canopy_rasters = [
+        path
+        for path in [
+            app_settings.data_dir / "processed" / "rasters" / "canopy_height_1m.tif",
+            app_settings.data_dir / "processed" / "rasters" / "canopy_1m.tif",
+            app_settings.data_dir / "processed" / "rasters" / "canopy_1m_center_tile.tif",
+            app_settings.data_dir / "processed" / "solweig_inputs" / "trees_cdsm_1m.tif",
+            app_settings.data_dir / "processed" / "solweig_inputs" / "trees_cdsm_1m_center_tile.tif",
+        ]
+        if path.exists()
+    ]
+    landcover_rasters = [
+        path
+        for path in [
+            app_settings.data_dir / "processed" / "rasters" / "landcover_1m.tif",
+            app_settings.data_dir / "processed" / "rasters" / "landcover_1m_center_tile.tif",
+            app_settings.data_dir / "processed" / "solweig_inputs" / "landcover_1m.tif",
+            app_settings.data_dir / "processed" / "solweig_inputs" / "landcover_1m_center_tile.tif",
+        ]
+        if path.exists()
+    ]
+    missing = []
+    if graph_path is None:
+        missing.append("local DC walking GraphML")
+    if dem_path is None:
+        missing.append("LiDAR-derived DEM")
+    if utci_raster is None:
+        missing.append("SOLWEIG UTCI raster")
+    if not canopy_rasters:
+        missing.append("tree canopy or canopy-height raster")
+    if not traffic_path.exists():
+        missing.append("DDOT traffic volume GeoJSON")
+    manifest_path = app_settings.data_dir / "metadata" / "manifest.json"
+    lidar_manifest_path = app_settings.data_dir / "metadata" / "lidar_processing_manifest.json"
+    manifest_aoi = None
+    manifest_created_at = None
+    lidar_tiles_processed = None
+    if manifest_path.exists():
+        try:
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest_aoi = manifest.get("aoi")
+            manifest_created_at = manifest.get("created_at")
+        except json.JSONDecodeError:
+            pass
+    if lidar_manifest_path.exists():
+        try:
+            lidar_manifest = json.loads(lidar_manifest_path.read_text(encoding="utf-8"))
+            lidar_tiles_processed = lidar_manifest.get("tiles_processed")
+        except json.JSONDecodeError:
+            pass
+    lidar_tiles_downloaded = len(list((app_settings.data_dir / "raw" / "lidar" / "laz").glob("*.laz")))
+
+    return DataStatusResponse(
+        data_dir=str(app_settings.data_dir),
+        manifest_exists=manifest_path.exists(),
+        graph_exists=graph_path is not None,
+        dem_exists=dem_path is not None,
+        utci_raster=str(utci_raster) if utci_raster else None,
+        shadow_raster=str(shadow_raster) if shadow_raster else None,
+        graph_path=str(graph_path) if graph_path else None,
+        dem_path=str(dem_path) if dem_path else None,
+        manifest_aoi=manifest_aoi,
+        manifest_created_at=manifest_created_at,
+        canopy_raster_count=len(canopy_rasters),
+        landcover_raster_count=len(landcover_rasters),
+        lidar_tiles_downloaded=lidar_tiles_downloaded,
+        lidar_tiles_processed=lidar_tiles_processed,
+        traffic_exists=traffic_path.exists(),
+        direct_shadow_ready=shadow_raster is not None,
+        strict_real_ready=not missing,
+        missing_required_layers=missing,
+    )
+
+
 def create_app(settings: Settings | None = None) -> FastAPI:
     """Create the FastAPI app with injectable settings for tests."""
 
     app_settings = settings or Settings.from_env()
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        if app_settings.preload_local_graph:
+            _preload_local_graph(app, app_settings)
+        yield
+
     app = FastAPI(
         title="Query-Conditioned Radiative-Perceptual Routing Backend",
         version="0.1.0",
@@ -232,102 +399,42 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "Computes walking or cycling route candidates optimized for "
             "micro-climate comfort, shade, scenicness, quietness and slope."
         ),
+        lifespan=lifespan,
+    )
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=list(app_settings.cors_origins),
+        allow_credentials="*" not in app_settings.cors_origins,
+        allow_methods=["*"],
+        allow_headers=["*"],
     )
     app.state.settings = app_settings
+    app.state.edge_feature_cache = {}
 
     @app.get("/health")
-    def health() -> dict[str, str]:
+    async def health() -> dict[str, str]:
         """Return service health for load balancers and smoke tests."""
 
         return {"status": "ok"}
 
     @app.get("/data/status", response_model=DataStatusResponse)
-    def data_status() -> DataStatusResponse:
+    async def data_status() -> DataStatusResponse:
         """Report which local real-data bundle assets are available."""
 
-        graph_path = _local_graph_path(app_settings, "walk")
-        dem_path = default_dem_path(app_settings.data_dir)
-        utci_raster = find_time_raster(app_settings.data_dir, "utci", datetime.now())
-        traffic_path = app_settings.data_dir / "raw" / "traffic_noise" / "ddot_traffic_volume_2023.geojson"
-        canopy_rasters = [
-            path
-            for path in [
-                app_settings.data_dir / "processed" / "rasters" / "canopy_height_1m.tif",
-                app_settings.data_dir / "processed" / "rasters" / "canopy_1m.tif",
-                app_settings.data_dir / "processed" / "rasters" / "canopy_1m_center_tile.tif",
-                app_settings.data_dir / "processed" / "solweig_inputs" / "trees_cdsm_1m.tif",
-                app_settings.data_dir / "processed" / "solweig_inputs" / "trees_cdsm_1m_center_tile.tif",
-            ]
-            if path.exists()
-        ]
-        landcover_rasters = [
-            path
-            for path in [
-                app_settings.data_dir / "processed" / "rasters" / "landcover_1m.tif",
-                app_settings.data_dir / "processed" / "rasters" / "landcover_1m_center_tile.tif",
-                app_settings.data_dir / "processed" / "solweig_inputs" / "landcover_1m.tif",
-                app_settings.data_dir / "processed" / "solweig_inputs" / "landcover_1m_center_tile.tif",
-            ]
-            if path.exists()
-        ]
-        missing = []
-        if graph_path is None:
-            missing.append("local DC walking GraphML")
-        if dem_path is None:
-            missing.append("LiDAR-derived DEM")
-        if utci_raster is None:
-            missing.append("SOLWEIG UTCI raster")
-        if not canopy_rasters:
-            missing.append("tree canopy or canopy-height raster")
-        if not traffic_path.exists():
-            missing.append("DDOT traffic volume GeoJSON")
-        manifest_path = app_settings.data_dir / "metadata" / "manifest.json"
-        lidar_manifest_path = app_settings.data_dir / "metadata" / "lidar_processing_manifest.json"
-        manifest_aoi = None
-        manifest_created_at = None
-        lidar_tiles_processed = None
-        if manifest_path.exists():
-            try:
-                manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-                manifest_aoi = manifest.get("aoi")
-                manifest_created_at = manifest.get("created_at")
-            except json.JSONDecodeError:
-                pass
-        if lidar_manifest_path.exists():
-            try:
-                lidar_manifest = json.loads(lidar_manifest_path.read_text(encoding="utf-8"))
-                lidar_tiles_processed = lidar_manifest.get("tiles_processed")
-            except json.JSONDecodeError:
-                pass
-        lidar_tiles_downloaded = len(list((app_settings.data_dir / "raw" / "lidar" / "laz").glob("*.laz")))
-
-        return DataStatusResponse(
-            data_dir=str(app_settings.data_dir),
-            manifest_exists=manifest_path.exists(),
-            graph_exists=graph_path is not None,
-            dem_exists=dem_path is not None,
-            utci_raster=str(utci_raster) if utci_raster else None,
-            graph_path=str(graph_path) if graph_path else None,
-            dem_path=str(dem_path) if dem_path else None,
-            manifest_aoi=manifest_aoi,
-            manifest_created_at=manifest_created_at,
-            canopy_raster_count=len(canopy_rasters),
-            landcover_raster_count=len(landcover_rasters),
-            lidar_tiles_downloaded=lidar_tiles_downloaded,
-            lidar_tiles_processed=lidar_tiles_processed,
-            traffic_exists=traffic_path.exists(),
-            strict_real_ready=not missing,
-            missing_required_layers=missing,
-        )
+        return build_data_status(app_settings)
 
     @app.post("/route", response_model=RouteResponse)
-    def route(request: RouteRequest) -> RouteResponse:
+    async def route(request: RouteRequest) -> RouteResponse:
         """Return route candidates matching the requested comfort priorities."""
 
         departure_time = request.departure_time or datetime.now()
         preference = _preference_from_request(request)
         city = request.city or app_settings.default_city
         network_type = "bike" if request.mode in {"bike", "cycle", "cycling"} else app_settings.default_network_type
+        dem_path = default_dem_path(app_settings.data_dir)
+        if dem_path is None:
+            raise HTTPException(status_code=503, detail="Missing required LiDAR-derived DEM raster.")
+
         real_paths = None
         utci_raster = None
         try:
@@ -343,7 +450,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             else None
         )
         if graph_path:
-            raw_graph = _load_cached_graph(app, graph_path)
+            raw_graph = _load_cached_elevated_graph(app, graph_path, dem_path)
             raw_graph = clip_graph_to_route_area(
                 raw_graph,
                 request.origin.as_tuple(),
@@ -367,11 +474,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 status_code=503,
                 detail="No real local graph is available for this request and no OSMnx city was provided.",
             )
+        if not graph_path:
+            raw_graph = apply_node_elevations_from_dem(raw_graph, dem_path)
 
-        dem_path = default_dem_path(app_settings.data_dir)
-        if dem_path is None:
-            raise HTTPException(status_code=503, detail="Missing required LiDAR-derived DEM raster.")
-        raw_graph = apply_node_elevations_from_dem(raw_graph, dem_path)
         real_context = None
         if real_paths is not None:
             real_context = RealFeatureContext(real_paths)
@@ -388,41 +493,85 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 ),
             )
         try:
-            feature_graph = build_feature_graph(
-                raw_graph,
-                departure_time=departure_time,
-                mode=request.mode,
-                comfort_threshold=preference.comfort_threshold,
-                utci_raster_path=utci_raster,
-                real_feature_context=real_context,
-            )
-            origin_node = nearest_node(feature_graph, request.origin.as_tuple())
-            destination_node = nearest_node(feature_graph, request.destination.as_tuple())
-            candidates = resource_constrained_routes(
-                feature_graph,
-                origin_node=origin_node,
-                destination_node=destination_node,
-                preference=preference,
-                delta=request.detour_ratio,
-                max_candidates=request.max_candidates,
-                departure_time=departure_time,
-                utci_raster_path=utci_raster,
-            )
+            origin_node = nearest_node(raw_graph, request.origin.as_tuple())
+            destination_node = nearest_node(raw_graph, request.destination.as_tuple())
+            if _is_shortest_request(request):
+                feature_graph = raw_graph.copy()
+                candidates = [
+                    length_shortest_route_candidate(
+                        feature_graph,
+                        origin_node,
+                        destination_node,
+                        preference=preference,
+                        departure_time=departure_time,
+                        mode=request.mode,
+                        sample_spacing_m=app_settings.edge_sample_spacing_m,
+                        comfort_threshold=preference.comfort_threshold,
+                        utci_raster_path=utci_raster,
+                        real_feature_context=real_context,
+                    )
+                ]
+            else:
+                baseline_distance_m = baseline_shortest_path_distance(raw_graph, origin_node, destination_node)
+                corridor_graph = clip_graph_to_detour_corridor(
+                    raw_graph,
+                    origin_node,
+                    destination_node,
+                    maximum_distance_m=baseline_distance_m * (1.0 + request.detour_ratio),
+                    margin_m=app_settings.detour_corridor_margin_m,
+                )
+                feature_graph = build_feature_graph(
+                    corridor_graph,
+                    departure_time=departure_time,
+                    mode=request.mode,
+                    sample_spacing_m=app_settings.edge_sample_spacing_m,
+                    comfort_threshold=preference.comfort_threshold,
+                    utci_raster_path=utci_raster,
+                    real_feature_context=real_context,
+                    feature_cache=getattr(app.state, "edge_feature_cache", None),
+                )
+                candidates = resource_constrained_routes(
+                    feature_graph,
+                    origin_node=origin_node,
+                    destination_node=destination_node,
+                    preference=preference,
+                    delta=request.detour_ratio,
+                    max_candidates=request.max_candidates,
+                    departure_time=departure_time,
+                    utci_raster_path=utci_raster,
+                )
         except Exception as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
         finally:
             if real_context is not None:
                 real_context.close()
 
+        origin_snap_distance_m = haversine_distance_m(
+            request.origin.as_tuple(),
+            _node_coordinate(feature_graph, origin_node),
+        )
+        destination_snap_distance_m = haversine_distance_m(
+            request.destination.as_tuple(),
+            _node_coordinate(feature_graph, destination_node),
+        )
+
         return RouteResponse(
             graph_source=str(feature_graph.graph.get("source", "unknown")),
             origin_node=str(origin_node),
             destination_node=str(destination_node),
+            origin_snap_distance_m=origin_snap_distance_m,
+            destination_snap_distance_m=destination_snap_distance_m,
+            removed_no_utci_edges=int(feature_graph.graph.get("removed_no_utci_edges", 0)),
+            warnings=_snap_warnings(
+                origin_snap_distance_m=origin_snap_distance_m,
+                destination_snap_distance_m=destination_snap_distance_m,
+                threshold_m=app_settings.snap_warning_threshold_m,
+            ),
             candidates=[_candidate_to_response(candidate) for candidate in candidates],
         )
 
     @app.get("/utci", response_model=UtciTileResponse)
-    def utci(
+    async def utci(
         lat: float = Query(38.8816, ge=-90, le=90, description="Center latitude."),
         lon: float = Query(-77.0910, ge=-180, le=180, description="Center longitude."),
         time: datetime | None = Query(None, description="Inspection timestamp."),

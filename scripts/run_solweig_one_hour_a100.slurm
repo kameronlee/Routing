@@ -6,8 +6,8 @@
 #SBATCH --error=/scratch/%u/%x-%j.err
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=16
-#SBATCH --gres=gpu:a100.80gb:1
+#SBATCH --cpus-per-task=32
+#SBATCH --gres=gpu:A100.80gb:1
 #SBATCH --mem=122G
 #SBATCH --time=0-08:00:00
 #SBATCH --export=ALL
@@ -18,10 +18,15 @@ umask 0027
 REPO_DIR="${ROUTING_REPO_DIR:-${SLURM_SUBMIT_DIR:-/scratch/klee206/work/Routing}}"
 cd "$REPO_DIR"
 
-SOLWEIG_DATE="${SOLWEIG_DATE:-2026-05-23}"
+SOLWEIG_TIMEZONE="${SOLWEIG_TIMEZONE:-America/New_York}"
+SOLWEIG_DATE="${SOLWEIG_DATE:-$(TZ="$SOLWEIG_TIMEZONE" date +%F)}"
 SOLWEIG_HOUR="${SOLWEIG_HOUR:-14}"
 SOLWEIG_TILE_SIZE="${SOLWEIG_TILE_SIZE:-1000}"
 SOLWEIG_WORK_DIR="${SOLWEIG_WORK_DIR:-data/processed/solweig_gpu_work}"
+SOLWEIG_FILL_UTCI_NANS="${SOLWEIG_FILL_UTCI_NANS:-1}"
+SOLWEIG_UTCI_FILL_DISTANCE="${SOLWEIG_UTCI_FILL_DISTANCE:-256}"
+SOLWEIG_SAVE_SHADOW="${SOLWEIG_SAVE_SHADOW:-1}"
+SOLWEIG_MET_FILE_CUSTOM="${SOLWEIG_MET_FILE:+1}"
 SOLWEIG_MET_FILE="${SOLWEIG_MET_FILE:-data/processed/solweig_inputs/met_forcing_${SOLWEIG_DATE}_${SOLWEIG_DATE}.txt}"
 
 module load hosts/hopper
@@ -39,11 +44,24 @@ mkdir -p "$TMPDIR" "$PIP_CACHE_DIR" "$(dirname "$SOLWEIG_WORK_DIR")"
 
 echo "Running one-hour SOLWEIG-GPU production job on A100"
 echo "repo: $PWD"
+echo "timezone: $SOLWEIG_TIMEZONE"
 echo "date: $SOLWEIG_DATE"
 echo "hour: $SOLWEIG_HOUR"
 echo "met file: $SOLWEIG_MET_FILE"
 echo "work dir: $SOLWEIG_WORK_DIR"
 echo "tile size: $SOLWEIG_TILE_SIZE"
+echo "save shadow: $SOLWEIG_SAVE_SHADOW"
+
+if [[ ! -f "$SOLWEIG_MET_FILE" ]]; then
+  if [[ -n "$SOLWEIG_MET_FILE_CUSTOM" ]]; then
+    echo "Requested SOLWEIG_MET_FILE does not exist: $SOLWEIG_MET_FILE" >&2
+    exit 1
+  fi
+  echo "Met file not found; building weather forcing for $SOLWEIG_DATE"
+  python scripts/build_weather_forcing.py \
+    --start-date "$SOLWEIG_DATE" \
+    --end-date "$SOLWEIG_DATE"
+fi
 
 nvidia-smi
 
@@ -58,13 +76,34 @@ if torch.cuda.is_available():
     print("GPU:", torch.cuda.get_device_name(0))
 PY
 
-python scripts/run_solweig_gpu.py \
+SOLWEIG_RUN_ARGS=(
+  scripts/run_solweig_gpu.py
   --date "$SOLWEIG_DATE" \
   --met-file "$SOLWEIG_MET_FILE" \
   --hour "$SOLWEIG_HOUR" \
   --work-dir "$SOLWEIG_WORK_DIR" \
   --tile-size "$SOLWEIG_TILE_SIZE" \
   --publish
+)
+if [[ "$SOLWEIG_SAVE_SHADOW" != "0" ]]; then
+  SOLWEIG_RUN_ARGS+=(--save-shadow)
+fi
+
+python "${SOLWEIG_RUN_ARGS[@]}"
+
+if [[ "$SOLWEIG_FILL_UTCI_NANS" != "0" ]]; then
+  SOLWEIG_HOUR_PADDED="$(printf "%02d" "$SOLWEIG_HOUR")"
+  PUBLISHED_UTCI="data/processed/solweig_outputs/utci_${SOLWEIG_DATE}_${SOLWEIG_HOUR_PADDED}.tif"
+  if [[ -f "$PUBLISHED_UTCI" ]]; then
+    python scripts/fill_utci_nans.py \
+      "$PUBLISHED_UTCI" \
+      --in-place \
+      --max-search-distance "$SOLWEIG_UTCI_FILL_DISTANCE"
+  else
+    echo "Expected published UTCI raster not found for NaN fill: $PUBLISHED_UTCI" >&2
+    exit 1
+  fi
+fi
 
 echo "Published SOLWEIG outputs:"
 ls -lh data/processed/solweig_outputs || true
