@@ -16,9 +16,10 @@ data/processed/**/*.tmp
 data/processed/solweig_gpu_work/
 data/processed/solweig_gpu_work_*/
 
-# Local frontend/runtime state from the nested HackTJ26 app checkout.
-HackTJ26/.git/
-HackTJ26/frontend/.env
-HackTJ26/frontend/.env.*
-!HackTJ26/frontend/.env.example
-HackTJ26/frontend/.expo/
+# Local frontend/runtime state from the nested ClearHelp app checkout.
+ClearHelp/.git/
+ClearHelp/frontend/.env
+ClearHelp/frontend/.env.*
+!ClearHelp/frontend/.env.example
+ClearHelp/frontend/.expo/
+ClearHelp/frontend/.expo-test-dist-*/

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 import math
 import re
@@ -34,6 +34,20 @@ def _parse_raster_timestamp(path: Path) -> tuple[str | None, int | None]:
     return None, int(match.group(1))
 
 
+def raster_timestamp(path: Path | None) -> datetime | None:
+    """Return the timestamp encoded in a dated raster filename."""
+
+    if path is None:
+        return None
+    raster_date, raster_hour = _parse_raster_timestamp(path)
+    if raster_date is None or raster_hour is None:
+        return None
+    try:
+        return datetime.fromisoformat(f"{raster_date}T{raster_hour:02d}:00:00")
+    except ValueError:
+        return None
+
+
 def find_time_raster(
     data_dir: Path,
     prefix: str,
@@ -62,15 +76,21 @@ def find_time_raster(
     elif departure_time is not None:
         requested_hour = int(float(departure_time)) % 24
 
-    def score(path: Path) -> tuple[int, int, str]:
+    def score(path: Path) -> tuple[int, int, int, str]:
         raster_date, raster_hour = _parse_raster_timestamp(path)
         date_score = 0 if requested_date and raster_date == requested_date else 1
+        try:
+            date_ordinal = date.fromisoformat(raster_date).toordinal() if raster_date else 0
+        except ValueError:
+            date_ordinal = 0
         if requested_hour is None or raster_hour is None:
             hour_score = 99
         else:
             direct = abs(raster_hour - requested_hour)
             hour_score = min(direct, 24 - direct)
-        return date_score, hour_score, str(path)
+        # Exact dates win. When no exact date exists, prefer the newest dated
+        # dataset before choosing the closest available hour.
+        return date_score, -date_ordinal, hour_score, str(path)
 
     return min(candidates, key=score)
 
@@ -97,9 +117,15 @@ def sample_raster_values(raster_path: Path, points: Iterable[Coordinate]) -> lis
         if dataset.crs and str(dataset.crs).upper() not in {"EPSG:4326", "OGC:CRS84"}:
             xs, ys = transform("EPSG:4326", dataset.crs, xs, ys)
 
+        in_bounds = [
+            (x, y)
+            for x, y in zip(xs, ys)
+            if dataset.bounds.left <= x < dataset.bounds.right
+            and dataset.bounds.bottom < y <= dataset.bounds.top
+        ]
         values: list[float] = []
         nodata = dataset.nodata
-        for sample in dataset.sample(zip(xs, ys)):
+        for sample in dataset.sample(in_bounds):
             if len(sample) == 0:
                 continue
             value = float(sample[0])

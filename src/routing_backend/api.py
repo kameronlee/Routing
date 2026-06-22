@@ -8,6 +8,7 @@ from datetime import datetime
 import json
 import os
 from pathlib import Path
+import threading
 from typing import Literal
 
 from fastapi import FastAPI, HTTPException, Query
@@ -18,6 +19,7 @@ from routing_backend.data_ingestion import (
     apply_node_elevations_from_dem,
     build_synthetic_graph,
     clip_graph_to_detour_corridor,
+    clip_graph_to_candidate_paths,
     clip_graph_to_route_area,
     download_osm_graph,
     load_street_graph,
@@ -26,13 +28,20 @@ from routing_backend.data_ingestion import (
 from routing_backend.microclimate_model import Coordinate
 from routing_backend.microclimate_model import haversine_distance_m
 from routing_backend.preferences import Preference, preference_from_descriptors
-from routing_backend.raster_data import default_data_dir, default_dem_path, find_time_raster, sample_raster_values
+from routing_backend.raster_data import (
+    default_data_dir,
+    default_dem_path,
+    find_time_raster,
+    raster_timestamp,
+    sample_raster_values,
+)
 from routing_backend.real_features import RealDataMissingError, RealFeatureContext, discover_real_feature_paths
 from routing_backend.route_engine import (
     RouteCandidate,
     baseline_shortest_path_distance,
     build_feature_graph,
     length_shortest_route_candidate,
+    node_path_candidate,
     resource_constrained_routes,
 )
 
@@ -58,6 +67,11 @@ class Settings:
     detour_corridor_margin_m: float = 50.0
     edge_sample_spacing_m: float = 60.0
     snap_warning_threshold_m: float = 50.0
+    max_snap_distance_m: float = 250.0
+    route_search_seconds: float = 1.5
+    route_search_expansions: int = 20_000
+    route_search_labels_per_node: int = 8
+    route_candidate_path_limit: int = 10
     allow_synthetic_graph: bool = False
     allow_synthetic_microclimate: bool = False
     cors_origins: tuple[str, ...] = ("*",)
@@ -76,6 +90,11 @@ class Settings:
             detour_corridor_margin_m=float(os.getenv("ROUTING_DETOUR_CORRIDOR_MARGIN_M", "50")),
             edge_sample_spacing_m=float(os.getenv("ROUTING_EDGE_SAMPLE_SPACING_M", "60")),
             snap_warning_threshold_m=float(os.getenv("ROUTING_SNAP_WARNING_THRESHOLD_M", "50")),
+            max_snap_distance_m=float(os.getenv("ROUTING_MAX_SNAP_DISTANCE_M", "250")),
+            route_search_seconds=float(os.getenv("ROUTING_ROUTE_SEARCH_SECONDS", "1.5")),
+            route_search_expansions=int(os.getenv("ROUTING_ROUTE_SEARCH_EXPANSIONS", "20000")),
+            route_search_labels_per_node=int(os.getenv("ROUTING_ROUTE_SEARCH_LABELS_PER_NODE", "8")),
+            route_candidate_path_limit=int(os.getenv("ROUTING_ROUTE_CANDIDATE_PATH_LIMIT", "10")),
             allow_synthetic_graph=os.getenv("ROUTING_ALLOW_SYNTHETIC_GRAPH", "0") == "1",
             allow_synthetic_microclimate=os.getenv("ROUTING_ALLOW_SYNTHETIC_MICROCLIMATE", "0") == "1",
             cors_origins=_cors_origins_from_env(os.getenv("ROUTING_CORS_ORIGINS")),
@@ -136,6 +155,15 @@ class RouteRequest(BaseModel):
         description="Maximum extra distance relative to the shortest path, e.g. 0.2 for 20%.",
     )
     max_candidates: int = Field(3, ge=1, le=5, description="Maximum number of route candidates.")
+    snap_tolerance_m: float | None = Field(
+        None,
+        ge=250,
+        le=400,
+        description=(
+            "Optional bounded snap tolerance for large landmarks or parks. "
+            "Ordinary addresses should omit this and use the server default."
+        ),
+    )
 
 
 class RouteCandidateResponse(BaseModel):
@@ -164,6 +192,11 @@ class RouteResponse(BaseModel):
     origin_snap_distance_m: float
     destination_snap_distance_m: float
     removed_no_utci_edges: int = 0
+    utci_source: str | None = None
+    utci_time: datetime | None = None
+    requested_departure_time: datetime
+    uses_nearest_time: bool = False
+    search_truncated: bool = False
     warnings: list[str] = Field(default_factory=list)
     candidates: list[RouteCandidateResponse]
 
@@ -173,6 +206,8 @@ class UtciTileResponse(BaseModel):
 
     center: CoordinateModel
     time: datetime | None
+    requested_time: datetime | None = None
+    utci_source: str
     values: list[dict[str, float]]
     min_utci: float
     mean_utci: float
@@ -239,8 +274,12 @@ def _local_graph_path(settings: Settings, mode: str) -> Path | None:
 
 
 def _looks_like_dc_request(origin: CoordinateModel, destination: CoordinateModel, city: str | None) -> bool:
-    if city and "washington" not in city.lower() and "district of columbia" not in city.lower():
-        return False
+    if city:
+        normalized_city = city.lower()
+        # An explicit/default DC city should always use the installed graph. The
+        # snap-distance check below then rejects out-of-coverage coordinates
+        # immediately instead of attempting a slow OSM network download.
+        return "washington" in normalized_city or "district of columbia" in normalized_city
     for coordinate in (origin, destination):
         if not (38.75 <= coordinate.lat <= 39.05 and -77.20 <= coordinate.lon <= -76.85):
             return False
@@ -248,21 +287,23 @@ def _looks_like_dc_request(origin: CoordinateModel, destination: CoordinateModel
 
 
 def _load_cached_graph(app: FastAPI, graph_path: Path):
-    cache = getattr(app.state, "graph_cache", {})
-    key = str(graph_path)
-    if key not in cache:
-        cache[key] = load_street_graph(graph_path)
-        app.state.graph_cache = cache
-    return cache[key]
+    with app.state.graph_cache_lock:
+        cache = getattr(app.state, "graph_cache", {})
+        key = str(graph_path)
+        if key not in cache:
+            cache[key] = load_street_graph(graph_path)
+            app.state.graph_cache = cache
+        return cache[key]
 
 
 def _load_cached_elevated_graph(app: FastAPI, graph_path: Path, dem_path: Path):
-    cache = getattr(app.state, "elevated_graph_cache", {})
-    key = f"{graph_path}|{dem_path}"
-    if key not in cache:
-        cache[key] = apply_node_elevations_from_dem(_load_cached_graph(app, graph_path), dem_path)
-        app.state.elevated_graph_cache = cache
-    return cache[key]
+    with app.state.graph_cache_lock:
+        cache = getattr(app.state, "elevated_graph_cache", {})
+        key = f"{graph_path}|{dem_path}"
+        if key not in cache:
+            cache[key] = apply_node_elevations_from_dem(_load_cached_graph(app, graph_path), dem_path)
+            app.state.elevated_graph_cache = cache
+        return cache[key]
 
 
 def _preload_local_graph(app: FastAPI, settings: Settings) -> None:
@@ -293,9 +334,43 @@ def _snap_warnings(
     return warnings
 
 
+def _nearest_route_nodes(graph, origin: CoordinateModel, destination: CoordinateModel):
+    origin_node = nearest_node(graph, origin.as_tuple())
+    destination_node = nearest_node(graph, destination.as_tuple())
+    origin_distance = haversine_distance_m(origin.as_tuple(), _node_coordinate(graph, origin_node))
+    destination_distance = haversine_distance_m(destination.as_tuple(), _node_coordinate(graph, destination_node))
+    return origin_node, destination_node, origin_distance, destination_distance
+
+
 def _is_shortest_request(request: RouteRequest) -> bool:
     descriptors = {descriptor.strip().lower() for descriptor in request.descriptors}
     return request.objective == "shortest" or bool(descriptors & {"shortest", "fastest"})
+
+
+def _rank_single_priority_candidates(
+    request: RouteRequest,
+    candidates: list[RouteCandidate],
+) -> list[RouteCandidate] | None:
+    """Rank single-purpose profiles by the metric users explicitly selected."""
+
+    descriptors = {descriptor.strip().lower() for descriptor in request.descriptors}
+    heat = bool(descriptors & {"heat sensitive", "avoid heat", "coolest", "shade", "shade seeker"})
+    scenic = bool(descriptors & {"scenic", "green", "greenery", "pleasant", "park lover"})
+    quiet = bool(descriptors & {"noise averse", "quiet", "quietest", "low noise"})
+    hills = bool(descriptors & {"avoid hills", "mobility limited", "flat", "low slope"})
+    selected = sum((heat, scenic, quiet, hills))
+    if selected != 1:
+        return None
+    if scenic:
+        return sorted(candidates, key=lambda candidate: (-candidate.scenic_score, candidate.distance_m))
+    if quiet:
+        return sorted(candidates, key=lambda candidate: (candidate.noise_score, candidate.distance_m))
+    if hills:
+        return sorted(candidates, key=lambda candidate: (candidate.slope_penalty, candidate.distance_m))
+    return sorted(
+        candidates,
+        key=lambda candidate: (candidate.mean_utci, candidate.max_utci, -candidate.shade_fraction, candidate.distance_m),
+    )
 
 
 def build_data_status(settings: Settings | None = None) -> DataStatusResponse:
@@ -389,7 +464,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         if app_settings.preload_local_graph:
-            _preload_local_graph(app, app_settings)
+            preload_thread = threading.Thread(
+                target=_preload_local_graph,
+                args=(app, app_settings),
+                name="routing-data-preload",
+                daemon=True,
+            )
+            preload_thread.start()
+            app.state.preload_thread = preload_thread
         yield
 
     app = FastAPI(
@@ -410,6 +492,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     app.state.settings = app_settings
     app.state.edge_feature_cache = {}
+    app.state.graph_cache_lock = threading.RLock()
 
     @app.get("/health")
     async def health() -> dict[str, str]:
@@ -432,17 +515,22 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         city = request.city or app_settings.default_city
         network_type = "bike" if request.mode in {"bike", "cycle", "cycling"} else app_settings.default_network_type
         dem_path = default_dem_path(app_settings.data_dir)
+        snap_tolerance_m = max(
+            app_settings.max_snap_distance_m,
+            request.snap_tolerance_m or app_settings.max_snap_distance_m,
+        )
         if dem_path is None:
             raise HTTPException(status_code=503, detail="Missing required LiDAR-derived DEM raster.")
 
         real_paths = None
         utci_raster = None
-        try:
-            real_paths = discover_real_feature_paths(app_settings.data_dir, departure_time)
-            utci_raster = real_paths.utci_raster
-        except RealDataMissingError as exc:
-            if not app_settings.allow_synthetic_microclimate:
-                raise HTTPException(status_code=503, detail=str(exc)) from exc
+        if app_settings.prefer_local_data:
+            try:
+                real_paths = discover_real_feature_paths(app_settings.data_dir, departure_time)
+                utci_raster = real_paths.utci_raster
+            except RealDataMissingError as exc:
+                if not app_settings.allow_synthetic_microclimate:
+                    raise HTTPException(status_code=503, detail=str(exc)) from exc
 
         graph_path = (
             _local_graph_path(app_settings, request.mode)
@@ -450,13 +538,33 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             else None
         )
         if graph_path:
-            raw_graph = _load_cached_elevated_graph(app, graph_path, dem_path)
+            full_graph = _load_cached_elevated_graph(app, graph_path, dem_path)
+            origin_node, destination_node, origin_snap_distance_m, destination_snap_distance_m = _nearest_route_nodes(
+                full_graph,
+                request.origin,
+                request.destination,
+            )
+            if max(origin_snap_distance_m, destination_snap_distance_m) > snap_tolerance_m:
+                raise HTTPException(
+                    status_code=422,
+                    detail=(
+                        "One or both locations are outside the supported street-network coverage. "
+                        f"Maximum snap distance for this request is {snap_tolerance_m:.0f} m."
+                    ),
+                )
+            if origin_node == destination_node:
+                raise HTTPException(
+                    status_code=422,
+                    detail="Origin and destination resolve to the same street-network node.",
+                )
             raw_graph = clip_graph_to_route_area(
-                raw_graph,
+                full_graph,
                 request.origin.as_tuple(),
                 request.destination.as_tuple(),
                 buffer_m=app_settings.route_clip_buffer_m,
             )
+            if origin_node not in raw_graph or destination_node not in raw_graph:
+                raw_graph = full_graph
         elif city:
             raw_graph = download_osm_graph(
                 city,
@@ -476,11 +584,29 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             )
         if not graph_path:
             raw_graph = apply_node_elevations_from_dem(raw_graph, dem_path)
+            origin_node, destination_node, origin_snap_distance_m, destination_snap_distance_m = _nearest_route_nodes(
+                raw_graph,
+                request.origin,
+                request.destination,
+            )
+            if max(origin_snap_distance_m, destination_snap_distance_m) > snap_tolerance_m:
+                raise HTTPException(
+                    status_code=422,
+                    detail=(
+                        "One or both locations are outside the supported street-network coverage. "
+                        f"Maximum snap distance for this request is {snap_tolerance_m:.0f} m."
+                    ),
+                )
+            if origin_node == destination_node:
+                raise HTTPException(
+                    status_code=422,
+                    detail="Origin and destination resolve to the same street-network node.",
+                )
 
         real_context = None
         if real_paths is not None:
             real_context = RealFeatureContext(real_paths)
-        elif app_settings.allow_synthetic_microclimate:
+        elif app_settings.allow_synthetic_microclimate and app_settings.prefer_local_data:
             utci_raster = find_time_raster(app_settings.data_dir, "utci", departure_time)
 
         if utci_raster is None and not app_settings.allow_synthetic_microclimate:
@@ -493,8 +619,6 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 ),
             )
         try:
-            origin_node = nearest_node(raw_graph, request.origin.as_tuple())
-            destination_node = nearest_node(raw_graph, request.destination.as_tuple())
             if _is_shortest_request(request):
                 feature_graph = raw_graph.copy()
                 candidates = [
@@ -520,6 +644,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                     maximum_distance_m=baseline_distance_m * (1.0 + request.detour_ratio),
                     margin_m=app_settings.detour_corridor_margin_m,
                 )
+                corridor_graph = clip_graph_to_candidate_paths(
+                    corridor_graph,
+                    origin_node,
+                    destination_node,
+                    maximum_distance_m=baseline_distance_m * (1.0 + request.detour_ratio),
+                    # Search breadth must not depend on the response limit;
+                    # otherwise max_candidates=1 can return a worse primary route.
+                    max_paths=app_settings.route_candidate_path_limit,
+                )
                 feature_graph = build_feature_graph(
                     corridor_graph,
                     departure_time=departure_time,
@@ -537,23 +670,81 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                     preference=preference,
                     delta=request.detour_ratio,
                     max_candidates=request.max_candidates,
+                    max_labels_per_node=app_settings.route_search_labels_per_node,
+                    max_search_seconds=app_settings.route_search_seconds,
+                    max_expansions=app_settings.route_search_expansions,
                     departure_time=departure_time,
                     utci_raster_path=utci_raster,
                 )
+                baseline_candidate = length_shortest_route_candidate(
+                    feature_graph,
+                    origin_node,
+                    destination_node,
+                    preference=preference,
+                    departure_time=departure_time,
+                    mode=request.mode,
+                    sample_spacing_m=app_settings.edge_sample_spacing_m,
+                    comfort_threshold=preference.comfort_threshold,
+                    utci_raster_path=utci_raster,
+                )
+                path_candidates: list[RouteCandidate] = []
+                for path_nodes in feature_graph.graph.get("candidate_node_paths", []):
+                    try:
+                        path_candidates.append(
+                            node_path_candidate(
+                                feature_graph,
+                                path_nodes,
+                                preference,
+                                departure_time=departure_time,
+                                utci_raster_path=utci_raster,
+                            )
+                        )
+                    except (KeyError, ValueError):
+                        # Strict UTCI coverage can remove an edge from a stored path.
+                        continue
+                unique_candidates = {
+                    tuple(candidate.edge_ids): candidate
+                    for candidate in [*candidates, *path_candidates, baseline_candidate]
+                }
+                ranked = _rank_single_priority_candidates(request, list(unique_candidates.values()))
+                if ranked is None:
+                    ranked = sorted(unique_candidates.values(), key=lambda candidate: (candidate.cost, candidate.distance_m))
+                candidates = ranked[: request.max_candidates]
         except Exception as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
         finally:
             if real_context is not None:
                 real_context.close()
 
-        origin_snap_distance_m = haversine_distance_m(
-            request.origin.as_tuple(),
-            _node_coordinate(feature_graph, origin_node),
+        selected_utci_time = raster_timestamp(utci_raster)
+        uses_nearest_time = bool(
+            selected_utci_time
+            and (
+                selected_utci_time.date() != departure_time.date()
+                or selected_utci_time.hour != departure_time.hour
+            )
         )
-        destination_snap_distance_m = haversine_distance_m(
-            request.destination.as_tuple(),
-            _node_coordinate(feature_graph, destination_node),
+        warnings = _snap_warnings(
+            origin_snap_distance_m=origin_snap_distance_m,
+            destination_snap_distance_m=destination_snap_distance_m,
+            threshold_m=app_settings.snap_warning_threshold_m,
         )
+        if (
+            request.mode in {"bike", "cycle", "cycling"}
+            and graph_path is not None
+            and graph_path.name != "dc_bike_graph.graphml"
+        ):
+            warnings.append(
+                "Cycling fallback: no local DC bicycle graph is installed; this route uses the walking graph."
+            )
+        search_truncated = bool(feature_graph.graph.get("route_search_truncated", False))
+        if search_truncated:
+            warnings.append("Alternative-route search reached its performance budget; returning the best routes found.")
+        if uses_nearest_time and selected_utci_time is not None:
+            warnings.append(
+                "Climate data fallback: using the nearest available UTCI snapshot "
+                f"({selected_utci_time.isoformat(timespec='minutes')})."
+            )
 
         return RouteResponse(
             graph_source=str(feature_graph.graph.get("source", "unknown")),
@@ -562,11 +753,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             origin_snap_distance_m=origin_snap_distance_m,
             destination_snap_distance_m=destination_snap_distance_m,
             removed_no_utci_edges=int(feature_graph.graph.get("removed_no_utci_edges", 0)),
-            warnings=_snap_warnings(
-                origin_snap_distance_m=origin_snap_distance_m,
-                destination_snap_distance_m=destination_snap_distance_m,
-                threshold_m=app_settings.snap_warning_threshold_m,
-            ),
+            utci_source=str(utci_raster) if utci_raster else None,
+            utci_time=selected_utci_time,
+            requested_departure_time=departure_time,
+            uses_nearest_time=uses_nearest_time,
+            search_truncated=search_truncated,
+            warnings=warnings,
             candidates=[_candidate_to_response(candidate) for candidate in candidates],
         )
 
@@ -601,7 +793,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         utci_values = [value["utci"] for value in values]
         return UtciTileResponse(
             center=CoordinateModel(lat=lat, lon=lon),
-            time=time,
+            time=raster_timestamp(utci_raster),
+            requested_time=time,
+            utci_source=str(utci_raster),
             values=values,
             min_utci=min(utci_values),
             mean_utci=sum(utci_values) / len(utci_values),

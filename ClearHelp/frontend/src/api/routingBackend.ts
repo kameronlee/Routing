@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 export type MapCoordinate = {
   latitude: number;
   longitude: number;
+  snapToleranceM?: number;
 };
 
 type BackendCoordinate = {
@@ -32,6 +33,11 @@ type BackendRouteResponse = {
   origin_snap_distance_m: number;
   destination_snap_distance_m: number;
   removed_no_utci_edges: number;
+  utci_source: string | null;
+  utci_time: string | null;
+  requested_departure_time: string;
+  uses_nearest_time: boolean;
+  search_truncated: boolean;
   warnings: string[];
   candidates: BackendRouteCandidate[];
 };
@@ -45,6 +51,8 @@ export type RouteComparison = {
   shade_multiplier: number;
   cool_mean_utci: number;
   cool_max_utci: number;
+  standard_mean_utci: number;
+  standard_max_utci: number;
   cool_duration_seconds: number;
   cool_heat_dose: number;
   scenic_score: number;
@@ -52,6 +60,10 @@ export type RouteComparison = {
   slope_penalty: number;
   route_candidate_count: number;
   graph_source: string;
+  utci_source: string | null;
+  utci_time: string | null;
+  uses_nearest_time: boolean;
+  search_truncated: boolean;
   warnings: string[];
 };
 
@@ -86,9 +98,9 @@ export const DEFAULT_ROUTE_PREFERENCES: RoutePreferences = {
   profile: 'balanced',
   departurePreset: 'now',
   detourBudget: 'balanced',
-  cooling: true,
+  cooling: false,
   quiet: false,
-  scenic: true,
+  scenic: false,
   avoidHills: false,
   preferFast: false,
   showBenches: true,
@@ -119,6 +131,7 @@ export class RoutingApiError extends Error {
 }
 
 const trimTrailingSlash = (value: string) => value.replace(/\/+$/, '');
+const DEFAULT_ROUTING_API_PORT = 8010;
 
 export function getRoutingApiBaseUrl(): string {
   const configuredUrl = process.env.EXPO_PUBLIC_ROUTING_API_URL?.trim();
@@ -127,9 +140,9 @@ export function getRoutingApiBaseUrl(): string {
   }
 
   if (Platform.OS === 'android') {
-    return 'http://10.0.2.2:8000';
+    return `http://10.0.2.2:${DEFAULT_ROUTING_API_PORT}`;
   }
-  return 'http://127.0.0.1:8000';
+  return `http://127.0.0.1:${DEFAULT_ROUTING_API_PORT}`;
 }
 
 function clampPreference(value: number | undefined): number {
@@ -169,6 +182,7 @@ function routeDescriptors(preferences: RoutePreferences): string[] {
   }
   if (preferences.profile === 'fastest') {
     descriptors.add('in a hurry');
+    descriptors.add('fastest');
   }
 
   if (preferences.cooling) {
@@ -191,13 +205,13 @@ function roundedWeight(value: number): number {
 function routeWeights(preferences: RoutePreferences) {
   const byProfile = {
     balanced: {
-      weight_cool: 1.15,
-      weight_scenic: 0.6,
-      weight_quiet: 0.55,
-      weight_slope: 0.45,
-      weight_time: 0.25,
-      weight_distance: 0.2,
-      uncertainty_penalty: 0.18,
+      weight_cool: 0.35,
+      weight_scenic: 0.35,
+      weight_quiet: 0.35,
+      weight_slope: 0.35,
+      weight_time: 1,
+      weight_distance: 1,
+      uncertainty_penalty: 0.12,
       comfort_threshold: 26,
     },
     coolest: {
@@ -221,8 +235,8 @@ function routeWeights(preferences: RoutePreferences) {
       comfort_threshold: 26,
     },
     green: {
-      weight_cool: 1.45,
-      weight_scenic: 1.65,
+      weight_cool: 0.9,
+      weight_scenic: 2.8,
       weight_quiet: 0.7,
       weight_slope: 0.45,
       weight_time: 0.18,
@@ -244,14 +258,14 @@ function routeWeights(preferences: RoutePreferences) {
 
   const weights = { ...byProfile[preferences.profile] };
 
-  if (preferences.cooling) {
+  if (preferences.cooling && preferences.profile !== 'green') {
     weights.weight_cool = Math.max(weights.weight_cool, 1.9);
     weights.comfort_threshold = Math.min(weights.comfort_threshold, 24.8);
     weights.uncertainty_penalty = Math.max(weights.uncertainty_penalty, 0.28);
   }
   if (preferences.quiet) weights.weight_quiet = Math.max(weights.weight_quiet, 1.5);
   if (preferences.scenic) weights.weight_scenic = Math.max(weights.weight_scenic, 1.25);
-  if (preferences.avoidHills) weights.weight_slope = Math.max(weights.weight_slope, 1.45);
+  if (preferences.avoidHills) weights.weight_slope = Math.max(weights.weight_slope, 2.2);
   if (preferences.preferFast || preferences.profile === 'fastest') {
     weights.weight_time = Math.max(weights.weight_time, 1.05);
     weights.weight_distance = Math.max(weights.weight_distance, 0.85);
@@ -318,6 +332,10 @@ function routeBody(params: FetchRoutesParams, objective: RouteObjective) {
     weights: routeWeights(preferences),
     detour_ratio: detourRatio(preferences),
     max_candidates: candidateCount(preferences),
+    snap_tolerance_m: Math.max(
+      params.start.snapToleranceM || 250,
+      params.destination.snapToleranceM || 250,
+    ),
     ...(resolvedDepartureTime ? { departure_time: resolvedDepartureTime } : {}),
   };
 }
@@ -406,7 +424,7 @@ export async function fetchBackendRoutes(params: FetchRoutesParams): Promise<Rou
   const cool = firstCandidate(comfortResponse, 'comfort');
   const standardShadeScore = standard.shade_fraction * 100;
   const coolShadeScore = cool.shade_fraction * 100;
-  const warnings = [...standardResponse.warnings, ...comfortResponse.warnings];
+  const warnings = [...new Set([...standardResponse.warnings, ...comfortResponse.warnings])];
 
   return {
     standardRoute: toMapCoordinates(standard.geometry),
@@ -420,6 +438,8 @@ export async function fetchBackendRoutes(params: FetchRoutesParams): Promise<Rou
       shade_multiplier: shadeMultiplier(standardShadeScore, coolShadeScore),
       cool_mean_utci: cool.mean_utci,
       cool_max_utci: cool.max_utci,
+      standard_mean_utci: standard.mean_utci,
+      standard_max_utci: standard.max_utci,
       cool_duration_seconds: cool.duration_s,
       cool_heat_dose: cool.heat_dose,
       scenic_score: cool.scenic_score,
@@ -427,6 +447,10 @@ export async function fetchBackendRoutes(params: FetchRoutesParams): Promise<Rou
       slope_penalty: cool.slope_penalty,
       route_candidate_count: comfortResponse.candidates.length,
       graph_source: comfortResponse.graph_source,
+      utci_source: comfortResponse.utci_source,
+      utci_time: comfortResponse.utci_time,
+      uses_nearest_time: comfortResponse.uses_nearest_time,
+      search_truncated: comfortResponse.search_truncated,
       warnings,
     },
   };

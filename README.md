@@ -1,9 +1,47 @@
-# Query-Conditioned Radiative-Perceptual Routing Backend
+# ClearHelp DC
 
-This project is a Python backend for walking and cycling routes optimized for
-micro-climate comfort, shade, scenicness, quietness and slope. The runtime is
-configured for strict real-data routing: it uses local staged DC datasets and
-fails loudly when a required real layer is missing.
+ClearHelp DC is a high-school-track prototype for USAII's 2026 **Help is Hard
+to Find** challenge, Direction A: Crisis-to-Action Translator. Its primary user
+is a DC parent or caregiver under financial stress who receives a confusing
+school-meal, food-benefit, or housing notice and needs to act without missing
+an important deadline.
+
+The primary flow is intentionally simple:
+
+1. The user pastes a notice.
+2. A small on-device Naive Bayes text classifier identifies the likely support
+   category from synthetic training examples.
+3. The app extracts the likely topic, requested action, deadline, and named
+   documents, then returns a plain-language explanation, checklist, confidence
+   label, and immediate next step.
+4. The user chooses a human support resource and can request directions.
+
+AI is needed before search because a stressed caregiver may not know what kind
+of help the letter concerns, which words matter, or what to search for. The
+on-device NLP step turns the raw notice into a likely topic, extracted deadline,
+requested action, and document list; only then does the app suggest a resource.
+
+Responsible AI is concrete in the product:
+
+- **Risk:** the small classifier can misclassify an unfamiliar notice or point
+  toward a synthetic/outdated resource.
+- **Mitigation:** text remains on-device, uncertain input receives a neutral
+  "Needs review" result, confidence is qualitative rather than a misleading
+  percentage, and every demo resource is labeled for verification.
+- **Human in the loop:** a benefits worker, school staff member, housing
+  advocate, counselor, or trusted adult confirms what the notice requires and
+  makes every eligibility, legal, medical, or safety decision.
+
+The AI does **not** decide eligibility, interpret legal rights, make medical or
+safety decisions, or verify that a resource is current. The prototype makes
+that risk visible through confidence labels, synthetic-data disclosure, and a
+human-review boundary. Demo directory records are synthetic and must be
+replaced with verified official listings before deployment.
+
+The repository also includes an advanced shade-aware routing subsystem for the
+secondary “get to help” action. It computes walking and cycling routes optimized
+for micro-climate comfort, shade, scenicness, quietness, and slope using staged
+Washington, DC data.
 
 ## What Is Included
 
@@ -169,18 +207,23 @@ Open:
 
 ## Run The Expo App
 
-From `HackTJ26/frontend`, Expo also starts the FastAPI routing backend through
+From `ClearHelp/frontend`, Expo also starts the FastAPI routing backend through
 `metro.config.js`, so the usual command brings up both services:
 
 ```bash
 npx expo start
 ```
 
-The backend launcher uses `scripts/run_dev_server.py`, binds FastAPI to
-`0.0.0.0:8000` by default, and writes logs to `devserver.log` and
-`devserver.err.log`. Set `EXPO_ROUTING_BACKEND_AUTOSTART=0` or
-`EXPO_SKIP_ROUTING_BACKEND=1` to opt out, and set `ROUTING_BACKEND_PYTHON` if
-Expo should use a specific Python interpreter.
+The Expo backend launcher uses `scripts/run_dev_server.py`, binds FastAPI to
+`0.0.0.0:8010`, automatically prefers the repository's `.venv` Python, and
+writes logs to `devserver.log` and `devserver.err.log`. Graph and elevation
+data preload in the background so `/health` can answer immediately; an early
+route request waits on the same protected cache instead of loading a duplicate.
+Set
+`EXPO_ROUTING_BACKEND_AUTOSTART=0` or `EXPO_SKIP_ROUTING_BACKEND=1` to opt out,
+and set `ROUTING_BACKEND_PYTHON` to override the detected Python interpreter.
+When today's UTCI raster is unavailable, routing uses the newest dated UTCI
+dataset and then chooses its closest available hour.
 
 Example route request:
 
@@ -214,6 +257,11 @@ Configuration is read from environment variables:
 - `ROUTING_PREFER_LOCAL_DATA`: set to `0` to ignore local GraphML/rasters.
 - `ROUTING_ROUTE_CLIP_BUFFER_M`: route corridor buffer around origin/destination, default `500`.
 - `ROUTING_EDGE_SAMPLE_SPACING_M`: route feature sampling interval in metres, default `60`.
+- `ROUTING_MAX_SNAP_DISTANCE_M`: reject locations farther than this from the covered street graph, default `250`.
+- `ROUTING_ROUTE_SEARCH_SECONDS`: time budget for alternative-route search, default `1.5`.
+- `ROUTING_ROUTE_SEARCH_EXPANSIONS`: maximum label expansions per route search, default `20000`.
+- `ROUTING_ROUTE_SEARCH_LABELS_PER_NODE`: maximum retained labels per graph node, default `8`.
+- `ROUTING_ROUTE_CANDIDATE_PATH_LIMIT`: maximum diversified path corridors evaluated, default `10`.
 - `ROUTING_PRELOAD_LOCAL_GRAPH`: set to `0` to skip loading the local graph/DEM at startup.
 - `ROUTING_ALLOW_SYNTHETIC_GRAPH`: development-only escape hatch; set to `1` to allow the test grid.
 - `ROUTING_ALLOW_SYNTHETIC_MICROCLIMATE`: development-only escape hatch; set to `1` to allow placeholder UTCI.
