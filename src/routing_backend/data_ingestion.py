@@ -234,23 +234,28 @@ def clip_graph_to_detour_corridor(
     if origin_node not in graph or destination_node not in graph:
         return graph
 
-    origin_data = graph.nodes[origin_node]
-    destination_data = graph.nodes[destination_node]
-    if not {"y", "x"} <= origin_data.keys() or not {"y", "x"} <= destination_data.keys():
-        return graph
-
-    origin = (float(origin_data["y"]), float(origin_data["x"]))
-    destination = (float(destination_data["y"]), float(destination_data["x"]))
     lower_bound_limit_m = maximum_distance_m + margin_m
-
-    nodes = []
-    for node, data in graph.nodes(data=True):
-        if "y" not in data or "x" not in data:
-            continue
-        coordinate = (float(data["y"]), float(data["x"]))
-        lower_bound_m = haversine_distance_m(origin, coordinate) + haversine_distance_m(coordinate, destination)
-        if lower_bound_m <= lower_bound_limit_m:
-            nodes.append(node)
+    try:
+        distance_from_origin = nx.single_source_dijkstra_path_length(
+            graph,
+            origin_node,
+            cutoff=lower_bound_limit_m,
+            weight="length",
+        )
+        distance_to_destination = nx.single_source_dijkstra_path_length(
+            graph.reverse(copy=False),
+            destination_node,
+            cutoff=lower_bound_limit_m,
+            weight="length",
+        )
+        nodes = [
+            node
+            for node, origin_distance in distance_from_origin.items()
+            if node in distance_to_destination
+            and origin_distance + distance_to_destination[node] <= lower_bound_limit_m
+        ]
+    except nx.NetworkXError:
+        return graph
 
     if origin_node not in nodes or destination_node not in nodes or len(nodes) < minimum_nodes:
         return graph
@@ -260,6 +265,70 @@ def clip_graph_to_detour_corridor(
     clipped.graph["detour_corridor_node_count"] = len(nodes)
     clipped.graph["detour_corridor_maximum_distance_m"] = maximum_distance_m
     clipped.graph["detour_corridor_margin_m"] = margin_m
+    return nx.MultiDiGraph(clipped)
+
+
+def clip_graph_to_candidate_paths(
+    graph: nx.MultiDiGraph,
+    origin_node: Any,
+    destination_node: Any,
+    *,
+    maximum_distance_m: float,
+    max_paths: int = 16,
+) -> nx.MultiDiGraph:
+    """Keep the union of a bounded set of shortest feasible path alternatives."""
+
+    if max_paths < 1 or origin_node not in graph or destination_node not in graph:
+        return graph
+
+    simple = nx.DiGraph()
+    simple.add_nodes_from(graph.nodes(data=True))
+    for u, v, data in graph.edges(data=True):
+        length = float(data.get("length", 1.0))
+        current = simple.get_edge_data(u, v)
+        if current is None or length < float(current.get("length", math.inf)):
+            simple.add_edge(u, v, length=length)
+
+    selected_edges: set[tuple[Any, Any, Any]] = set()
+    selected_signatures: set[tuple[Any, ...]] = set()
+    selected_node_paths: list[list[Any]] = []
+    edge_use_count: dict[tuple[Any, Any], int] = {}
+    selected_paths = 0
+    for _attempt in range(max_paths * 3):
+        try:
+            path = nx.shortest_path(
+                simple,
+                origin_node,
+                destination_node,
+                weight=lambda u, v, data: float(data["length"])
+                * (1.0 + 0.55 * edge_use_count.get((u, v), 0)),
+            )
+        except (nx.NetworkXNoPath, nx.NodeNotFound):
+            break
+        signature = tuple(path)
+        path_length = sum(float(simple.edges[u, v]["length"]) for u, v in zip(path, path[1:]))
+        if path_length > maximum_distance_m + 1e-9:
+            break
+        if signature in selected_signatures:
+            break
+        selected_signatures.add(signature)
+        selected_node_paths.append(list(path))
+        for u, v in zip(path, path[1:]):
+            edge_use_count[(u, v)] = edge_use_count.get((u, v), 0) + 1
+            edge_options = graph.get_edge_data(u, v) or {}
+            selected_edges.update((u, v, key) for key in edge_options)
+        selected_paths += 1
+        if selected_paths >= max_paths:
+            break
+
+    if not selected_edges:
+        return graph
+
+    clipped = graph.edge_subgraph(selected_edges).copy()
+    clipped.graph.update(graph.graph)
+    clipped.graph["candidate_path_count"] = selected_paths
+    clipped.graph["candidate_path_edge_count"] = clipped.number_of_edges()
+    clipped.graph["candidate_node_paths"] = selected_node_paths
     return nx.MultiDiGraph(clipped)
 
 
