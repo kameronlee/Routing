@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import networkx as nx
+import pytest
 
 from routing_backend import route_engine
 from routing_backend.preferences import Preference
@@ -82,6 +83,14 @@ def test_constrained_search_respects_distance_budget() -> None:
 
     assert routes[0].edge_ids == ["a->b:0", "b->d:0"]
     assert routes[0].distance_m == 200
+
+
+def test_constrained_search_reports_expansion_budget() -> None:
+    graph = _test_graph()
+    pref = Preference(weight_cool=2.0, weight_scenic=1.0, weight_quiet=1.0, weight_distance=0.0)
+
+    with pytest.raises(RuntimeError, match="expansion budget"):
+        resource_constrained_routes(graph, "a", "d", pref, delta=0.05, max_candidates=1, max_expansions=1)
 
 
 def test_build_feature_graph_removes_edges_without_utci_coverage(monkeypatch) -> None:

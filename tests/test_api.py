@@ -1,23 +1,27 @@
-from fastapi.testclient import TestClient
+import httpx
 import numpy as np
+import pytest
 import rasterio
 from rasterio.transform import from_origin
 
 from routing_backend.api import Settings, build_data_status, create_app
 
 
-def test_health_endpoint() -> None:
-    client = TestClient(create_app(Settings(prefer_local_data=False)))
+@pytest.mark.anyio
+async def test_health_endpoint() -> None:
+    transport = httpx.ASGITransport(app=create_app(Settings(prefer_local_data=False)))
 
-    response = client.get("/health")
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.get("/health")
 
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
 
 
-def test_route_endpoint_returns_candidate() -> None:
-    client = TestClient(
-        create_app(
+@pytest.mark.anyio
+async def test_route_endpoint_returns_candidate() -> None:
+    transport = httpx.ASGITransport(
+        app=create_app(
             Settings(
                 prefer_local_data=False,
                 allow_synthetic_graph=True,
@@ -26,17 +30,18 @@ def test_route_endpoint_returns_candidate() -> None:
         )
     )
 
-    response = client.post(
-        "/route",
-        json={
-            "origin": {"lat": 38.8805, "lon": -77.0920},
-            "destination": {"lat": 38.8828, "lon": -77.0896},
-            "departure_time": "2026-07-01T14:00:00",
-            "descriptors": ["heat sensitive", "quiet"],
-            "detour_ratio": 0.4,
-            "max_candidates": 2,
-        },
-    )
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.post(
+            "/route",
+            json={
+                "origin": {"lat": 38.8805, "lon": -77.0920},
+                "destination": {"lat": 38.8828, "lon": -77.0896},
+                "departure_time": "2026-07-01T14:00:00",
+                "descriptors": ["heat sensitive", "quiet"],
+                "detour_ratio": 0.4,
+                "max_candidates": 2,
+            },
+        )
 
     assert response.status_code == 200
     payload = response.json()
@@ -50,7 +55,8 @@ def test_route_endpoint_returns_candidate() -> None:
     assert 0 <= candidate["shade_fraction"] <= 1
 
 
-def test_utci_endpoint_returns_real_tile(tmp_path) -> None:
+@pytest.mark.anyio
+async def test_utci_endpoint_returns_real_tile(tmp_path) -> None:
     output_dir = tmp_path / "processed" / "solweig_outputs"
     output_dir.mkdir(parents=True)
     raster_path = output_dir / "utci_2026-07-01_14.tif"
@@ -69,9 +75,10 @@ def test_utci_endpoint_returns_real_tile(tmp_path) -> None:
     ) as dataset:
         dataset.write(values, 1)
 
-    client = TestClient(create_app(Settings(data_dir=tmp_path, prefer_local_data=False)))
+    transport = httpx.ASGITransport(app=create_app(Settings(data_dir=tmp_path, prefer_local_data=False)))
 
-    response = client.get("/utci?lat=38.8816&lon=-77.0910&cells=3&time=2026-07-01T14:00:00")
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.get("/utci?lat=38.8816&lon=-77.0910&cells=3&time=2026-07-01T14:00:00")
 
     assert response.status_code == 200
     payload = response.json()
@@ -79,10 +86,12 @@ def test_utci_endpoint_returns_real_tile(tmp_path) -> None:
     assert payload["min_utci"] <= payload["mean_utci"] <= payload["max_utci"]
 
 
-def test_data_status_endpoint_reports_missing_bundle(tmp_path) -> None:
-    client = TestClient(create_app(Settings(data_dir=tmp_path)))
+@pytest.mark.anyio
+async def test_data_status_endpoint_reports_missing_bundle(tmp_path) -> None:
+    transport = httpx.ASGITransport(app=create_app(Settings(data_dir=tmp_path)))
 
-    response = client.get("/data/status")
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.get("/data/status")
 
     assert response.status_code == 200
     payload = response.json()
@@ -103,9 +112,10 @@ def test_build_data_status_reports_missing_bundle(tmp_path) -> None:
     assert "SOLWEIG UTCI raster" in status.missing_required_layers
 
 
-def test_route_can_require_real_utci(tmp_path) -> None:
-    client = TestClient(
-        create_app(
+@pytest.mark.anyio
+async def test_route_can_require_real_utci(tmp_path) -> None:
+    transport = httpx.ASGITransport(
+        app=create_app(
             Settings(
                 data_dir=tmp_path,
                 prefer_local_data=False,
@@ -114,13 +124,14 @@ def test_route_can_require_real_utci(tmp_path) -> None:
         )
     )
 
-    response = client.post(
-        "/route",
-        json={
-            "origin": {"lat": 38.8805, "lon": -77.0920},
-            "destination": {"lat": 38.8828, "lon": -77.0896},
-            "departure_time": "2026-07-01T14:00:00",
-        },
-    )
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.post(
+            "/route",
+            json={
+                "origin": {"lat": 38.8805, "lon": -77.0920},
+                "destination": {"lat": 38.8828, "lon": -77.0896},
+                "departure_time": "2026-07-01T14:00:00",
+            },
+        )
 
     assert response.status_code == 503

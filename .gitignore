@@ -15,6 +15,9 @@ data/raw/**/*.tmp
 data/processed/**/*.tmp
 data/processed/solweig_gpu_work/
 data/processed/solweig_gpu_work_*/
+results/**
+!results/
+!results/.gitkeep
 
 # Local frontend/runtime state from the nested HackTJ26 app checkout.
 HackTJ26/.git/

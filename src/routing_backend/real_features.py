@@ -20,6 +20,9 @@ class RealDataMissingError(RuntimeError):
     """Raised when strict real-data routing lacks a required input layer."""
 
 
+_DISABLABLE_LAYERS = {"canopy", "landcover", "building_height"}
+
+
 @dataclass(frozen=True)
 class RealFeaturePaths:
     """Paths to real-data layers used by edge feature extraction."""
@@ -292,14 +295,35 @@ class TrafficIndex:
 class RealFeatureContext:
     """Context object that joins real rasters/vectors onto edges."""
 
-    def __init__(self, paths: RealFeaturePaths) -> None:
+    def __init__(self, paths: RealFeaturePaths, *, disabled_layers: Iterable[str] = ()) -> None:
+        disabled = frozenset(disabled_layers)
+        unknown = sorted(disabled - _DISABLABLE_LAYERS)
+        if unknown:
+            raise ValueError("Unknown real-feature layer(s): " + ", ".join(unknown))
         self.paths = paths
+        self.disabled_layers = disabled
         self.utci = RasterCollection((paths.utci_raster,))
         self.shadow = RasterCollection((paths.shadow_raster,)) if paths.shadow_raster is not None else None
-        self.canopy_height = RasterCollection(paths.canopy_height_rasters)
-        self.canopy_class = RasterCollection(paths.canopy_class_rasters)
-        self.landcover = RasterCollection(paths.landcover_rasters)
-        self.building_height = RasterCollection(paths.building_height_rasters)
+        self.canopy_height = (
+            RasterCollection(())
+            if self._is_disabled("canopy")
+            else RasterCollection(paths.canopy_height_rasters)
+        )
+        self.canopy_class = (
+            RasterCollection(())
+            if self._is_disabled("canopy")
+            else RasterCollection(paths.canopy_class_rasters)
+        )
+        self.landcover = (
+            RasterCollection(())
+            if self._is_disabled("landcover")
+            else RasterCollection(paths.landcover_rasters)
+        )
+        self.building_height = (
+            RasterCollection(())
+            if self._is_disabled("building_height")
+            else RasterCollection(paths.building_height_rasters)
+        )
         self.traffic = TrafficIndex(paths.traffic_geojson)
 
     @classmethod
@@ -308,6 +332,9 @@ class RealFeatureContext:
 
         paths = discover_real_feature_paths(data_dir or default_data_dir(), departure_time)
         return cls(paths)
+
+    def _is_disabled(self, layer: str) -> bool:
+        return layer in self.disabled_layers
 
     def close(self) -> None:
         """Release raster handles."""
@@ -411,17 +438,25 @@ class RealFeatureContext:
         """Compute real edge-level perceptual/noise attributes."""
 
         samples = densify_geometry(points, spacing_m=20.0)
-        canopy_height_values = self.canopy_height.sample(samples)
-        canopy_class_values = self.canopy_class.sample(samples)
-        landcover_values = self.landcover.sample(samples)
-        building_height_values = self.building_height.sample(_lateral_sample_points(points, edge_data, 20.0))
+        canopy_height_values = [] if self._is_disabled("canopy") else self.canopy_height.sample(samples)
+        canopy_class_values = [] if self._is_disabled("canopy") else self.canopy_class.sample(samples)
+        landcover_values = [] if self._is_disabled("landcover") else self.landcover.sample(samples)
+        building_height_values = (
+            []
+            if self._is_disabled("building_height")
+            else self.building_height.sample(_lateral_sample_points(points, edge_data, 20.0))
+        )
 
-        if canopy_height_values:
+        if self._is_disabled("canopy"):
+            canopy_summary = self._summarize_canopy_height([])
+        elif canopy_height_values:
             canopy_summary = self._summarize_canopy_height(canopy_height_values)
         elif canopy_class_values:
             canopy_summary = self._summarize_categorical_canopy(canopy_class_values)
         else:
-            raise RealDataMissingError("No canopy or canopy-height raster coverage for an edge in this route corridor")
+            raise RealDataMissingError(
+                "No canopy or canopy-height raster coverage for an edge in this route corridor"
+            )
 
         if landcover_values:
             rounded_landcover = [int(round(value)) for value in landcover_values]
@@ -480,10 +515,26 @@ class RealFeatureContext:
             _lateral_sample_points(points, edge_data, sample_spacing_m)
             for points, edge_data, _length in edge_groups
         ]
-        canopy_height_groups = self.canopy_height.sample_groups(sample_groups)
-        canopy_class_groups = self.canopy_class.sample_groups(sample_groups)
-        landcover_groups = self.landcover.sample_groups(sample_groups)
-        building_height_groups = self.building_height.sample_groups(building_sample_groups)
+        canopy_height_groups = (
+            [[] for _group in sample_groups]
+            if self._is_disabled("canopy")
+            else self.canopy_height.sample_groups(sample_groups)
+        )
+        canopy_class_groups = (
+            [[] for _group in sample_groups]
+            if self._is_disabled("canopy")
+            else self.canopy_class.sample_groups(sample_groups)
+        )
+        landcover_groups = (
+            [[] for _group in sample_groups]
+            if self._is_disabled("landcover")
+            else self.landcover.sample_groups(sample_groups)
+        )
+        building_height_groups = (
+            [[] for _group in building_sample_groups]
+            if self._is_disabled("building_height")
+            else self.building_height.sample_groups(building_sample_groups)
+        )
 
         attributes: list[dict[str, float]] = []
         for (
@@ -499,12 +550,16 @@ class RealFeatureContext:
             landcover_groups,
             building_height_groups,
         ):
-            if canopy_height_values:
+            if self._is_disabled("canopy"):
+                canopy_summary = self._summarize_canopy_height([])
+            elif canopy_height_values:
                 canopy_summary = self._summarize_canopy_height(canopy_height_values)
             elif canopy_class_values:
                 canopy_summary = self._summarize_categorical_canopy(canopy_class_values)
             else:
-                raise RealDataMissingError("No canopy or canopy-height raster coverage for an edge in this route corridor")
+                raise RealDataMissingError(
+                    "No canopy or canopy-height raster coverage for an edge in this route corridor"
+                )
 
             if landcover_values:
                 rounded_landcover = [int(round(value)) for value in landcover_values]

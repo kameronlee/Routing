@@ -9,6 +9,7 @@ import itertools
 import math
 from pathlib import Path
 from statistics import fmean
+from time import perf_counter
 from typing import Any, Hashable, Iterable, MutableMapping, Sequence
 
 import networkx as nx
@@ -459,6 +460,7 @@ def _edge_feature_cache_key(
     key: Hashable | None,
 ) -> tuple[Any, ...]:
     paths = getattr(real_feature_context, "paths", None)
+    disabled_layers = tuple(sorted(getattr(real_feature_context, "disabled_layers", ())))
     if paths is None:
         path_key: tuple[str, ...] = (str(utci_raster_path),)
     else:
@@ -474,7 +476,7 @@ def _edge_feature_cache_key(
                 *getattr(paths, "building_height_rasters", ()),
             )
             if path is not None
-        )
+        ) + tuple(f"disabled:{layer}" for layer in disabled_layers)
     return (
         path_key,
         mode,
@@ -719,6 +721,8 @@ def resource_constrained_routes(
     delta: float = 0.20,
     max_candidates: int = 3,
     max_labels_per_node: int = 30,
+    max_expansions: int | None = None,
+    max_seconds: float | None = None,
     departure_time: datetime | float | int | None = None,
     utci_raster_path: str | Path | None = None,
 ) -> list[RouteCandidate]:
@@ -733,6 +737,10 @@ def resource_constrained_routes(
         raise ValueError("delta must be non-negative")
     if max_candidates < 1:
         raise ValueError("max_candidates must be at least 1")
+    if max_expansions is not None and max_expansions < 1:
+        raise ValueError("max_expansions must be at least 1")
+    if max_seconds is not None and max_seconds <= 0:
+        raise ValueError("max_seconds must be positive")
 
     if origin_node == destination_node:
         node_data = graph.nodes[origin_node]
@@ -793,9 +801,19 @@ def resource_constrained_routes(
     labels: dict[Hashable, list[tuple[float, float]]] = {origin_node: [(0.0, 0.0)]}
     candidates: list[RouteCandidate] = []
     seen_edge_sequences: set[tuple[EdgeTraversal, ...]] = set()
+    expanded_labels = 0
+    started_at = perf_counter()
+    limit_reason: str | None = None
 
     while queue and len(candidates) < max_candidates:
+        if max_seconds is not None and perf_counter() - started_at >= max_seconds:
+            limit_reason = f"time budget of {max_seconds:.3f}s"
+            break
+        if max_expansions is not None and expanded_labels >= max_expansions:
+            limit_reason = f"expansion budget of {max_expansions}"
+            break
         path_cost, _order, node, length_m, path_nodes, path_edges = heapq.heappop(queue)
+        expanded_labels += 1
 
         if node == destination_node:
             signature = tuple(path_edges)
@@ -843,6 +861,11 @@ def resource_constrained_routes(
             )
 
     if not candidates:
+        if limit_reason is not None:
+            raise RuntimeError(
+                "Route search exceeded "
+                f"{limit_reason} before finding a route within the detour budget"
+            )
         candidates.append(
             shortest_path_candidate(
                 graph,
