@@ -176,7 +176,7 @@ def _boxplot_by_method(config, rows: list[dict[str, str]], metric: str, filename
         return
     labels = sorted(grouped)
     fig, ax = plt.subplots(figsize=(10, 5), constrained_layout=True)
-    ax.boxplot([grouped[label] for label in labels], labels=labels, showfliers=False)
+    ax.boxplot([grouped[label] for label in labels], tick_labels=labels, showfliers=False)
     ax.set_title(title)
     ax.set_ylabel(ylabel)
     ax.tick_params(axis="x", rotation=35)
