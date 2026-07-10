@@ -21,6 +21,7 @@ class Preference:
     weight_slope: float = 0.35
     weight_time: float = 0.20
     weight_distance: float = 0.15
+    weight_shade: float = 1.0
     uncertainty_penalty: float = 0.15
     comfort_threshold: float = 26.0
 

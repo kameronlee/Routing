@@ -8,6 +8,7 @@ from routing_backend.preferences import Preference
 from routing_backend.route_engine import (
     EdgeFeatures,
     build_feature_graph,
+    cost,
     length_shortest_route_candidate,
     resource_constrained_routes,
 )
@@ -91,6 +92,15 @@ def test_constrained_search_reports_expansion_budget() -> None:
 
     with pytest.raises(RuntimeError, match="expansion budget"):
         resource_constrained_routes(graph, "a", "d", pref, delta=0.05, max_candidates=1, max_expansions=1)
+
+
+def test_shade_weight_increases_sun_exposure_cost() -> None:
+    features = _features(100, 30, 0.5, 0.5)
+
+    base_cost = cost(features, Preference(weight_cool=1.0, weight_shade=1.0))
+    shade_heavy_cost = cost(features, Preference(weight_cool=1.0, weight_shade=2.0))
+
+    assert shade_heavy_cost > base_cost
 
 
 def test_build_feature_graph_removes_edges_without_utci_coverage(monkeypatch) -> None:

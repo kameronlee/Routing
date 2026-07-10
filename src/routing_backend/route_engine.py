@@ -584,7 +584,7 @@ def cost(features: EdgeFeatures, pref: Preference) -> float:
         max(0.0, features.mean_utci - pref.comfort_threshold) / 8.0
         + max(0.0, features.max_utci - pref.comfort_threshold) / 10.0
         + features.heat_dose / 6.0
-        + (1.0 - features.shade_fraction) * 0.45
+        + pref.weight_shade * (1.0 - features.shade_fraction) * 0.45
     )
     scenic_penalty = 1.0 - features.scenic_score
     slope_penalty = abs(features.slope) * 10.0 + max(0.0, features.elevation_change_m) / 25.0
