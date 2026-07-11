@@ -28,7 +28,7 @@ The core route feature vector includes distance, travel time, mean UTCI, maximum
 heat_dose = mean(max(0, UTCI - comfort_threshold_c))
 ```
 
-For this benchmark, the comfort threshold is 26.0 C. The direct-shadow raster is interpreted as a binary or near-binary SOLWEIG-style field where values at or below 0.5 indicate shade and values above 0.5 indicate sun exposure.
+For this benchmark, the comfort threshold is 26.0°C. The direct-shadow raster is interpreted as a binary or near-binary SOLWEIG-style field where values at or below 0.5 indicate shade and values above 0.5 indicate sun exposure.
 
 The proposed route cost uses a weighted preference model. The current implementation includes a tunable shade weight, so direct sun exposure can be emphasized independently from the broader UTCI and heat-dose terms. The full preference model is intentionally a composite objective: it is not expected to maximize a single thermal metric in every case.
 
@@ -87,28 +87,28 @@ Among successful comparable rows, all non-shortest methods reduced modeled heat 
 
 ![Modeled heat-dose reduction by method](../paper_assets/method_comparison.png)
 
-| Method | Mean heat-dose reduction | Mean heat-dose reduction | Mean UTCI reduction | Shade-fraction increase | Mean excess distance | Median runtime |
+| Method | Mean heat-dose reduction (°C) | Mean heat-dose reduction (%) | Mean UTCI reduction (°C) | Shade-fraction increase | Mean excess distance | Median runtime |
 |---|---:|---:|---:|---:|---:|---:|
-| `heat_dose` | 0.710 C | 14.8% | 0.717 C | 0.105 | 9.57% | 271 ms |
-| `shadow_only` | 0.706 C | 14.7% | 0.713 C | 0.109 | 9.66% | 272 ms |
-| `azimuth_heuristic` | 0.656 C | 13.6% | 0.663 C | 0.477 | 9.16% | 284 ms |
-| `proposed_full` | 0.597 C | 12.4% | 0.604 C | 0.089 | 8.93% | 259 ms |
-| `shortest_distance` | 0.000 C | 0.0% | 0.000 C | 0.000 | 0.00% | 229 ms |
+| `heat_dose` | 0.710°C | 14.8% | 0.717°C | 0.105 | 9.57% | 271 ms |
+| `shadow_only` | 0.706°C | 14.7% | 0.713°C | 0.109 | 9.66% | 272 ms |
+| `azimuth_heuristic` | 0.656°C | 13.6% | 0.663°C | 0.477 | 9.16% | 284 ms |
+| `proposed_full` | 0.597°C | 12.4% | 0.604°C | 0.089 | 8.93% | 259 ms |
+| `shortest_distance` | 0.000°C | 0.0% | 0.000°C | 0.000 | 0.00% | 229 ms |
 
 This pattern supports a narrower interpretation than "the proposed method beats every baseline." The proposed full model is better understood as a multi-objective routing policy that trades some thermal optimization for a broader objective including shade, scenic and noise proxies, slope, travel time, distance, and uncertainty. In this run, it had the best success rate among non-shortest methods and the lowest mean excess distance among the non-shortest methods, but it did not maximize heat-dose reduction.
 
 ### 4.3 Detour Tradeoff for the Proposed Full Model
 
-For `proposed_full`, larger detour budgets increased modeled heat-dose reduction. The trend is monotonic in the aggregate table, with mean heat-dose reduction rising from 0.411 C at a 5% detour budget to 0.756 C at a 30% detour budget.
+For `proposed_full`, larger detour budgets increased modeled heat-dose reduction. The trend is monotonic in the aggregate table, with mean heat-dose reduction rising from 0.411°C at a 5% detour budget to 0.756°C at a 30% detour budget.
 
 ![Heat-dose reduction versus detour budget](../paper_assets/heat_reduction_vs_detour.png)
 
-| Detour budget | Successful rows | Mean heat-dose reduction | Mean heat-dose reduction | Mean excess distance | Median runtime |
+| Detour budget | Successful rows | Mean heat-dose reduction (°C) | Mean heat-dose reduction (%) | Mean excess distance | Median runtime |
 |---|---:|---:|---:|---:|---:|
-| 5% | 401 | 0.411 C | 8.5% | 3.37% | 214 ms |
-| 10% | 349 | 0.531 C | 11.1% | 6.37% | 222 ms |
-| 20% | 376 | 0.677 C | 14.0% | 10.89% | 277 ms |
-| 30% | 428 | 0.756 C | 15.5% | 14.50% | 352 ms |
+| 5% | 401 | 0.411°C | 8.5% | 3.37% | 214 ms |
+| 10% | 349 | 0.531°C | 11.1% | 6.37% | 222 ms |
+| 20% | 376 | 0.677°C | 14.0% | 10.89% | 277 ms |
+| 30% | 428 | 0.756°C | 15.5% | 14.50% | 352 ms |
 
 This result is consistent with the design goal of bounded-detour routing: the amount of allowable extra walking distance materially changes the attainable exposure reduction. It also suggests that a single "coolest route" result is less useful than a tradeoff curve.
 

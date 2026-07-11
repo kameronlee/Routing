@@ -20,14 +20,14 @@ The 500-pair experiment shows that heat-aware routing reduces modeled heat expos
 - Successes: 1554 / 2000
 - Failures: 446
 - Mean heat-dose reduction: 0.597
-- Mean UTCI reduction: 0.604 C
+- Mean UTCI reduction: 0.604°C
 - Mean excess distance: 8.93%
 
 ## Comparison to thermal baselines
 
-- `heat_dose`: mean heat-dose reduction 0.710, mean UTCI reduction 0.717 C, mean excess distance 9.57%
-- `shadow_only`: mean heat-dose reduction 0.706, mean UTCI reduction 0.713 C, mean excess distance 9.66%
-- `azimuth_heuristic`: mean heat-dose reduction 0.656, mean UTCI reduction 0.663 C, mean excess distance 9.16%
+- `heat_dose`: mean heat-dose reduction 0.710, mean UTCI reduction 0.717°C, mean excess distance 9.57%
+- `shadow_only`: mean heat-dose reduction 0.706, mean UTCI reduction 0.713°C, mean excess distance 9.66%
+- `azimuth_heuristic`: mean heat-dose reduction 0.656, mean UTCI reduction 0.663°C, mean excess distance 9.16%
 
 ## Interpretation
 
