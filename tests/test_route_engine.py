@@ -10,6 +10,7 @@ from routing_backend.route_engine import (
     build_feature_graph,
     cost,
     length_shortest_route_candidate,
+    node_path_candidate,
     resource_constrained_routes,
 )
 
@@ -86,12 +87,31 @@ def test_constrained_search_respects_distance_budget() -> None:
     assert routes[0].distance_m == 200
 
 
-def test_constrained_search_reports_expansion_budget() -> None:
+def test_search_budget_returns_fast_candidate_and_marks_truncation() -> None:
     graph = _test_graph()
     pref = Preference(weight_cool=2.0, weight_scenic=1.0, weight_quiet=1.0, weight_distance=0.0)
 
-    with pytest.raises(RuntimeError, match="expansion budget"):
-        resource_constrained_routes(graph, "a", "d", pref, delta=0.05, max_candidates=1, max_expansions=1)
+    routes = resource_constrained_routes(
+        graph,
+        "a",
+        "d",
+        pref,
+        delta=0.25,
+        max_candidates=3,
+        max_expansions=0,
+    )
+
+    assert routes
+    assert routes[0].edge_ids == ["a->c:0", "c->d:0"]
+    assert graph.graph["route_search_truncated"] is True
+
+
+def test_environmental_edge_cost_scales_with_edge_length() -> None:
+    pref = Preference(weight_cool=1.0, weight_scenic=1.0, weight_quiet=1.0, weight_slope=1.0)
+    short = _features(50, 30, 0.4, 0.7)
+    long = _features(100, 30, 0.4, 0.7)
+
+    assert cost(long, pref) == pytest.approx(cost(short, pref) * 2.0)
 
 
 def test_shade_weight_increases_sun_exposure_cost() -> None:
@@ -189,3 +209,14 @@ def test_length_shortest_route_candidate_uses_true_shortest_path() -> None:
     assert route.edge_ids == ["a->b:0", "b->d:0"]
     assert route.distance_m == 200
     assert route.cost == 200
+
+
+def test_node_path_candidate_scores_requested_alternative() -> None:
+    graph = _test_graph()
+    pref = Preference(weight_cool=2.0, weight_scenic=1.0, weight_quiet=1.0, weight_distance=0.0)
+
+    route = node_path_candidate(graph, ["a", "c", "d"], pref)
+
+    assert route.edge_ids == ["a->c:0", "c->d:0"]
+    assert route.distance_m == 240
+    assert route.scenic_score == pytest.approx(0.9)

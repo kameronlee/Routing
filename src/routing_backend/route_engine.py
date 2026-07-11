@@ -9,7 +9,7 @@ import itertools
 import math
 from pathlib import Path
 from statistics import fmean
-from time import perf_counter
+import time
 from typing import Any, Hashable, Iterable, MutableMapping, Sequence
 
 import networkx as nx
@@ -371,7 +371,7 @@ def _assign_batched_real_features(
     try:
         attribute_groups = real_feature_context.edge_attributes_many(
             context_groups,
-            sample_spacing_m=sample_spacing_m,
+            sample_spacing_m=min(sample_spacing_m, 20.0),
         )
     except TypeError:
         attribute_groups = real_feature_context.edge_attributes_many(context_groups)
@@ -586,17 +586,22 @@ def cost(features: EdgeFeatures, pref: Preference) -> float:
         + features.heat_dose / 6.0
         + pref.weight_shade * (1.0 - features.shade_fraction) * 0.45
     )
-    scenic_penalty = 1.0 - features.scenic_score
+    scenic_penalty = (1.0 - features.scenic_score) ** 2
+    noise_penalty = features.noise_score**2
     slope_penalty = abs(features.slope) * 10.0 + max(0.0, features.elevation_change_m) / 25.0
+    exposure_units = max(features.length_m, 1.0) / 100.0
 
     scalar = (
         pref.weight_distance * (features.length_m / 1_000.0)
         + pref.weight_time * (features.travel_time_s / 600.0)
-        + pref.weight_cool * cool_penalty
-        + pref.weight_scenic * scenic_penalty
-        + pref.weight_quiet * features.noise_score
-        + pref.weight_slope * slope_penalty
-        + pref.uncertainty_penalty * features.uncertainty
+        + exposure_units
+        * (
+            pref.weight_cool * cool_penalty
+            + pref.weight_scenic * scenic_penalty
+            + pref.weight_quiet * noise_penalty
+            + pref.weight_slope * slope_penalty
+            + pref.uncertainty_penalty * features.uncertainty
+        )
     )
     return max(0.0, scalar)
 
@@ -720,8 +725,9 @@ def resource_constrained_routes(
     preference: Preference,
     delta: float = 0.20,
     max_candidates: int = 3,
-    max_labels_per_node: int = 30,
-    max_expansions: int | None = None,
+    max_labels_per_node: int = 8,
+    max_search_seconds: float | None = 1.5,
+    max_expansions: int | None = 20_000,
     max_seconds: float | None = None,
     departure_time: datetime | float | int | None = None,
     utci_raster_path: str | Path | None = None,
@@ -737,10 +743,11 @@ def resource_constrained_routes(
         raise ValueError("delta must be non-negative")
     if max_candidates < 1:
         raise ValueError("max_candidates must be at least 1")
-    if max_expansions is not None and max_expansions < 1:
-        raise ValueError("max_expansions must be at least 1")
-    if max_seconds is not None and max_seconds <= 0:
-        raise ValueError("max_seconds must be positive")
+    if max_expansions is not None and max_expansions < 0:
+        raise ValueError("max_expansions must be non-negative")
+    search_seconds = max_seconds if max_seconds is not None else max_search_seconds
+    if search_seconds is not None and search_seconds <= 0:
+        raise ValueError("search seconds must be positive")
 
     if origin_node == destination_node:
         node_data = graph.nodes[origin_node]
@@ -764,18 +771,17 @@ def resource_constrained_routes(
 
     baseline_distance = baseline_shortest_path_distance(graph, origin_node, destination_node)
     maximum_distance = baseline_distance * (1.0 + delta)
-    if max_candidates == 1:
-        fast_candidate = _cost_shortest_candidate_within_budget(
-            graph,
-            origin_node,
-            destination_node,
-            preference,
-            maximum_distance,
-            departure_time,
-            utci_raster_path,
-        )
-        if fast_candidate is not None:
-            return [fast_candidate]
+    fast_candidate = _cost_shortest_candidate_within_budget(
+        graph,
+        origin_node,
+        destination_node,
+        preference,
+        maximum_distance,
+        departure_time,
+        utci_raster_path,
+    )
+    if max_candidates == 1 and fast_candidate is not None:
+        return [fast_candidate]
 
     try:
         distance_to_destination = nx.single_source_dijkstra_path_length(
@@ -799,36 +805,37 @@ def resource_constrained_routes(
         ]
     ] = [(0.0, next(counter), origin_node, 0.0, [origin_node], [])]
     labels: dict[Hashable, list[tuple[float, float]]] = {origin_node: [(0.0, 0.0)]}
-    candidates: list[RouteCandidate] = []
-    seen_edge_sequences: set[tuple[EdgeTraversal, ...]] = set()
-    expanded_labels = 0
-    started_at = perf_counter()
-    limit_reason: str | None = None
+    candidates: list[RouteCandidate] = [fast_candidate] if fast_candidate is not None else []
+    seen_edge_sequences: set[tuple[str, ...]] = {
+        tuple(fast_candidate.edge_ids)
+    } if fast_candidate is not None else set()
+    search_started = time.monotonic()
+    expansions = 0
+    search_truncated = False
 
     while queue and len(candidates) < max_candidates:
-        if max_seconds is not None and perf_counter() - started_at >= max_seconds:
-            limit_reason = f"time budget of {max_seconds:.3f}s"
+        if (
+            (max_expansions is not None and expansions >= max_expansions)
+            or (search_seconds is not None and time.monotonic() - search_started >= search_seconds)
+        ):
+            search_truncated = True
             break
-        if max_expansions is not None and expanded_labels >= max_expansions:
-            limit_reason = f"expansion budget of {max_expansions}"
-            break
+        expansions += 1
         path_cost, _order, node, length_m, path_nodes, path_edges = heapq.heappop(queue)
-        expanded_labels += 1
 
         if node == destination_node:
-            signature = tuple(path_edges)
+            candidate = summarize_route(
+                graph,
+                path_edges,
+                preference,
+                path_cost=path_cost,
+                departure_time=departure_time,
+                utci_raster_path=utci_raster_path,
+            )
+            signature = tuple(candidate.edge_ids)
             if signature not in seen_edge_sequences:
                 seen_edge_sequences.add(signature)
-                candidates.append(
-                    summarize_route(
-                        graph,
-                        path_edges,
-                        preference,
-                        path_cost=path_cost,
-                        departure_time=departure_time,
-                        utci_raster_path=utci_raster_path,
-                    )
-                )
+                candidates.append(candidate)
             continue
 
         for u, v, key, data in _out_edges(graph, node):
@@ -860,12 +867,10 @@ def resource_constrained_routes(
                 ),
             )
 
+    graph.graph["route_search_expansions"] = expansions
+    graph.graph["route_search_truncated"] = search_truncated
+
     if not candidates:
-        if limit_reason is not None:
-            raise RuntimeError(
-                "Route search exceeded "
-                f"{limit_reason} before finding a route within the detour budget"
-            )
         candidates.append(
             shortest_path_candidate(
                 graph,
@@ -947,7 +952,10 @@ def summarize_route(
     shade_fraction = sum(feature.shade_fraction * weight for feature, weight in zip(features, weights)) / total_weight
     scenic_score = sum(feature.scenic_score * weight for feature, weight in zip(features, weights)) / total_weight
     noise_score = sum(feature.noise_score * weight for feature, weight in zip(features, weights)) / total_weight
-    slope_penalty = fmean(abs(feature.slope) for feature in features)
+    slope_penalty = sum(
+        (abs(feature.slope) + max(0.0, feature.elevation_change_m) / max(feature.length_m, 1.0)) * weight
+        for feature, weight in zip(features, weights)
+    ) / total_weight
     scalar_cost = path_cost if path_cost is not None else sum(cost(feature, preference) for feature in features)
 
     return RouteCandidate(
@@ -980,6 +988,30 @@ def shortest_path_candidate(
     """Build a route candidate from the baseline length-shortest path."""
 
     path_nodes = nx.shortest_path(graph, origin_node, destination_node, weight="length")
+    traversals = [
+        _best_edge_between(graph, u, v, preference)
+        for u, v in zip(path_nodes, path_nodes[1:])
+    ]
+    return summarize_route(
+        graph,
+        traversals,
+        preference=preference,
+        departure_time=departure_time,
+        utci_raster_path=utci_raster_path,
+    )
+
+
+def node_path_candidate(
+    graph: nx.MultiDiGraph,
+    path_nodes: Sequence[Hashable],
+    preference: Preference,
+    departure_time: datetime | float | int | None = None,
+    utci_raster_path: str | Path | None = None,
+) -> RouteCandidate:
+    """Score a preselected node path using its best parallel edge choices."""
+
+    if len(path_nodes) < 2:
+        raise ValueError("A candidate node path must contain at least two nodes")
     traversals = [
         _best_edge_between(graph, u, v, preference)
         for u, v in zip(path_nodes, path_nodes[1:])

@@ -1,9 +1,10 @@
 const { spawn } = require('child_process');
+const fs = require('fs');
 const http = require('http');
 const path = require('path');
 
 const STARTED_KEY = '__routingBackendAutostarted';
-const DEFAULT_PORT = 8000;
+const DEFAULT_PORT = 8010;
 
 function repoRoot() {
   return path.resolve(__dirname, '..', '..', '..');
@@ -21,6 +22,21 @@ function configuredPort() {
 
 function localBaseUrl(port) {
   return `http://127.0.0.1:${port}`;
+}
+
+function backendPython(root) {
+  if (process.env.ROUTING_BACKEND_PYTHON) {
+    return process.env.ROUTING_BACKEND_PYTHON;
+  }
+
+  const virtualenvPython = process.platform === 'win32'
+    ? path.join(root, '.venv', 'Scripts', 'python.exe')
+    : path.join(root, '.venv', 'bin', 'python');
+  if (fs.existsSync(virtualenvPython)) {
+    return virtualenvPython;
+  }
+
+  return process.env.PYTHON || 'python';
 }
 
 function requestJson(url, timeoutMs = 1000) {
@@ -56,7 +72,7 @@ function sleep(ms) {
 }
 
 async function waitForHealth(baseUrl) {
-  for (let attempt = 0; attempt < 40; attempt += 1) {
+  for (let attempt = 0; attempt < 120; attempt += 1) {
     try {
       await requestJson(`${baseUrl}/health`, 750);
       return true;
@@ -68,34 +84,44 @@ async function waitForHealth(baseUrl) {
 }
 
 async function logDataStatus(baseUrl) {
-  try {
-    const status = await requestJson(`${baseUrl}/data/status`, 3000);
-    const lidarReady = Boolean(status.dem_exists && status.canopy_raster_count > 0);
-    const strictReady = Boolean(status.strict_real_ready);
-    const canopyProducts = status.canopy_raster_count || 0;
-    const lidarTilesProcessed = status.lidar_tiles_processed ?? 0;
-    const lidarTilesDownloaded = status.lidar_tiles_downloaded ?? 0;
-    console.log(
-      `[routing-backend] LiDAR status: dem=${status.dem_exists ? 'yes' : 'no'}, ` +
-        `canopy_products=${canopyProducts}, ` +
-        `lidar_tiles_processed=${lidarTilesProcessed}, ` +
-        `lidar_tiles_downloaded=${lidarTilesDownloaded}, ` +
-        `strict_real_ready=${strictReady ? 'yes' : 'no'}`
-    );
-    if (!lidarReady || !strictReady) {
-      const missing = Array.isArray(status.missing_required_layers)
-        ? status.missing_required_layers.join('; ')
-        : 'unknown required layer';
-      console.warn(`[routing-backend] Real-data routing is not fully ready: ${missing}`);
+  let lastError;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      const status = await requestJson(`${baseUrl}/data/status`, 5000);
+      const lidarReady = Boolean(status.dem_exists && status.canopy_raster_count > 0);
+      const strictReady = Boolean(status.strict_real_ready);
+      const canopyProducts = status.canopy_raster_count || 0;
+      const lidarTilesProcessed = status.lidar_tiles_processed ?? 0;
+      const lidarTilesDownloaded = status.lidar_tiles_downloaded ?? 0;
+      console.log(
+        `[routing-backend] LiDAR status: dem=${status.dem_exists ? 'yes' : 'no'}, ` +
+          `canopy_products=${canopyProducts}, ` +
+          `lidar_tiles_processed=${lidarTilesProcessed}, ` +
+          `lidar_tiles_downloaded=${lidarTilesDownloaded}, ` +
+          `strict_real_ready=${strictReady ? 'yes' : 'no'}`
+      );
+      if (!lidarReady || !strictReady) {
+        const missing = Array.isArray(status.missing_required_layers)
+          ? status.missing_required_layers.join('; ')
+          : 'unknown required layer';
+        console.warn(`[routing-backend] Real-data routing is not fully ready: ${missing}`);
+      }
+      return;
+    } catch (error) {
+      lastError = error;
+      if (attempt < 2) await sleep(750);
     }
-  } catch (error) {
-    console.warn(`[routing-backend] Could not read /data/status: ${error.message}`);
   }
+
+  console.warn(
+    `[routing-backend] Backend is healthy; detailed data status is still loading ` +
+      `(${lastError?.message || 'request pending'}).`
+  );
 }
 
 function spawnBackend(port) {
   const root = repoRoot();
-  const python = process.env.ROUTING_BACKEND_PYTHON || process.env.PYTHON || 'python';
+  const python = backendPython(root);
   const srcPath = path.join(root, 'src');
   const pythonPath = [srcPath, process.env.PYTHONPATH].filter(Boolean).join(path.delimiter);
   const env = {
@@ -103,7 +129,7 @@ function spawnBackend(port) {
     PYTHONPATH: pythonPath,
     ROUTING_HOST: process.env.ROUTING_HOST || '0.0.0.0',
     ROUTING_PORT: process.env.ROUTING_PORT || String(port),
-    ROUTING_PRELOAD_LOCAL_GRAPH: process.env.ROUTING_PRELOAD_LOCAL_GRAPH || '0',
+    ROUTING_PRELOAD_LOCAL_GRAPH: process.env.ROUTING_PRELOAD_LOCAL_GRAPH || '1',
   };
   const child = spawn(python, ['scripts/run_dev_server.py'], {
     cwd: root,
