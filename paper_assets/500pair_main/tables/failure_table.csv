@@ -1,0 +1,6 @@
+method,count,failures,failure_rate
+azimuth_heuristic,2000,478,0.239
+heat_dose,2000,521,0.2605
+proposed_full,2000,446,0.223
+shadow_only,2000,462,0.231
+shortest_distance,2000,0,0.0

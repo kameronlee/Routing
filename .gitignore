@@ -15,6 +15,9 @@ data/raw/**/*.tmp
 data/processed/**/*.tmp
 data/processed/solweig_gpu_work/
 data/processed/solweig_gpu_work_*/
+results/**
+!results/
+!results/.gitkeep
 
 # Local frontend/runtime state from the nested ClearHelp app checkout.
 ClearHelp/.git/
@@ -23,3 +26,6 @@ ClearHelp/frontend/.env.*
 !ClearHelp/frontend/.env.example
 ClearHelp/frontend/.expo/
 ClearHelp/frontend/.expo-test-dist-*/
+
+# Local leftovers from the pre-rename HackTJ26 app checkout.
+HackTJ26/

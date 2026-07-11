@@ -1,0 +1,26 @@
+study_name: dc_snapshot
+city: Washington, District of Columbia, USA
+mode: walk
+departure_time: "2026-06-19T14:00:00"
+graph_path: data/processed/streets/dc_walk_graph.graphml
+utci_raster_path: data/processed/solweig_outputs/utci_2026-06-19_14.tif
+shadow_raster_path: data/processed/solweig_outputs/shadow_2026-06-19_14.tif
+dem_raster_path: data/processed/rasters/dem_1m.tif
+canopy_raster_paths:
+  - data/processed/rasters/canopy_height_1m.tif
+landcover_raster_paths:
+  - data/processed/rasters/landcover_1m_center_tile.tif
+building_height_raster_paths:
+  - data/processed/solweig_inputs/building_dsm_1m.tif
+traffic_geojson_path: data/raw/traffic_noise/ddot_traffic_volume_2023.geojson
+output_dir: results/dc_snapshot_500pair_main_methods
+random_seed: 42
+od_pair_count: 500
+min_shortest_distance_m: 400
+max_shortest_distance_m: 3000
+detour_ratios: [0.05, 0.10, 0.20, 0.30]
+comfort_threshold_c: 26.0
+sample_spacing_m: 20.0
+route_search_seconds: 1.5
+route_search_expansions: 20000
+route_search_labels_per_node: 8

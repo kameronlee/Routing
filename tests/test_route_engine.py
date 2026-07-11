@@ -114,6 +114,15 @@ def test_environmental_edge_cost_scales_with_edge_length() -> None:
     assert cost(long, pref) == pytest.approx(cost(short, pref) * 2.0)
 
 
+def test_shade_weight_increases_sun_exposure_cost() -> None:
+    features = _features(100, 30, 0.5, 0.5)
+
+    base_cost = cost(features, Preference(weight_cool=1.0, weight_shade=1.0))
+    shade_heavy_cost = cost(features, Preference(weight_cool=1.0, weight_shade=2.0))
+
+    assert shade_heavy_cost > base_cost
+
+
 def test_build_feature_graph_removes_edges_without_utci_coverage(monkeypatch) -> None:
     graph = nx.MultiDiGraph()
     graph.add_node("a", y=0.0, x=0.0)

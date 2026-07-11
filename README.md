@@ -269,6 +269,40 @@ Configuration is read from environment variables:
 
 No external API keys are hard-coded.
 
+## Paper Experiment: DC UTCI/Shadow Snapshot
+
+The repository includes a backend-only experiment layer for a computational
+routing paper. It evaluates one modeled UTCI/direct-shadow snapshot for
+Washington, DC and reports modeled heat exposure, not measured human comfort.
+It does not require field testing in DC and does not use frontend code.
+
+Install the figure dependency if you plan to run `make_figures.py`:
+
+```bash
+python -m pip install -e ".[dev,experiments]"
+```
+
+Run the full pipeline from the repository root:
+
+```bash
+python experiments/inspect_rasters.py --config configs/dc_snapshot.yaml
+python experiments/generate_od_pairs.py --config configs/dc_snapshot.yaml
+python experiments/run_route_benchmark.py --config configs/dc_snapshot.yaml
+python experiments/run_ablations.py --config configs/dc_snapshot.yaml
+python experiments/run_sensitivity.py --config configs/dc_snapshot.yaml
+python experiments/export_visual_audit.py --config configs/dc_snapshot.yaml
+python experiments/aggregate_results.py --config configs/dc_snapshot.yaml
+python experiments/make_figures.py --config configs/dc_snapshot.yaml
+```
+
+The main experiment fails clearly if the configured real GraphML, UTCI raster,
+direct-shadow raster, canopy raster, DEM, or traffic GeoJSON is missing.
+Synthetic fallback data is disabled for the research scripts and should only be
+used in unit tests.
+
+The default config is `configs/dc_snapshot.yaml`. Update the raster paths there
+when evaluating a different timestamp.
+
 ## Testing
 
 ```bash

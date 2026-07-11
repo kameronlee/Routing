@@ -460,6 +460,7 @@ def _edge_feature_cache_key(
     key: Hashable | None,
 ) -> tuple[Any, ...]:
     paths = getattr(real_feature_context, "paths", None)
+    disabled_layers = tuple(sorted(getattr(real_feature_context, "disabled_layers", ())))
     if paths is None:
         path_key: tuple[str, ...] = (str(utci_raster_path),)
     else:
@@ -475,7 +476,7 @@ def _edge_feature_cache_key(
                 *getattr(paths, "building_height_rasters", ()),
             )
             if path is not None
-        )
+        ) + tuple(f"disabled:{layer}" for layer in disabled_layers)
     return (
         path_key,
         mode,
@@ -583,7 +584,7 @@ def cost(features: EdgeFeatures, pref: Preference) -> float:
         max(0.0, features.mean_utci - pref.comfort_threshold) / 8.0
         + max(0.0, features.max_utci - pref.comfort_threshold) / 10.0
         + features.heat_dose / 6.0
-        + (1.0 - features.shade_fraction) * 0.45
+        + pref.weight_shade * (1.0 - features.shade_fraction) * 0.45
     )
     scenic_penalty = (1.0 - features.scenic_score) ** 2
     noise_penalty = features.noise_score**2
@@ -725,8 +726,9 @@ def resource_constrained_routes(
     delta: float = 0.20,
     max_candidates: int = 3,
     max_labels_per_node: int = 8,
-    max_search_seconds: float = 1.5,
-    max_expansions: int = 20_000,
+    max_search_seconds: float | None = 1.5,
+    max_expansions: int | None = 20_000,
+    max_seconds: float | None = None,
     departure_time: datetime | float | int | None = None,
     utci_raster_path: str | Path | None = None,
 ) -> list[RouteCandidate]:
@@ -741,6 +743,11 @@ def resource_constrained_routes(
         raise ValueError("delta must be non-negative")
     if max_candidates < 1:
         raise ValueError("max_candidates must be at least 1")
+    if max_expansions is not None and max_expansions < 0:
+        raise ValueError("max_expansions must be non-negative")
+    search_seconds = max_seconds if max_seconds is not None else max_search_seconds
+    if search_seconds is not None and search_seconds <= 0:
+        raise ValueError("search seconds must be positive")
 
     if origin_node == destination_node:
         node_data = graph.nodes[origin_node]
@@ -807,7 +814,10 @@ def resource_constrained_routes(
     search_truncated = False
 
     while queue and len(candidates) < max_candidates:
-        if expansions >= max_expansions or time.monotonic() - search_started >= max_search_seconds:
+        if (
+            (max_expansions is not None and expansions >= max_expansions)
+            or (search_seconds is not None and time.monotonic() - search_started >= search_seconds)
+        ):
             search_truncated = True
             break
         expansions += 1

@@ -604,7 +604,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 )
 
         real_context = None
-        if real_paths is not None:
+        use_synthetic_microclimate = (
+            app_settings.allow_synthetic_microclimate
+            and str(raw_graph.graph.get("source", "")).lower() == "synthetic"
+        )
+        if use_synthetic_microclimate:
+            utci_raster = None
+        elif real_paths is not None:
             real_context = RealFeatureContext(real_paths)
         elif app_settings.allow_synthetic_microclimate and app_settings.prefer_local_data:
             utci_raster = find_time_raster(app_settings.data_dir, "utci", departure_time)
