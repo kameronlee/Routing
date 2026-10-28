@@ -1,72 +1,46 @@
-# GeoHealth 2026 submission 3466 revision
+# GeoHealth 3466 revision
 
-The submitted numerical results have **not** been rerun. The Overleaf manuscript
-has been revised using the supplied feedback and existing aggregates. Code fixes
-change routing behavior; new outputs must not be represented as the old experiment.
+The revised paper is in [geohealth3466/](geohealth3466/). It uses the original
+10,000 route records recovered from Hopper on October 28, 2026.
 
-## Implemented
+The revision adds:
 
-- Carry the original-network distance ceiling into the constrained solver and
-  through the API's auxiliary route filtering. A smaller raster-covered graph
-  cannot enlarge that ceiling.
-- Use length-shortest parallel edges in a shortest-route fallback.
-- Preserve route source, cap termination, label counts, rejection type, and the
-  proportion of route length using a shade surrogate.
-- Preserve sampled mean positive UTCI exceedance through objective projection.
-  The old no-op projection replaced it by positive exceedance of the edge mean;
-  these are different when samples straddle the threshold.
-- Compare methods only on the intersection of successful OD-budget records,
-  matched within study/config/run/raster snapshot. Reject duplicate records.
-  Paired heat contrasts use OD-cluster bootstrap intervals.
-- Retain rejected-attempt runtime summaries and failure-reason tables.
-- Provide actual coefficient sweeps (0, 0.5 and 2 times each default weight),
-  thresholds 24/26/28/32 C, 5/10/20/40 m spacing, UTCI offsets, and explicitly
-  labeled deterministic shade mixing. Selected routes are scored on a common
-  reference field; failures stay in the raw output.
-- Add an offset-aware revision configuration and a metric OD plotting command.
-- Fail clearly on unhydrated Git LFS input pointers.
+- A common-set comparison: 1,386 OD–budget records from 459 OD pairs.
+- OD-cluster bootstrap intervals, keeping repeated budgets together.
+- Joint-weight tuning on 142 common records from 81 pairs.
+- The original OD map in metric coordinates and runtimes for failed attempts.
+- A clear account of the expansion-limit failures and implementation audit.
 
-## Required data and real-data execution
+The README and paper now distinguish the historical experiment from the code
+fixes. The archived failures all log the 20,000-expansion limit. They do not
+show that those neighborhoods have no feasible or cooler walking route.
 
-Recover the **original** `od_pairs.csv`, `routes_summary.csv`, routes GeoJSON,
-failure logs and environment/provenance from Hopper. Do not regenerate OD pairs
-and describe them as the original sample. Verify data/LFS objects and preserve
-the historical outputs before running corrected code.
-
-From the repository root, with the real data restored:
+## Reproduce the reanalysis
 
 ```bash
-# First analyze the existing raw results; this does not require new routing.
-python experiments/aggregate_results.py --config configs/dc_snapshot_review3466.yaml --routes-summary /absolute/path/to/original/routes_summary.csv
-
-# Rerun corrected routing on the same original serialized OD pairs.
-python experiments/run_route_benchmark.py --config configs/dc_snapshot_review3466.yaml --od-pairs /absolute/path/to/original/od_pairs.csv --methods shortest_distance azimuth_heuristic shadow_only heat_dose proposed_full weighted_sum
-python experiments/run_review_sensitivity.py --config configs/dc_snapshot_review3466.yaml --od-pairs /absolute/path/to/original/od_pairs.csv --subset-size 100
-python experiments/aggregate_results.py --config configs/dc_snapshot_review3466.yaml
-python experiments/plot_od_pairs_metric.py --od-pairs /absolute/path/to/original/od_pairs.csv --output results/dc_snapshot_review3466/figures/od_pairs_metric.pdf
+python experiments/reanalyze_geohealth3466.py --figures
 ```
 
-Use a separate directory/configuration when aggregating old and new raw records;
-the example commands show the required inputs, not a license to overwrite the
-first aggregation with a later run. Capture the actual Python/package versions,
-Git commit, input checksums, machine details, and wall-clock/cache conditions.
+Inputs and checksums are under `paper_assets/review3466/raw/`; outputs are under
+`paper_assets/review3466/analysis/`. The script checks matching identifiers,
+duplicate records, distance ceilings, the OD subset, and baseline sequences.
 
-`weighted_sum` is the existing unconstrained Dijkstra comparison. Its detour
-must be reported, not silently treated as a budget-feasible environmental method.
-Common-set comparisons default to the original five methods. The first 100
-serialized OD pairs define the prespecified sensitivity subset; 35 variants at
-four budgets yield 14,000 attempted sensitivity records for a complete subset.
+## Still needed
 
-## Remaining scientific requirements
+The exact historical code/environment and complete frozen raster/graph inputs
+are not pinned. A corrected real-data rerun, independent coefficient sweeps,
+threshold checks, sampling convergence, and additional cities/hours remain
+unfinished. The September uncertainty runs use a different design and are not
+evidence for this pilot.
 
-- Real common-sample and sensitivity results are pending Hopper access.
-- Redraw the actual OD coordinates in metric CRS; the current historical image
-  is clearly identified as an endpoint-coverage display, not distance evidence.
-- Additional cities/hours and exact small-instance solver comparisons have not
-  been run; the manuscript limits claims to one modeled DC snapshot.
-- Publish a frozen data/OD/results release and confirm usable LFS objects.
-- Insert ACM-supplied rights/DOI/ISBN only when actually provided. Review the
-  compiled PDF and final page limit before any workshop or arXiv submission.
+With verified real inputs, run the revision config against the original OD CSV:
 
-The revision package is a draft for scientific review, not a claim that these
-remaining analyses have already been completed.
+```bash
+python experiments/run_route_benchmark.py --config configs/dc_snapshot_review3466.yaml --od-pairs paper_assets/review3466/raw/od_pairs.csv --methods shortest_distance azimuth_heuristic shadow_only heat_dose proposed_full weighted_sum
+python experiments/run_review_sensitivity.py --config configs/dc_snapshot_review3466.yaml --od-pairs paper_assets/review3466/raw/od_pairs.csv --subset-size 100
+python experiments/aggregate_results.py --config configs/dc_snapshot_review3466.yaml
+```
+
+The 35-variant sensitivity run attempts 14,000 records. It has not been run for
+this revision. The limited historical tuning changes several weights together
+and does not establish robustness to the threshold or sample spacing.

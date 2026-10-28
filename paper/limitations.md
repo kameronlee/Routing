@@ -1,10 +1,14 @@
-# Limitations
+# Scope and limitations
 
-- The Washington, DC experiment is based on modeled UTCI and direct-shadow rasters.
-- No in-person field validation was conducted in DC.
-- Results are for a single timestamp unless additional rasters are added and evaluated.
-- Scenicness and noise may be proxy-based, depending on available land-cover, canopy, and traffic data.
-- SOLWEIG/raster errors propagate into edge features, route costs, and reported exposure metrics.
-- A route that is modeled cooler may not always feel cooler to every person.
-- Direct-shadow values do not capture every factor affecting perceived thermal comfort.
-- Future work should include field transects, multiple weather conditions, more timestamps, seasonal evaluation, and user studies.
+This pilot uses one modeled DC hour. It has no field or participant validation.
+Street centerlines can misrepresent sidewalk shade, and the environmental
+layers have different source years and uncertain coverage.
+
+Comparisons use common successful records, so difficult failed attempts remain
+outside the exposure estimates. Historical records do not mark fallback paths.
+The original execution commit, environment, and complete frozen inputs are not
+pinned.
+
+Joint-weight tuning is limited to 100 OD pairs. Threshold and spacing checks,
+a corrected real-data rerun, and multi-city/time evaluation remain unfinished.
+UTCI exceedance is a modeled mean, not total time-dose or a health outcome.

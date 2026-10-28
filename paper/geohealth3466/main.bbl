@@ -1,0 +1,386 @@
+%%% -*-BibTeX-*-
+%%% Do NOT edit. File created by BibTeX with style
+%%% ACM-Reference-Format-Journals [18-Jan-2012].
+
+\begin{thebibliography}{25}
+
+%%% ====================================================================
+%%% NOTE TO THE USER: you can override these defaults by providing
+%%% customized versions of any of these macros before the \bibliography
+%%% command.  Each of them MUST provide its own final punctuation,
+%%% except for \shownote{} and \showURL{}.  The latter two
+%%% do not use final punctuation, in order to avoid confusing it with
+%%% the Web address.
+%%%
+%%% To suppress output of a particular field, define its macro to expand
+%%% to an empty string, or better, \unskip, like this:
+%%%
+%%% \newcommand{\showURL}[1]{\unskip}   % LaTeX syntax
+%%%
+%%% \def \showURL #1{\unskip}           % plain TeX syntax
+%%%
+%%% ====================================================================
+
+\ifx \showCODEN    \undefined \def \showCODEN     #1{\unskip}     \fi
+\ifx \showISBNx    \undefined \def \showISBNx     #1{\unskip}     \fi
+\ifx \showISBNxiii \undefined \def \showISBNxiii  #1{\unskip}     \fi
+\ifx \showISSN     \undefined \def \showISSN      #1{\unskip}     \fi
+\ifx \showLCCN     \undefined \def \showLCCN      #1{\unskip}     \fi
+\ifx \shownote     \undefined \def \shownote      #1{#1}          \fi
+\ifx \showarticletitle \undefined \def \showarticletitle #1{#1}   \fi
+\ifx \showURL      \undefined \def \showURL       {\relax}        \fi
+% The following commands are used for tagged output and should be
+% invisible to TeX
+\providecommand\bibfield[2]{#2}
+\providecommand\bibinfo[2]{#2}
+\providecommand\natexlab[1]{#1}
+\providecommand\showeprint[2][]{arXiv:#2}
+
+\bibitem[Basu et~al\mbox{.}(2024)]%
+        {basu2024}
+\bibfield{author}{\bibinfo{person}{R. Basu}, \bibinfo{person}{N. Colaninno},
+  \bibinfo{person}{A. Alhassan}, {and} \bibinfo{person}{A. Sevtsuk}.}
+  \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{Hot and bothered: Exploring the effect of heat on
+  pedestrian route choice behavior and accessibility}.
+\newblock \bibinfo{journal}{\emph{Cities}}  \bibinfo{volume}{155}
+  (\bibinfo{year}{2024}), \bibinfo{pages}{105435}.
+\newblock
+\href{https://doi.org/10.1016/j.cities.2024.105435}{doi:\nolinkurl{10.1016/j.cities.2024.105435}}
+
+
+\bibitem[Boeing(2017)]%
+        {boeing2017}
+\bibfield{author}{\bibinfo{person}{G. Boeing}.}
+  \bibinfo{year}{2017}\natexlab{}.
+\newblock \showarticletitle{{OSMnx}: New methods for acquiring, constructing,
+  analyzing, and visualizing complex street networks}.
+\newblock \bibinfo{journal}{\emph{Computers, Environment and Urban Systems}}
+  \bibinfo{volume}{65} (\bibinfo{year}{2017}), \bibinfo{pages}{126--139}.
+\newblock
+\href{https://doi.org/10.1016/j.compenvurbsys.2017.05.004}{doi:\nolinkurl{10.1016/j.compenvurbsys.2017.05.004}}
+
+
+\bibitem[Br{\"o}de et~al\mbox{.}(2012)]%
+        {brode2012}
+\bibfield{author}{\bibinfo{person}{P. Br{\"o}de}, \bibinfo{person}{D. Fiala},
+  \bibinfo{person}{K. B{\l}a{\.z}ejczyk}, \bibinfo{person}{I. Holm{\'e}r},
+  \bibinfo{person}{G. Jendritzky}, \bibinfo{person}{B. Kampmann},
+  \bibinfo{person}{B. Tinz}, {and} \bibinfo{person}{G. Havenith}.}
+  \bibinfo{year}{2012}\natexlab{}.
+\newblock \showarticletitle{Deriving the operational procedure for the
+  {Universal Thermal Climate Index (UTCI)}}.
+\newblock \bibinfo{journal}{\emph{International Journal of Biometeorology}}
+  \bibinfo{volume}{56}, \bibinfo{number}{3} (\bibinfo{year}{2012}),
+  \bibinfo{pages}{481--494}.
+\newblock
+\href{https://doi.org/10.1007/s00484-011-0454-1}{doi:\nolinkurl{10.1007/s00484-011-0454-1}}
+
+
+\bibitem[Colaninno et~al\mbox{.}(2025)]%
+        {colaninno2025}
+\bibfield{author}{\bibinfo{person}{N. Colaninno}, \bibinfo{person}{R. Basu},
+  \bibinfo{person}{M. Hosseini}, \bibinfo{person}{A. Alhassan},
+  \bibinfo{person}{L. Liu}, {and} \bibinfo{person}{A. Sevtsuk}.}
+  \bibinfo{year}{2025}\natexlab{}.
+\newblock \showarticletitle{A sidewalk-level urban heat risk assessment
+  framework using pedestrian mobility and urban microclimate modeling}.
+\newblock \bibinfo{journal}{\emph{Environment and Planning B: Urban Analytics
+  and City Science}} \bibinfo{volume}{52}, \bibinfo{number}{5}
+  (\bibinfo{year}{2025}), \bibinfo{pages}{1071--1090}.
+\newblock
+\href{https://doi.org/10.1177/23998083241280746}{doi:\nolinkurl{10.1177/23998083241280746}}
+
+
+\bibitem[Da et~al\mbox{.}(2024)]%
+        {da2024}
+\bibfield{author}{\bibinfo{person}{L. Da}, \bibinfo{person}{R. Chhibba},
+  \bibinfo{person}{R. Jaiswal}, \bibinfo{person}{A. Middel}, {and}
+  \bibinfo{person}{H. Wei}.} \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{Shaded route planning using active segmentation and
+  identification of satellite images}. In \bibinfo{booktitle}{\emph{Proceedings
+  of the 33rd {ACM} International Conference on Information and Knowledge
+  Management}}. \bibinfo{pages}{5205--5209}.
+\newblock
+\href{https://doi.org/10.1145/3627673.3679234}{doi:\nolinkurl{10.1145/3627673.3679234}}
+
+
+\bibitem[{DC Office of the Chief Technology Officer}(2020a)]%
+        {dcgis2020a}
+\bibfield{author}{\bibinfo{person}{{DC Office of the Chief Technology
+  Officer}}.} \bibinfo{year}{2020}\natexlab{a}.
+\newblock \bibinfo{title}{Generalized Land Cover 2020}.
+\newblock \bibinfo{howpublished}{ArcGIS image service, Open Data DC}.
+\newblock
+\shownote{Created by PlanIT Geo for the District Department of Transportation
+  Urban Forestry Division; accessed 17 July 2026}.
+\newblock
+\urldef\tempurl%
+\url{https://imagery.dcgis.dc.gov/dcgis/rest/services/UFD/Generalized_Land_Cover_2020/ImageServer}
+\showURL{%
+\tempurl}
+
+
+\bibitem[{DC Office of the Chief Technology Officer}(2020b)]%
+        {dcgis2020b}
+\bibfield{author}{\bibinfo{person}{{DC Office of the Chief Technology
+  Officer}}.} \bibinfo{year}{2020}\natexlab{b}.
+\newblock \bibinfo{title}{Urban Tree Canopy 2020}.
+\newblock \bibinfo{howpublished}{ArcGIS image service, Open Data DC}.
+\newblock
+\shownote{Accessed 17 July 2026}.
+\newblock
+\urldef\tempurl%
+\url{https://imagery.dcgis.dc.gov/dcgis/rest/services/UFD/Urban_Tree_Canopy_2020/ImageServer}
+\showURL{%
+\tempurl}
+
+
+\bibitem[{District Department of Transportation}(2023)]%
+        {ddot2023}
+\bibfield{author}{\bibinfo{person}{{District Department of Transportation}}.}
+  \bibinfo{year}{2023}\natexlab{}.
+\newblock \bibinfo{title}{Traffic Volume---2023}.
+\newblock \bibinfo{howpublished}{ArcGIS feature layer, Open Data DC}.
+\newblock
+\shownote{Accessed 17 July 2026}.
+\newblock
+\urldef\tempurl%
+\url{https://opendata.dc.gov/datasets/DCGIS::2023-traffic-volume/about}
+\showURL{%
+\tempurl}
+
+
+\bibitem[{District of Columbia}({[n.\,d.]})]%
+        {sustainabledc}
+\bibfield{author}{\bibinfo{person}{{District of Columbia}}.}
+  \bibinfo{year}{[n.\,d.]}\natexlab{}.
+\newblock \bibinfo{title}{Sustainable DC 2.0: Transportation}.
+\newblock
+\shownote{Historical commute mode share for 2016; accessed 28 October 2026}.
+\newblock
+\urldef\tempurl%
+\url{https://sustainable.dc.gov/sites/default/files/dc/sites/sustainable/page_content/attachments/SDC2%20Transportation.pdf}
+\showURL{%
+\tempurl}
+
+
+\bibitem[{European Environment Agency}({[n.\,d.]})]%
+        {eeautci}
+\bibfield{author}{\bibinfo{person}{{European Environment Agency}}.}
+  \bibinfo{year}{[n.\,d.]}\natexlab{}.
+\newblock \bibinfo{title}{Thermal Comfort Indices---Universal Thermal Climate
+  Index, 1979--2020}.
+\newblock
+\shownote{Archived indicator documentation; standard UTCI stress categories;
+  accessed 28 October 2026}.
+\newblock
+\urldef\tempurl%
+\url{https://climate-adapt.eea.europa.eu/en/metadata/indicators/thermal-comfort-indices-universal-thermal-climate-index-1979-2019}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Hagberg et~al\mbox{.}(2008)]%
+        {hagberg2008}
+\bibfield{author}{\bibinfo{person}{A.~A. Hagberg}, \bibinfo{person}{D.~A.
+  Schult}, {and} \bibinfo{person}{P.~J. Swart}.}
+  \bibinfo{year}{2008}\natexlab{}.
+\newblock \showarticletitle{Exploring network structure, dynamics, and function
+  using {NetworkX}}. In \bibinfo{booktitle}{\emph{Proceedings of the 7th Python
+  in Science Conference}}. \bibinfo{pages}{11--15}.
+\newblock
+\href{https://doi.org/10.25080/TCWV9851}{doi:\nolinkurl{10.25080/TCWV9851}}
+
+
+\bibitem[Kamath et~al\mbox{.}(2026)]%
+        {kamath2026}
+\bibfield{author}{\bibinfo{person}{H.~G. Kamath}, \bibinfo{person}{N.
+  Sudharsan}, \bibinfo{person}{M. Singh}, \bibinfo{person}{N. Wallenberg},
+  \bibinfo{person}{F. Lindberg}, {and} \bibinfo{person}{D. Niyogi}.}
+  \bibinfo{year}{2026}\natexlab{}.
+\newblock \showarticletitle{{SOLWEIG-GPU}: {GPU}-Accelerated Thermal Comfort
+  Modeling Framework for Urban Digital Twins}.
+\newblock \bibinfo{journal}{\emph{Journal of Open Source Software}}
+  \bibinfo{volume}{11}, \bibinfo{number}{118} (\bibinfo{year}{2026}),
+  \bibinfo{pages}{9535}.
+\newblock
+\href{https://doi.org/10.21105/joss.09535}{doi:\nolinkurl{10.21105/joss.09535}}
+
+
+\bibitem[Kolaxidis et~al\mbox{.}(2025)]%
+        {kolaxidis2025}
+\bibfield{author}{\bibinfo{person}{N. Kolaxidis}, \bibinfo{person}{C. Ludwig},
+  \bibinfo{person}{S. Knoblauch}, \bibinfo{person}{J. F{\"u}rle},
+  \bibinfo{person}{K. Foshag}, \bibinfo{person}{S. Fendrich},
+  \bibinfo{person}{S. Lautenbach}, {and} \bibinfo{person}{A. Zipf}.}
+  \bibinfo{year}{2025}\natexlab{}.
+\newblock \showarticletitle{Mitigating heat stress by reducing solar exposure
+  in pedestrian routing}.
+\newblock \bibinfo{journal}{\emph{Transactions in GIS}} \bibinfo{volume}{29},
+  \bibinfo{number}{6} (\bibinfo{year}{2025}), \bibinfo{pages}{e70110}.
+\newblock
+\href{https://doi.org/10.1111/tgis.70110}{doi:\nolinkurl{10.1111/tgis.70110}}
+
+
+\bibitem[Levenson et~al\mbox{.}(2025)]%
+        {levenson2025}
+\bibfield{author}{\bibinfo{person}{M. Levenson}, \bibinfo{person}{D.
+  Pearlmutter}, {and} \bibinfo{person}{O. Aleksandrowicz}.}
+  \bibinfo{year}{2025}\natexlab{}.
+\newblock \showarticletitle{An observational analysis of shade-related
+  pedestrian activity}.
+\newblock \bibinfo{journal}{\emph{Buildings and Cities}} \bibinfo{volume}{6},
+  \bibinfo{number}{1} (\bibinfo{year}{2025}), \bibinfo{pages}{398--414}.
+\newblock
+\href{https://doi.org/10.5334/bc.574}{doi:\nolinkurl{10.5334/bc.574}}
+
+
+\bibitem[Lindberg et~al\mbox{.}(2008)]%
+        {lindberg2008}
+\bibfield{author}{\bibinfo{person}{F. Lindberg}, \bibinfo{person}{B. Holmer},
+  {and} \bibinfo{person}{S. Thorsson}.} \bibinfo{year}{2008}\natexlab{}.
+\newblock \showarticletitle{{SOLWEIG} 1.0: Modelling spatial variations of 3D
+  radiant fluxes and mean radiant temperature in complex urban settings}.
+\newblock \bibinfo{journal}{\emph{International Journal of Biometeorology}}
+  \bibinfo{volume}{52}, \bibinfo{number}{7} (\bibinfo{year}{2008}),
+  \bibinfo{pages}{697--713}.
+\newblock
+\href{https://doi.org/10.1007/s00484-008-0162-7}{doi:\nolinkurl{10.1007/s00484-008-0162-7}}
+
+
+\bibitem[{NOAA Office for Coastal Management}(2022a)]%
+        {noaa2022b}
+\bibfield{author}{\bibinfo{person}{{NOAA Office for Coastal Management}}.}
+  \bibinfo{year}{2022}\natexlab{a}.
+\newblock \bibinfo{title}{2022 {DC OCTO} Lidar {DEM}: Washington, {DC}}.
+\newblock \bibinfo{howpublished}{NOAA InPort item 69939}.
+\newblock
+\shownote{Accessed 17 July 2026}.
+\newblock
+\urldef\tempurl%
+\url{https://www.fisheries.noaa.gov/inport/item/69939}
+\showURL{%
+\tempurl}
+
+
+\bibitem[{NOAA Office for Coastal Management}(2022b)]%
+        {noaa2022a}
+\bibfield{author}{\bibinfo{person}{{NOAA Office for Coastal Management}}.}
+  \bibinfo{year}{2022}\natexlab{b}.
+\newblock \bibinfo{title}{2022 {DC OCTO} Lidar: Washington, {DC}}.
+\newblock \bibinfo{howpublished}{NOAA InPort item 69938}.
+\newblock
+\shownote{Accessed 17 July 2026}.
+\newblock
+\urldef\tempurl%
+\url{https://www.fisheries.noaa.gov/inport/item/69938}
+\showURL{%
+\tempurl}
+
+
+\bibitem[{OpenStreetMap contributors}(2026)]%
+        {osm2026}
+\bibfield{author}{\bibinfo{person}{{OpenStreetMap contributors}}.}
+  \bibinfo{year}{2026}\natexlab{}.
+\newblock \bibinfo{title}{{OpenStreetMap}}.
+\newblock \bibinfo{howpublished}{Open database licensed under ODbL 1.0}.
+\newblock
+\shownote{Accessed 17 July 2026}.
+\newblock
+\urldef\tempurl%
+\url{https://www.openstreetmap.org/copyright}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Patel et~al\mbox{.}(2026)]%
+        {patel2026}
+\bibfield{author}{\bibinfo{person}{A. Patel}, \bibinfo{person}{N. Sudharsan},
+  \bibinfo{person}{T. Brooks}, \bibinfo{person}{H. Kamath}, \bibinfo{person}{D.
+  Crawley}, \bibinfo{person}{Z. Baumer}, \bibinfo{person}{M. Coudert}, {and}
+  \bibinfo{person}{D. Niyogi}.} \bibinfo{year}{2026}\natexlab{}.
+\newblock \bibinfo{title}{Thermal comfort path planning tool for urban mobility
+  in {Austin, Texas}}.
+\newblock \bibinfo{howpublished}{arXiv preprint arXiv:2602.02540}.
+\newblock
+\showeprint[arxiv]{2602.02540}
+\href{https://doi.org/10.48550/arXiv.2602.02540}{doi:\nolinkurl{10.48550/arXiv.2602.02540}}
+
+
+\bibitem[Skoumas et~al\mbox{.}(2015)]%
+        {skoumas2015}
+\bibfield{author}{\bibinfo{person}{Georgios Skoumas},
+  \bibinfo{person}{Klaus~Arthur Schmid}, \bibinfo{person}{Gregor Joss{\'e}},
+  \bibinfo{person}{Matthias Schubert}, \bibinfo{person}{Mario~A. Nascimento},
+  \bibinfo{person}{Andreas Z{\"u}fle}, \bibinfo{person}{Matthias Renz}, {and}
+  \bibinfo{person}{Dieter Pfoser}.} \bibinfo{year}{2015}\natexlab{}.
+\newblock \showarticletitle{Knowledge-Enriched Route Computation}. In
+  \bibinfo{booktitle}{\emph{Advances in Spatial and Temporal Databases}}
+  \emph{(\bibinfo{series}{Lecture Notes in Computer Science},
+  Vol.~\bibinfo{volume}{9239})}. \bibinfo{publisher}{Springer},
+  \bibinfo{address}{Cham}, \bibinfo{pages}{157--176}.
+\newblock
+\href{https://doi.org/10.1007/978-3-319-22363-6_9}{doi:\nolinkurl{10.1007/978-3-319-22363-6_9}}
+
+
+\bibitem[Vartholomaios(2023)]%
+        {vartholomaios2023}
+\bibfield{author}{\bibinfo{person}{A. Vartholomaios}.}
+  \bibinfo{year}{2023}\natexlab{}.
+\newblock \showarticletitle{Follow the shade: Detection of optimally shaded
+  pedestrian paths within the historic city center of {Thessaloniki}}.
+\newblock \bibinfo{journal}{\emph{IOP Conference Series: Earth and
+  Environmental Science}}  \bibinfo{volume}{1196} (\bibinfo{year}{2023}),
+  \bibinfo{pages}{012070}.
+\newblock
+\href{https://doi.org/10.1088/1755-1315/1196/1/012070}{doi:\nolinkurl{10.1088/1755-1315/1196/1/012070}}
+
+
+\bibitem[Verma et~al\mbox{.}(2026)]%
+        {verma2026}
+\bibfield{author}{\bibinfo{person}{D. Verma}, \bibinfo{person}{O. Mumm}, {and}
+  \bibinfo{person}{V.~M. Carlow}.} \bibinfo{year}{2026}\natexlab{}.
+\newblock \showarticletitle{{CoolPaths}: Street-scale {Physiological Equivalent
+  Temperature (PET)} mapping and cooler-routes planning using open data}.
+\newblock \bibinfo{journal}{\emph{City and Environment Interactions}}
+  \bibinfo{volume}{30} (\bibinfo{year}{2026}), \bibinfo{pages}{100349}.
+\newblock
+\href{https://doi.org/10.1016/j.cacint.2026.100349}{doi:\nolinkurl{10.1016/j.cacint.2026.100349}}
+
+
+\bibitem[Wolf et~al\mbox{.}(2025)]%
+        {wolf2025}
+\bibfield{author}{\bibinfo{person}{H. Wolf}, \bibinfo{person}{A.~R. Vier{\o}},
+  {and} \bibinfo{person}{M. Szell}.} \bibinfo{year}{2025}\natexlab{}.
+\newblock \showarticletitle{{CoolWalks} for active mobility in urban street
+  networks}.
+\newblock \bibinfo{journal}{\emph{Scientific Reports}}  \bibinfo{volume}{15}
+  (\bibinfo{year}{2025}), \bibinfo{pages}{14911}.
+\newblock
+\href{https://doi.org/10.1038/s41598-025-97200-2}{doi:\nolinkurl{10.1038/s41598-025-97200-2}}
+
+
+\bibitem[Yang et~al\mbox{.}(2025)]%
+        {yang2025}
+\bibfield{author}{\bibinfo{person}{L. Yang}, \bibinfo{person}{T. Miyata},
+  \bibinfo{person}{S. Kuroki}, \bibinfo{person}{T. Urakubo}, {and}
+  \bibinfo{person}{P. Finnerty}.} \bibinfo{year}{2025}\natexlab{}.
+\newblock \showarticletitle{Route planning in urban environments: A shade-aware
+  navigation framework}. In \bibinfo{booktitle}{\emph{2025 {IEEE} 14th Global
+  Conference on Consumer Electronics ({GCCE})}}. \bibinfo{pages}{644--645}.
+\newblock
+\href{https://doi.org/10.1109/GCCE65946.2025.11275334}{doi:\nolinkurl{10.1109/GCCE65946.2025.11275334}}
+
+
+\bibitem[Zippenfenig(2023)]%
+        {zippenfenig2023}
+\bibfield{author}{\bibinfo{person}{P. Zippenfenig}.}
+  \bibinfo{year}{2023}\natexlab{}.
+\newblock \bibinfo{title}{{Open-Meteo.com Weather API}}.
+\newblock \bibinfo{howpublished}{Computer software, Zenodo}.
+\newblock
+\href{https://doi.org/10.5281/zenodo.7970649}{doi:\nolinkurl{10.5281/zenodo.7970649}}
+
+
+\end{thebibliography}
