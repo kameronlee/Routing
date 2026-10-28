@@ -67,7 +67,7 @@ For UTCI samples $u_{ei}$ on edge $e$, define
  \bar u_e&=\frac{1}{n_e^u}\sum_i u_{ei},\qquad u_e^{\max}=\max_i u_{ei},\\
  h_e&=\frac{1}{n_e^u}\sum_i\max(0,u_{ei}-\tau),\quad \tau=26^\circ\mathrm C.
 \end{align}
-For valid shadow samples $b_{ej}$, the direct-shade fraction is $s_e^{\rm dir}=(n_e^b)^{-1}\sum_j\mathbf1[b_{ej}\leq0.5]$; the raster convention is zero for shade and one for sun. A normal method uses this value when present and the surrogate $s_e^{\rm az}$ otherwise. The hybrid-azimuth method uses $s_e^{\rm az}$ everywhere.
+For valid shadow samples $b_{ej}$, the direct-shade fraction is $s_e^{\rm dir}=(n_e^b)^{-1}\sum_j\mathbf1[b_{ej}\leq0.5]$; the raster convention is zero for shade and one for sun. Except for hybrid azimuth, each method uses this value when present and the surrogate $s_e^{\rm az}$ otherwise. The hybrid-azimuth method uses $s_e^{\rm az}$ everywhere.
 
 The $26^\circ$C reference is the conventional UTCI boundary between no thermal stress and moderate heat stress \citep{eeautci}. Its use here is an engineering reference, not a personalized safety threshold. The 20 m interval reduces sampling work on nominal 1 m rasters. It can miss short shaded segments; no convergence study establishes its accuracy.
 
@@ -88,7 +88,7 @@ where $[x]_+=\max(0,x)$. Its correlated UTCI and shade components can count rela
 Table~\ref{tab:methods} treats the environmental methods as objective variants of one implementation. Distance and time remain active in all four. The focused methods are therefore not pure single-feature optimizations. For reporting, selected routes are evaluated with full features; the hybrid shade outcome remains a surrogate and is not comparable with direct shade.
 
 \begin{table}[t]
-\caption{Objectives used in the historical experiment. $A_e$ is the distance--time term in Appendix~\ref{app:cost}.}
+\caption{Objectives used in the historical experiment. $A_e$ is the distance--time term in Appendix~\ref{app:cost}; all environmental penalties also use its edge-length scale.}
 \label{tab:methods}
 \small
 \begin{tabularx}{\columnwidth}{@{}lY@{}}\toprule
