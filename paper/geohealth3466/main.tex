@@ -45,19 +45,11 @@ Let $G_0$ be the original directed walking multigraph. For a route $P$, let $L(P
 \end{equation}
 The minimization is over directed paths connecting that pair. The allowance $\delta\in\{0.05,0.10,0.20,0.30\}$ limits proportional extra distance.
 
-Figure~\ref{fig:pipeline} shows the four pipeline stages. To reduce feature-extraction work, a node $v$ is retained when
+To reduce feature-extraction work, a node $v$ is retained when
 \begin{equation}
  d_{G_0}(o,v)+d_{G_0}(v,d)\leq D_0+50\,\mathrm{m},
 \end{equation}
 where $d_G$ denotes shortest-path distance on graph $G$. The pipeline then assigns raster-backed features and removes edges lacking valid UTCI samples. The resulting feature graph is $G_f$. Network processing uses OpenStreetMap, OSMnx, and NetworkX \citep{osm2026,boeing2017,hagberg2008}.
-
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{pipeline_revised.pdf}
-\caption{Historical routing pipeline. $G_0$ supplies the final budget $D_0$; the raster-covered graph $G_f$ supplies the historical internal budget $D_f$. A returned path must still pass the $D_0$ check.}
-\Description{Four stages: original walking graph and reference distance, raster-backed feature graph, objective and capped search, final acceptance and reporting.}
-\label{fig:pipeline}
-\end{figure*}
 
 \subsection{Sampling and reported exposure}
 Each source segment in an edge geometry is subdivided to a maximum spacing of 20 m, retaining endpoints. Coordinates are transformed into each raster's coordinate reference system before sampling. Non-finite and NoData samples are omitted. Edges without UTCI samples are removed; edges without direct-shadow samples use the surrogate in Appendix~\ref{app:features}.
@@ -133,19 +125,19 @@ Traffic & DDOT 2023 AADT lines; normalized traffic proxy, not sound measurements
 \end{table}
 
 \subsection{OD sample and experimental design}
-The generator uses the largest weakly connected graph component, then retains endpoints with finite UTCI and shadow raster values. With seed 42, it samples 500 distinct ordered node pairs whose shortest network distances lie between 400 and 3,000 m. The recovered distances range from 412.9 to 2,998.9 m. Figure~\ref{fig:od} redraws the original coordinates in UTM zone 18N (EPSG:32618); its connectors indicate pairs, not walking paths or the distance used for eligibility.
+The generator uses the largest weakly connected graph component, then retains endpoints with finite UTCI and shadow raster values. With seed 42, it samples 500 distinct ordered node pairs whose shortest network distances lie between 400 and 3,000 m. The recovered distances range from 412.9 to 2,998.9 m. Figure~\ref{fig:od} locates the original endpoints within the District and shows the distribution of network distances used for eligibility. Large parts of the District have no sampled endpoints. The retained records do not recover the exact valid-raster footprint; endpoint locations indicate this sample, not pedestrian demand or district-wide coverage.
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=\columnwidth]{od_pairs_metric.pdf}
-\caption{The original 500 OD pairs in metric coordinates. Endpoints are constrained by raster coverage. Gray connectors are not routes; eligibility uses network-edge lengths.}
-\Description{Original OD endpoints and connectors plotted in UTM zone 18N with kilometre axes.}
+\includegraphics[width=\textwidth]{study_area.pdf}
+\caption{Study sample and distance eligibility. (a) Original endpoint records for 500 OD pairs, with the full District boundary and DDOT/DC GIS context; boxes locate the map windows in Figure~\ref{fig:route-cases} \citep{ddotcontext2026,octowater2023}. Repeated endpoints can overlap; the sample does not cover the full District. Maps use EPSG:32618. (b) Distribution of original-network shortest distances in 200 m bins. Dashed lines mark the 400--3,000 m selection bounds. Geographic separation on the map is not the eligibility metric.}
+\Description{A contextual map of Washington DC with the sampled endpoints and example-route extents, alongside a histogram of the original 500 shortest network distances.}
 \label{fig:od}
-\end{figure}
+\end{figure*}
 
 Each pair is evaluated with five methods at four allowances, giving 10,000 attempts. The 2,000 shortest-distance records repeat 500 pairs; recovered edge sequences confirm an identical baseline path across all four allowances for every pair. Environmental routes can change with allowance-specific corridors, features, and search. Records from the same OD pair are not independent observations.
 
-\subsection{Matched comparison and uncertainty}
+\subsection{Matched comparison and uncertainty}\label{sec:matched-analysis}
 Let $P^0_{i\delta}$ be the matched shortest route and $P^m_{i\delta}$ the route returned by method $m$. Positive improvements are
 \begin{equation}
  \Delta H_{i\delta m}=H(P^0_{i\delta})-H(P^m_{i\delta}),
@@ -215,6 +207,16 @@ Composite & 0.576 & 0.427 & 0.582 & 0.086 & 8.32\\\bottomrule
 
 On paired records, the exceedance-focused objective has 0.125 K lower mean $H$ than the composite (OD-cluster interval 0.108--0.142 K). The difference between exceedance-focused and direct-shadow objectives is 0.008 K, with an interval spanning zero ($-0.002$ to 0.018 K). The latter comparison does not resolve a consistent separation between those objectives. These are comparisons of recorded exposure outcomes, not evidence that one objective dominates across distance, shade, or other preferences.
 
+Figure~\ref{fig:route-cases} illustrates the returned paths with two recorded comparisons. Both satisfy a 20\% distance allowance, but their changes in $H$ have opposite signs. The cases are selected by proximity to the median and 10th-percentile paired reduction on the common successful subset defined in Section~\ref{sec:matched-analysis}. They show spatial route differences, not measured microclimate or an independent validation sample.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{route_comparison.pdf}
+\caption{Recorded shortest and UTCI-exceedance routes at a 20\% allowance. Panels show the records nearest the (a) median and (b) 10th-percentile paired $H$ reduction among 309 common successful OD pairs. Positive reduction means lower $H$; the second case is adverse. O and D mark origin and destination. Both map windows cover 1.9 by 1.3 km in EPSG:32618. Gray segments are shared geometry; black and teal show each route's remaining segments. The focused objective also penalizes distance and time; Section~\ref{sec:search} describes the historical objective/reporting discrepancy, so lower reported $H$ is not guaranteed. Roads and water are DDOT/DC GIS display context, not the historical routing graph or exposure fields \citep{ddotcontext2026,octowater2023}.}
+\Description{Two recorded route comparisons at the same map scale, with shared and divergent geometry, origins, destinations, original graph distances, and mean UTCI-exceedance values. The median example reduces exceedance while the lower-tail example slightly increases it.}
+\label{fig:route-cases}
+\end{figure*}
+
 Positive averages also conceal adverse outcomes. In the full method-specific accepted sets, the 10th-percentile $\Delta H$ is negative for every environmental variant. Median reduction in maximum sampled UTCI is zero for each variant. Thus lower mean exposure does not imply improvement on every route or removal of its hottest segment. The hybrid's apparent shade improvement is especially unsuitable for ranking because its reporting field differs; direct-shadow methods can also substitute the surrogate on edges with missing shadow samples, with no historical substitution count.
 
 \subsection{Detour allowances}
@@ -242,15 +244,15 @@ Low distance & 144 & 0.755 & 9.38 & 42\\\bottomrule
 The tested configurations are close in this summary metric, but path choice is not invariant to the weights. Because several coefficients change together and the sample is small and selected, these results cannot identify an optimal setting or establish general robustness. They also do not address the separate choices of $26^\circ$C and 20 m.
 
 \subsection{Observed runtime}
-Figure~\ref{fig:runtime} uses observed runtimes for accepted and rejected attempts. Accepted medians range from 0.229 to 0.284 s and 90th percentiles from 0.914 to 1.097 s. Rejected environmental attempts have medians of 0.805--1.064 s and 90th percentiles of 1.385--1.530 s. Their omission from successful-only summaries would understate unsuccessful-request cost.
+Figure~\ref{fig:runtime} shows empirical cumulative distributions for every accepted and rejected attempt. Accepted medians range from 0.229 to 0.284 s and 90th percentiles from 0.914 to 1.097 s. Rejected environmental attempts have medians of 0.805--1.064 s and 90th percentiles of 1.385--1.530 s. The largest recorded times are 9.499 s for an accepted attempt and 7.586 s for a rejected attempt. Successful-only summaries would omit the unsuccessful-request cost.
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=\columnwidth]{runtime_observed.pdf}
-\caption{Observed end-to-end runtime. Thick bars show the 25th--75th percentiles, circles the medians, and thin lines extend to the 90th percentiles. Rejected attempts are shown separately. No density is inferred from these summaries.}
-\Description{Runtime quantiles for all five methods, separating accepted and rejected attempts.}
+\includegraphics[width=\textwidth]{runtime_ecdf.pdf}
+\caption{Empirical cumulative distributions of observed end-to-end runtime, pooling all four allowances. Each curve includes every recorded attempt for its method and status: (a) 8,093 accepted attempts that pass the final distance check; (b) 1,907 rejected attempts that return no accepted route. The 10,000 attempts are 500 pairs evaluated with five methods at four allowances; legend counts give each method's accepted/rejected totals. Shortest distance has no rejected attempts. Logarithmic horizontal axes retain the long tails. Curves mix repeated OD pairs and cache states; they are descriptive, not a controlled comparison of solver speed.}
+\Description{Empirical runtime distribution curves for all five methods on accepted attempts and four methods on rejected attempts, with logarithmic time axes showing the full observed tails.}
 \label{fig:runtime}
-\end{figure}
+\end{figure*}
 
 Accepted means exceed medians, and upper quantiles extend much farther from the median than lower quartiles, indicating long upper tails. Timings include corridor and feature-graph work as well as routing. Direct-shadow methods share a persistent feature cache; hybrid azimuth uses another cache. Mixed cache states, execution order, and the unpinned hardware environment prevent a controlled solver-speed comparison. The 1.5 s label-loop cap is not an end-to-end latency guarantee.
 

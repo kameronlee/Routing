@@ -8,7 +8,7 @@ The revision adds:
 - A common-set comparison: 1,386 OD–budget records from 459 OD pairs.
 - OD-cluster bootstrap intervals, keeping repeated budgets together.
 - Joint-weight tuning on 142 common records from 81 pairs.
-- The original OD map in metric coordinates and runtimes for failed attempts.
+- A study map, two recorded route comparisons, and complete runtime ECDFs.
 - A clear account of the expansion-limit failures and implementation audit.
 
 The README and paper now distinguish the historical experiment from the code
@@ -24,6 +24,9 @@ python experiments/reanalyze_geohealth3466.py --figures
 Inputs and checksums are under `paper_assets/review3466/raw/`; outputs are under
 `paper_assets/review3466/analysis/`. The script checks matching identifiers,
 duplicate records, distance ceilings, the OD subset, and baseline sequences.
+Figure inputs and source attribution are in
+`paper_assets/review3466/figure_inputs/`. Maps use frozen DC GIS background
+layers for context, separate from the historical routing inputs.
 
 ## Still needed
 

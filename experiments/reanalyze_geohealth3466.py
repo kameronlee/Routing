@@ -126,43 +126,8 @@ def main():
 
 
 def make_figures(routes, od, out):
-    import matplotlib
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-    from rasterio.warp import transform
-    plt.rcParams.update({"font.size": 9, "pdf.fonttype": 42, "font.family": "DejaVu Sans"})
-    ox, oy = transform("EPSG:4326", "EPSG:32618", [float(r['origin_lon']) for r in od], [float(r['origin_lat']) for r in od])
-    dx, dy = transform("EPSG:4326", "EPSG:32618", [float(r['destination_lon']) for r in od], [float(r['destination_lat']) for r in od])
-    fig, ax = plt.subplots(figsize=(3.35, 3.0), layout="constrained")
-    for a,b,c,d in zip(ox,oy,dx,dy):
-        ax.plot([a/1000,c/1000],[b/1000,d/1000], color=".55", alpha=.08, lw=.4)
-    ax.scatter([x/1000 for x in ox],[y/1000 for y in oy],s=4,label="Origin",color="#2878a5")
-    ax.scatter([x/1000 for x in dx],[y/1000 for y in dy],s=4,label="Destination",color="#c66b26")
-    ax.set(xlabel="Easting (km, UTM 18N)",ylabel="Northing (km)",aspect="equal")
-    ax.legend(loc="best",markerscale=2,fontsize=8,frameon=False)
-    fig.savefig(out / "od_pairs_metric.pdf")
-    plt.close(fig)
-    fig, ax = plt.subplots(figsize=(3.35, 2.5), layout="constrained")
-    from routing_backend.result_metrics import _quantile
-    # Use raw observed values; no synthetic density or reconstructed samples.
-    for i,m in enumerate(METHODS):
-        for accepted, offset, color in [(True,-.12,"#2878a5"),(False,.12,"#c66b26")]:
-            values = sorted(float(r['runtime_ms']) / 1000 for r in routes if r['method']==m and succeeded(r)==accepted)
-            if not values:
-                continue
-            q25,median,q75,q90 = [_quantile(values,p) for p in [.25,.5,.75,.9]]
-            y=i+offset
-            ax.plot([q25,q75],[y,y],lw=4,color=color,solid_capstyle="butt")
-            ax.plot([median,q90],[y,y],lw=.8,color=color)
-            ax.plot(median,y,'o',ms=4,color=color)
-            ax.plot(q90,y,'|',ms=6,color=color)
-    from matplotlib.lines import Line2D
-    ax.set(yticks=range(5),yticklabels=[NAMES[m] for m in METHODS],xlabel="End-to-end runtime (s)",xlim=(0,1.7))
-    ax.invert_yaxis()
-    ax.legend(handles=[Line2D([0],[0],color='#2878a5',lw=4,label='Accepted'),Line2D([0],[0],color='#c66b26',lw=4,label='Rejected')],fontsize=8,frameon=False,loc='lower right')
-    ax.spines[['top','right']].set_visible(False)
-    fig.savefig(out / "runtime_observed.pdf")
-    plt.close(fig)
+    from make_geohealth_figures import build_figures
+    build_figures(routes, od, out)
 
 
 if __name__ == "__main__":

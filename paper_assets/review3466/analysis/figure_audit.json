@@ -1,0 +1,41 @@
+{
+  "cases": [
+    {
+      "panel": "a",
+      "quantile": 0.5,
+      "target_delta_H_K": 0.6544660580057577,
+      "delta_H_K": 0.6544660580057577,
+      "pair_id": "od_00497",
+      "budget": 0.2,
+      "common_records_at_budget": 309
+    },
+    {
+      "panel": "b",
+      "quantile": 0.1,
+      "target_delta_H_K": -0.03786203450790513,
+      "delta_H_K": -0.037848824998502284,
+      "pair_id": "od_00116",
+      "budget": 0.2,
+      "common_records_at_budget": 309
+    }
+  ],
+  "context_scope": "Geographic display only; not an input to routing or exposure evaluation.",
+  "context_sha256": {
+    "district.geojson.gz": "be723ffb0217c760732b146e58284ea7ea85bcdddec8b73ab185a14e920c0dd7",
+    "roads.geojson.gz": "80208ce0f981fceed0783b8229d92fae55170a1ae912d6f874cfb4fb8c06f2ce",
+    "route_cases.geojson.gz": "67995ea227f60117a1eafbd17008607c73bdb0986e85f1c8364aef0a753e254a",
+    "water.geojson.gz": "27da64a8c43480da8aa5561549a5bda3578ef24885af277fb381330c2d42df82"
+  },
+  "map_crs": "EPSG:32618",
+  "map_case_extent_m": [
+    1900,
+    1300
+  ],
+  "runtime_records": 10000,
+  "runtime_success_records": 8093,
+  "runtime_values_plotted": "All observed finite positive runtimes; one ECDF per method and status.",
+  "software": {
+    "matplotlib": "3.11.2",
+    "numpy": "2.5.4"
+  }
+}

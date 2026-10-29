@@ -2,7 +2,7 @@
 %%% Do NOT edit. File created by BibTeX with style
 %%% ACM-Reference-Format-Journals [18-Jan-2012].
 
-\begin{thebibliography}{25}
+\begin{thebibliography}{27}
 
 %%% ====================================================================
 %%% NOTE TO THE USER: you can override these defaults by providing
@@ -136,6 +136,20 @@
 \tempurl}
 
 
+\bibitem[{DC Office of the Chief Technology Officer}(2023)]%
+        {octowater2023}
+\bibfield{author}{\bibinfo{person}{{DC Office of the Chief Technology
+  Officer}}.} \bibinfo{year}{2023}\natexlab{}.
+\newblock \bibinfo{title}{Waterbodies---2023}.
+\newblock
+\shownote{Retrieved 28 October 2026; geographic display context only}.
+\newblock
+\urldef\tempurl%
+\url{https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Planimetrics_2023/MapServer/14}
+\showURL{%
+\tempurl}
+
+
 \bibitem[{District Department of Transportation}(2023)]%
         {ddot2023}
 \bibfield{author}{\bibinfo{person}{{District Department of Transportation}}.}
@@ -147,6 +161,21 @@
 \newblock
 \urldef\tempurl%
 \url{https://opendata.dc.gov/datasets/DCGIS::2023-traffic-volume/about}
+\showURL{%
+\tempurl}
+
+
+\bibitem[{District Department of Transportation}(2026)]%
+        {ddotcontext2026}
+\bibfield{author}{\bibinfo{person}{{District Department of Transportation}}.}
+  \bibinfo{year}{2026}\natexlab{}.
+\newblock \bibinfo{title}{Roadway Block: Geographic Context Snapshot}.
+\newblock
+\shownote{DC GIS Roadway Block service, layer 163; retrieved 28 October 2026;
+  CC BY 4.0; display context only}.
+\newblock
+\urldef\tempurl%
+\url{https://opendata.dc.gov/pages/roadway-centerlines}
 \showURL{%
 \tempurl}
 
