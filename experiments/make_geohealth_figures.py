@@ -23,6 +23,7 @@ from matplotlib.patches import Polygon as MplPolygon, Rectangle
 from matplotlib import patheffects
 from rasterio.warp import transform, transform_geom
 from shapely.geometry import shape, box
+from shapely.ops import linemerge, unary_union
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "paper_assets/review3466"
@@ -73,7 +74,7 @@ def selected_cases(routes):
             base = index[(key, .2, "shortest_distance")]
             candidates.append((float(base["heat_dose"]) - float(row["heat_dose"]), key))
     cases = []
-    for quantile, panel in [(.5, "a"), (.1, "b")]:
+    for quantile, panel in [(.5, "a")]:
         target = float(np.quantile([x[0] for x in candidates], quantile))
         delta, pair_id = min(candidates, key=lambda x: (abs(x[0] - target), x[1]))
         cases.append({"panel": panel, "quantile": quantile, "target_delta_H_K": target,
@@ -140,13 +141,13 @@ def freeze_cases(geojson_path, cases):
         if key in required:
             feature["geometry"] = transform_geom("EPSG:4326", "EPSG:32618", feature["geometry"])
             features.append(feature)
-    if len(features) != 4:
-        raise ValueError("Expected four uniquely identified archived route geometries")
+    if len(features) != 2:
+        raise ValueError("Expected two uniquely identified archived route geometries")
     write_gzip_json(CONTEXT / "route_cases.geojson.gz", {"type": "FeatureCollection", "features": features})
     (CONTEXT / "route_cases_source.json").write_text(json.dumps({
         "source_file": "dc_snapshot_500pair_main_methods/routes.geojson",
         "sha256_full_source": hashlib.sha256(source_bytes).hexdigest(),
-        "selection": "Nearest observed paired H reduction to the median and tenth percentile at 20% allowance, among all-method common successful records; ties by OD ID.",
+        "selection": "Nearest observed paired H reduction to the median at 20% allowance, among all-method common successful records; ties by OD ID.",
         "cases": cases, "output_crs": "EPSG:32618", "geometry_changed": "Coordinate projection only."
     }, indent=2) + "\n", encoding="utf-8")
 
@@ -219,59 +220,108 @@ def save_figure(fig, path):
 
 
 def route_comparison(cases, routes, context, out):
-    records={(r["pair_id"],float(r["detour_ratio"]),r["method"]):r for r in routes}
-    features=load_json(CONTEXT / "route_cases.geojson.gz")["features"]
-    shapes={(f["properties"]["pair_id"],f["properties"]["method"]):shape(f["geometry"]) for f in features}
-    roads,water,district=context
-    fig=plt.figure(figsize=(7.0,3.7))
-    extents=[]
-    for i,c in enumerate(cases):
-        a=shapes[(c['pair_id'],'shortest_distance')];b=shapes[(c['pair_id'],'heat_dose')]
-        base=records[(c['pair_id'],.2,'shortest_distance')];alt=records[(c['pair_id'],.2,'heat_dose')]
-        # Verify that every map corresponds to the exact archived comparison.
-        assert abs(float(base['heat_dose'])-float(alt['heat_dose'])-c['delta_H_K'])<1e-12
-        for method,row in [('shortest_distance',base),('heat_dose',alt)]:
-            feature=next(f for f in features if f['properties']['pair_id']==c['pair_id'] and f['properties']['method']==method)
-            for key in ['route_distance_m','heat_dose','edge_ids']:
-                assert str(feature['properties'][key])==str(row[key]),f'Geometry/summary mismatch: {key}'
-        bb=a.union(b).bounds;cx=(bb[0]+bb[2])/2;cy=(bb[1]+bb[3])/2
-        bounds=(cx-950,cy-650,cx+950,cy+650);extents.append(bounds)
-        ax=fig.add_axes([.03+i*.50,.345,.44,.55])
-        draw_context(ax,roads,water,district,bounds)
-        shared=a.intersection(b)
-        assert a.difference(b).union(b.difference(a)).union(shared).symmetric_difference(a.union(b)).length < 1e-6
-        # Exact geometric intersections are drawn once; no buffering or map offset.
-        for geom,color,lw,ls in [(shared,'#858585',2.1,'-'),
-                                  (a.difference(b),'#252525',2.0,'-'),
-                                  (b.difference(a),'#007A6E',2.15,(0,(4,1.8)))]:
-            parts=[np.asarray(line.coords)/1000 for line in geometry_parts(geom,'LineString')]
-            ax.add_collection(LineCollection(parts,colors='white',linewidths=lw+1.7,capstyle='round',joinstyle='round',zorder=5))
-            ax.add_collection(LineCollection(parts,colors=color,linewidths=lw,linestyles=ls,capstyle='round',joinstyle='round',zorder=6))
-        xy=np.asarray(a.coords)/1000
-        for pt,label,marker in [(xy[0],'O','o'),(xy[-1],'D','s')]:
-            ax.plot(*pt,marker=marker,ms=5,mec='#222222',mew=.9,mfc='white',zorder=8)
-            ax.annotate(label,pt,xytext=(6,6),textcoords='offset points',fontsize=9,weight='bold',zorder=9,
-                        path_effects=[patheffects.withStroke(linewidth=3,foreground='white')])
-        ax.set_xticks([]);ax.set_yticks([])
-        scale_bar(ax,.5)
-        title='Median case' if i==0 else 'Lower-tail case'
-        fig.text(.03+i*.50,.97,f"({c['panel']}) {title}",fontsize=10,fontweight='bold')
-        fig.text(.03+i*.50,.925,f"{c['pair_id']}; 20% distance allowance",fontsize=8.5)
-        x=.03+i*.50
-        for ypos,method,length,heat in [(.295,'Route','Length (km)','H (K)'),
-                (.245,'Shortest',f"{float(base['route_distance_m'])/1000:.2f}",f"{float(base['heat_dose']):.2f}"),
-                (.195,'UTCI exceedance',f"{float(alt['route_distance_m'])/1000:.2f}",f"{float(alt['heat_dose']):.2f}")]:
-            fig.text(x,ypos,method,fontsize=9)
-            fig.text(x+.29,ypos,length,ha='right',fontsize=9)
-            fig.text(x+.44,ypos,heat,ha='right',fontsize=9)
-        fig.text(x,.135,f"ΔH = {c['delta_H_K']:+.2f} K; extra distance = {float(alt['excess_distance_ratio'])*100:.1f}%",fontsize=9)
-    fig.legend(handles=[Line2D([0],[0],color='#252525',lw=2,label='Shortest only'),
-                        Line2D([0],[0],color='#007A6E',lw=2.1,ls=(0,(4,1.8)),label='UTCI exceedance only'),
-                        Line2D([0],[0],color='#858585',lw=2.1,label='Shared geometry')],
-               loc='lower center',bbox_to_anchor=(.5,-.005),ncol=3,frameon=False,fontsize=9,handlelength=2.5,columnspacing=1.5)
-    fig.text(.5,.075,'H: mean positive UTCI exceedance; ΔH = shortest − UTCI exceedance',ha='center',fontsize=8.5)
-    save_figure(fig,out/'route_comparison.pdf')
-    return extents
+    records = {(r["pair_id"], float(r["detour_ratio"]), r["method"]): r for r in routes}
+    features = load_json(CONTEXT / "route_cases.geojson.gz")["features"]
+    geometries = {f["properties"]["method"]: shape(f["geometry"]) for f in features}
+    case = cases[0]
+    base = records[(case["pair_id"], .2, "shortest_distance")]
+    alternate = records[(case["pair_id"], .2, "heat_dose")]
+    for feature in features:
+        row = records[(case["pair_id"], .2, feature["properties"]["method"])]
+        for key in ["route_distance_m", "heat_dose", "edge_ids"]:
+            assert str(feature["properties"][key]) == str(row[key]), f"Geometry/summary mismatch: {key}"
+    assert abs(float(base["heat_dose"]) - float(alternate["heat_dose"]) - case["delta_H_K"]) < 1e-12
+
+    matched = []
+    for row in routes:
+        pair = row["pair_id"]
+        if row["method"] != "heat_dose" or float(row["detour_ratio"]) != .2:
+            continue
+        if all(records[(pair, .2, m)]["success"] == "true" for m in METHODS):
+            shortest = records[(pair, .2, "shortest_distance")]
+            matched.append({"pair_id": pair, "allowance": .2,
+                            "extra_distance_percent": float(row["excess_distance_ratio"]) * 100,
+                            "delta_H_K": float(shortest["heat_dose"]) - float(row["heat_dose"])})
+    assert len(matched) == 309
+    assert len({r["pair_id"] for r in matched}) == len(matched)
+    with (out / "route_tradeoff.csv").open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=list(matched[0]))
+        writer.writeheader(); writer.writerows(matched)
+
+    a, b = geometries["shortest_distance"], geometries["heat_dose"]
+    bb = a.union(b).bounds
+    cx, cy = (bb[0] + bb[2]) / 2, (bb[1] + bb[3]) / 2
+    bounds = (cx - 850, cy - 700, cx + 850, cy + 700)
+    roads, water, district = context
+    fig = plt.figure(figsize=(7, 3.25))
+    ax = fig.add_axes([.02, .18, .425, .75])
+    draw_context(ax, roads, water, district, bounds)
+    shared = a.intersection(b)
+    assert a.difference(b).union(b.difference(a)).union(shared).symmetric_difference(a.union(b)).length < 1e-6
+    styles = [(shared, "#868686", 1.1, "-"),
+              (a.difference(b), "#202020", 1.45, "-"),
+              (b.difference(a), "#007A6E", 1.55, (0, (4, 1.6)))]
+    for geom, color, width, linestyle in styles:
+        parts = [np.asarray(line.coords) / 1000 for line in geometry_parts(geom, "LineString")]
+        ax.add_collection(LineCollection(parts, colors="white", linewidths=width + .8, zorder=5))
+        ax.add_collection(LineCollection(parts, colors=color, linewidths=width,
+                                         linestyles=linestyle, capstyle="round", zorder=6))
+
+    # Labels follow the frozen DDOT street geometry, with small typographic offsets.
+    for name, label, fraction, offset in [
+        ("VEAZEY ST NW", "Veazey St NW", .50, (0, 7)),
+        ("RENO RD NW", "Reno Rd NW", .43, (7, 0)),
+        ("ORDWAY ST NW", "Ordway St NW", .45, (0, -9)),
+    ]:
+        merged = unary_union([g.intersection(box(*bounds)) for g, n in roads
+                              if n == name and g.intersects(box(*bounds))])
+        if merged.geom_type == "MultiLineString":
+            merged = linemerge(merged)
+        line = max(geometry_parts(merged, "LineString"), key=lambda x: x.length)
+        pt = line.interpolate(fraction, normalized=True)
+        before = line.interpolate(max(0, fraction - .04), normalized=True)
+        after = line.interpolate(min(1, fraction + .04), normalized=True)
+        angle = np.degrees(np.arctan2(after.y - before.y, after.x - before.x))
+        if angle > 90: angle -= 180
+        if angle < -90: angle += 180
+        ax.annotate(label, (pt.x / 1000, pt.y / 1000), xytext=offset,
+                    textcoords="offset points", ha="center", va="center", rotation=angle,
+                    fontsize=8, color="#515151", zorder=7,
+                    path_effects=[patheffects.withStroke(linewidth=1.5, foreground="white")])
+    xy = np.asarray(a.coords) / 1000
+    for pt, label, marker in [(xy[0], "O", "o"), (xy[-1], "D", "s")]:
+        ax.plot(*pt, marker=marker, ms=4.5, mec="#222222", mew=.9, mfc="white", zorder=8)
+        offset = (-11, -9) if label == "O" else (5, 5)
+        ax.annotate(label, pt, xytext=offset, textcoords="offset points", fontsize=9, zorder=9,
+                    path_effects=[patheffects.withStroke(linewidth=2, foreground="white")])
+    ax.set_xticks([]); ax.set_yticks([])
+    scale_bar(ax, .5)
+
+    scatter = fig.add_axes([.58, .22, .395, .68])
+    extra = np.array([r["extra_distance_percent"] for r in matched])
+    delta = np.array([r["delta_H_K"] for r in matched])
+    assert np.all(np.isfinite(extra)) and np.all(np.isfinite(delta))
+    assert extra.min() >= -1e-8 and extra.max() <= 20 + 1e-8
+    scatter.axhline(0, color="#777777", lw=.7, ls=(0, (3, 3)), zorder=0)
+    scatter.scatter(extra, delta, s=9, c="#555555", alpha=.55, linewidths=0)
+    mapped_extra = float(alternate["excess_distance_ratio"]) * 100
+    scatter.scatter([mapped_extra], [case["delta_H_K"]], s=34,
+                    facecolor="white", edgecolor="#007A6E", linewidth=1.3, zorder=4)
+    scatter.text(.04, .96, "n = 309", transform=scatter.transAxes,
+                 fontsize=8.5, va="top")
+    scatter.set(xlim=(-.6, 20.6), ylim=(-1.5, 3.5), xticks=[0, 5, 10, 15, 20],
+                yticks=[-1, 0, 1, 2, 3], xlabel="Extra distance (%)",
+                ylabel="Exceedance reduction, ΔH (K)")
+    scatter.spines[["top", "right"]].set_visible(False)
+    fig.text(.02, .965, "(a) Recorded routes", fontsize=10)
+    fig.text(.58, .965, "(b) Distance and exposure", fontsize=10)
+    fig.legend(handles=[Line2D([0], [0], color="#202020", lw=1.45, label="Shortest only"),
+                        Line2D([0], [0], color="#007A6E", lw=1.55, ls=(0, (4, 1.6)), label="UTCI exceedance only"),
+                        Line2D([0], [0], color="#868686", lw=1.1, label="Shared segments")],
+               loc="lower center", bbox_to_anchor=(.5, .005), ncol=3, frameon=False,
+               fontsize=8.5, handlelength=2.3, columnspacing=1.4)
+    save_figure(fig, out / "route_comparison.pdf")
+    return [bounds]
 
 
 def study_area(od,context,extents,out):
@@ -288,7 +338,7 @@ def study_area(od,context,extents,out):
     ax.scatter(np.asarray(x)/1000,np.asarray(y)/1000,s=4,color='#1F5C85',alpha=.62,linewidths=0,zorder=4)
     for i,(a,b,c,d) in enumerate(extents):
         ax.add_patch(Rectangle((a/1000,b/1000),(c-a)/1000,(d-b)/1000,fill=False,edgecolor='#111111',lw=.8,zorder=5))
-        ax.text(c/1000+.12,d/1000,f"2{'ab'[i]}",fontsize=8.5,weight='bold',va='bottom',zorder=6,
+        ax.text(c/1000+.12,d/1000,'2a',fontsize=8.5,weight='bold',va='bottom',zorder=6,
                 path_effects=[patheffects.withStroke(linewidth=2.5,foreground='white')])
     scale_bar(ax,5)
     ax.set_xticks([]);ax.set_yticks([])
@@ -311,7 +361,7 @@ def study_area(od,context,extents,out):
     hist.text(.5,1.035,f'500 pairs; observed range {lengths.min():.3f}–{lengths.max():.3f} km',transform=hist.transAxes,ha='center',va='bottom',fontsize=8.5)
     hist.text(.43,67,'Lower limit',fontsize=8,va='top')
     hist.text(2.97,67,'Upper limit',fontsize=8,ha='right',va='top')
-    fig.text(.025,.065,'Blue: sampled endpoints; boxes: Fig. 2 map extents',fontsize=8.5)
+    fig.text(.025,.065,'Blue: sampled endpoints; box: Fig. 2a map extent',fontsize=8.5)
     save_figure(fig,out/'study_area.pdf')
 
 
@@ -369,7 +419,7 @@ def build_figures(routes=None,od=None,out=None):
     runtime_ecdf(routes,out)
     audit={'cases':cases,'context_scope':'Geographic display only; not an input to routing or exposure evaluation.',
            'context_sha256':{p.name:source_digest(p) for p in sorted(CONTEXT.glob('*.gz'))},
-           'map_crs':'EPSG:32618','map_case_extent_m':[1900,1300],'runtime_records':len(routes),
+           'map_crs':'EPSG:32618','map_case_extent_m':[1700,1400],'runtime_records':len(routes),
            'runtime_success_records':sum(r['success']=='true' for r in routes),
            'runtime_values_plotted':'All observed finite positive runtimes; one ECDF per method and status.',
            'software':{'matplotlib':matplotlib.__version__,'numpy':np.__version__}}
@@ -380,7 +430,7 @@ def build_figures(routes=None,od=None,out=None):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--fetch-context',action='store_true')
-    parser.add_argument('--routes-geojson',type=Path,help='Original route geometries; needed only to create the frozen four-route subset.')
+    parser.add_argument('--routes-geojson',type=Path,help='Original route geometries; needed only to create the frozen route subset.')
     args=parser.parse_args()
     if args.fetch_context:fetch_context()
     if args.routes_geojson:freeze_cases(args.routes_geojson,selected_cases(read_csv('routes_summary.csv')))

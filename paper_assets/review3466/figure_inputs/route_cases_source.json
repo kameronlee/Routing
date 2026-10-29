@@ -1,7 +1,7 @@
 {
   "source_file": "dc_snapshot_500pair_main_methods/routes.geojson",
   "sha256_full_source": "00f109e10e9070ba9bf29fc0d4f0f918043a9f6f2ac9498135ac77682fc33bdf",
-  "selection": "Nearest observed paired H reduction to the median and tenth percentile at 20% allowance, among all-method common successful records; ties by OD ID.",
+  "selection": "Nearest observed paired H reduction to the median at 20% allowance, among all-method common successful records; ties by OD ID.",
   "cases": [
     {
       "panel": "a",
@@ -9,15 +9,6 @@
       "target_delta_H_K": 0.6544660580057577,
       "delta_H_K": 0.6544660580057577,
       "pair_id": "od_00497",
-      "budget": 0.2,
-      "common_records_at_budget": 309
-    },
-    {
-      "panel": "b",
-      "quantile": 0.1,
-      "target_delta_H_K": -0.03786203450790513,
-      "delta_H_K": -0.037848824998502284,
-      "pair_id": "od_00116",
       "budget": 0.2,
       "common_records_at_budget": 309
     }

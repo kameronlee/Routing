@@ -3,17 +3,19 @@
 The revised paper is in [geohealth3466/](geohealth3466/). It uses the original
 10,000 route records recovered from Hopper on October 28, 2026.
 
-The revision adds:
+## Reviewer checks
 
-- A common-set comparison: 1,386 OD–budget records from 459 OD pairs.
-- OD-cluster bootstrap intervals, keeping repeated budgets together.
-- Joint-weight tuning on 142 common records from 81 pairs.
-- A study map, two recorded route comparisons, and complete runtime ECDFs.
-- A clear account of the expansion-limit failures and implementation audit.
-
-The README and paper now distinguish the historical experiment from the code
-fixes. The archived failures all log the 20,000-expansion limit. They do not
-show that those neighborhoods have no feasible or cooler walking route.
+| Comment | Revision and remaining limit |
+| --- | --- |
+| R1: code and data | Code, OD pairs, original route records, checksums, and figure inputs are shared. Reanalysis is reproducible; complete historical graph/raster recovery is still missing. |
+| R1: presentation | All figures and tables are referenced. Figure labels are at least 8 pt at print width. Captions are shorter; Figure 2 links one recorded route comparison to all 309 matched pairs at a 20% allowance. |
+| R1/R3: contribution | The introduction identifies a computational benchmark, with established constrained-routing methods. Related work includes Skoumas et al. and CoolPaths. |
+| R2: broader evaluation | Claims are restricted to one modeled DC hour. No new city or time-period experiment has been completed. |
+| R3: unequal subsets | Table 5 uses the same 1,386 successful pair–budget records from 459 OD pairs for every method. Intervals resample whole OD pairs. |
+| R3: weights | Historical joint-weight tuning is reanalyzed on 142 common records from 81 pairs. Independent coefficient, threshold, and spacing sweeps remain unrun. |
+| R3: threshold, spacing, sidewalks | The 26°C reference is cited. The 20 m spacing is a computational choice without a convergence result. Centerline/sidewalk shade differences are explicit limitations. |
+| R4: metric and failures | The composite is identified as an uncalibrated engineering score. All 1,907 failures log the expansion limit; the paper does not equate them with geographic infeasibility. |
+| R4: walking, distances, runtime | The paper cites historical DC walking commute data, uses projected maps and original network distances, and plots complete accepted/rejected runtime distributions. |
 
 ## Reproduce the reanalysis
 
