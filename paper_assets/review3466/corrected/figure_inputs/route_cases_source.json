@@ -1,0 +1,18 @@
+{
+  "source_file": "Corrected run: selected_routes.geojson; full shard hashes in manifests",
+  "sha256_full_source": "fea524374767665ea9b43280376b40fa57bcf95ee1d2bf3190f5a754af2bf4ca",
+  "selection": "Nearest observed paired H reduction to the median at 20% allowance, among all-method common successful records; ties by OD ID.",
+  "cases": [
+    {
+      "panel": "a",
+      "quantile": 0.5,
+      "target_delta_H_K": 1.0620902845756224,
+      "delta_H_K": 1.0600330556767403,
+      "pair_id": "od_00000",
+      "budget": 0.2,
+      "common_records_at_budget": 500
+    }
+  ],
+  "output_crs": "EPSG:32618",
+  "geometry_changed": "Coordinate projection only."
+}

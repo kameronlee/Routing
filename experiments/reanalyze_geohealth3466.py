@@ -43,6 +43,10 @@ def with_differences(rows, baselines):
             for name, field, sign in [("delta_H_K", "heat_dose", 1), ("delta_U_K", "mean_utci", 1), ("delta_S", "shade_fraction", -1)]:
                 value[name] = sign * (float(base[field]) - float(row[field]))
             value["extra_distance_percent"] = 100 * float(row["excess_distance_ratio"])
+            value["J_K_m"] = float(row["route_distance_m"]) * float(row["heat_dose"])
+            value["delta_J_K_m"] = (
+                float(base["route_distance_m"]) * float(base["heat_dose"]) - value["J_K_m"]
+            )
         output.append(value)
     return output
 
@@ -57,6 +61,16 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
     paths_rows = [read_rows(args.raw_dir, name) for name in ["routes_summary.csv", "proposed_tuning_summary.csv", "od_pairs.csv"]]
     routes, tuning, od = [x[1] for x in paths_rows]
+    source_hashes = {
+        p.name.removesuffix('.gz'): hashlib.sha256(
+            gzip.decompress(p.read_bytes()) if p.suffix == '.gz' else p.read_bytes()
+        ).hexdigest() for p, _ in paths_rows
+    }
+    provenance_path = args.raw_dir / "provenance.json"
+    if provenance_path.exists():
+        expected_hashes = json.loads(provenance_path.read_text(encoding="utf-8"))["sha256_uncompressed"]
+        for name, digest in source_hashes.items():
+            assert digest == expected_hashes[name], f"Archived input checksum mismatch: {name}"
     assert len(routes) == 10000 and len(od) == 500 and len(tuning) == 800
     index_records(routes)
     index_records(tuning)
@@ -78,6 +92,21 @@ def main():
     write_csv(out / "paired_heat_contrasts.csv", contrasts)
     write_csv(out / "all_attempt_runtime.csv", summarize_by_group(routes, ["method", "success"], ["runtime_ms"]))
     write_csv(out / "method_specific.csv", summarize_by_group([r for r in enriched if succeeded(r)], ["method"], metrics))
+    # Post hoc check of normalization: lower mean H can accompany a larger L*H.
+    distance_check = []
+    for method in METHODS:
+        group = [r for r in common if r["method"] == method]
+        reversal_count = sum(
+            r["delta_H_K"] > 1e-9 and r["delta_J_K_m"] < -1e-6 for r in group
+        )
+        distance_check.append({
+            "method": method, "records": len(group),
+            "lower_H_records": sum(r["delta_H_K"] > 1e-9 for r in group),
+            "lower_H_higher_J_records": reversal_count,
+            "lower_H_higher_J_percent": 100 * reversal_count / len(group),
+            "mean_delta_J_K_m": fmean(r["delta_J_K_m"] for r in group),
+        })
+    write_csv(out / "exceedance_distance_check.csv", distance_check)
 
     variants = sorted({r["method"] for r in tuning})
     tune_index = index_records(tuning)
@@ -106,7 +135,7 @@ def main():
     common_counts = Counter(r["detour_ratio"] for r in common if r["method"] == "shortest_distance")
     audit = {
         "analysis_type": "reanalysis of historical records; no corrected routing rerun",
-        "source_sha256": {p.name.removesuffix('.gz'): hashlib.sha256(gzip.decompress(p.read_bytes()) if p.suffix == '.gz' else p.read_bytes()).hexdigest() for p, _ in paths_rows},
+        "source_sha256": source_hashes,
         "records": len(routes), "accepted": sum(succeeded(r) for r in routes),
         "common_records_per_method": len(common) // len(METHODS),
         "common_od_pairs": len({r['pair_id'] for r in common}), "common_by_budget": dict(common_counts),

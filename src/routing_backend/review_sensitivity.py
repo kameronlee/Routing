@@ -35,7 +35,7 @@ def sensitivity_variants():
     return variants
 
 
-def run_review_sensitivity(config, *, od_pairs_path, subset_size=100):
+def run_review_sensitivity(config, *, od_pairs_path, subset_size=100, variant_settings=None):
     """Reroute each perturbation but report exposure under the same reference field.
 
     Failures stay in the denominator. The first N serialized OD pairs define
@@ -51,7 +51,7 @@ def run_review_sensitivity(config, *, od_pairs_path, subset_size=100):
     ensure_output_layout(config)
     graph = load_experiment_graph(config)
     pairs = load_od_pairs(od_pairs_path, limit=subset_size)
-    variants = sensitivity_variants()
+    variants = sensitivity_variants() if variant_settings is None else variant_settings
     preference = get_method_config("proposed_full", comfort_threshold=config.comfort_threshold_c).preference
     context = build_real_feature_context(config)
     cache = {}

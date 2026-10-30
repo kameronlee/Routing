@@ -71,7 +71,6 @@ def discover_real_feature_paths(data_dir: Path, departure_time: object) -> RealF
     building_height_rasters = _existing(
         [
             data_dir / "processed" / "rasters" / "building_height_1m.tif",
-            data_dir / "processed" / "solweig_inputs" / "building_dsm_1m.tif",
         ]
     )
     traffic_geojson = data_dir / "raw" / "traffic_noise" / "ddot_traffic_volume_2023.geojson"

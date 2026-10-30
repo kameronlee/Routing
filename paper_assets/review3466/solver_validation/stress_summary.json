@@ -1,0 +1,15 @@
+{
+  "graphs": 25,
+  "seed": 42,
+  "nodes_per_graph": 33,
+  "paths_per_graph": 4294967296,
+  "cases": 200,
+  "matches_oracle": 50,
+  "truncated_cases": 150,
+  "mean_relative_gap": 0.42256094910699077,
+  "max_relative_gap": 1.3596882268373323,
+  "reference": "Independent integer-distance DP; one parallel edge per stage",
+  "wall_clock_limit": null,
+  "labels": 8,
+  "expansions": 20000
+}

@@ -10,7 +10,8 @@ shadow_raster_path: data/processed/solweig_outputs/shadow_2026-06-19_14.tif
 dem_raster_path: data/processed/rasters/dem_1m.tif
 canopy_raster_paths: [data/processed/rasters/canopy_height_1m.tif]
 landcover_raster_paths: [data/processed/rasters/landcover_1m_center_tile.tif]
-building_height_raster_paths: [data/processed/solweig_inputs/building_dsm_1m.tif]
+# Derived with scripts/derive_building_height.py; DSM elevation is not height.
+building_height_raster_paths: [data/processed/rasters/building_height_1m.tif]
 traffic_geojson_path: data/raw/traffic_noise/ddot_traffic_volume_2023.geojson
 output_dir: results/dc_snapshot_review3466
 random_seed: 42

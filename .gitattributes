@@ -10,3 +10,6 @@
 # Preserve the supplied ACM styles and keep vendor code out of prose diffs.
 paper/geohealth3466/acmart.cls -text -diff linguist-vendored
 paper/geohealth3466/ACM-Reference-Format.bst -text -diff linguist-vendored
+# Frozen record checksums refer to bytes, including original CSV line endings.
+paper_assets/review3466/raw/** -text
+paper_assets/review3466/corrected/raw/** -text

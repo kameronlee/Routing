@@ -1,0 +1,77 @@
+{
+  "seed": 42,
+  "graphs_per_family": 100,
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "networkx": "3.7",
+  "wall_clock_limit": null,
+  "script_sha256": "e5ea5f6d380faeddcb0edee4b725b2fc154ad11f83b0eda3deecb2f68b26a50f",
+  "graphs_sha256_uncompressed": "cc81f87beec4497a54eca5e853b9e7d770feda189615b4700c1393fc7c7e6238",
+  "elapsed_seconds": 44.042599099999734,
+  "summary": [
+    {
+      "setting": "default_counts",
+      "cases": 2400,
+      "budget_active_cases": 1395,
+      "matches_oracle": 2400,
+      "active_matches_oracle": 1395,
+      "truncated_cases": 0,
+      "mean_relative_gap": 1.7085425439717205e-17,
+      "max_relative_gap": 2.848142500964525e-16
+    },
+    {
+      "setting": "20_expansions",
+      "cases": 2400,
+      "budget_active_cases": 1395,
+      "matches_oracle": 1687,
+      "active_matches_oracle": 682,
+      "truncated_cases": 719,
+      "mean_relative_gap": 0.05157459933290869,
+      "max_relative_gap": 1.1354663382656505
+    },
+    {
+      "setting": "uncapped_1_label",
+      "cases": 2400,
+      "budget_active_cases": 1395,
+      "matches_oracle": 2400,
+      "active_matches_oracle": 1395,
+      "truncated_cases": 0,
+      "mean_relative_gap": 1.7085425439717205e-17,
+      "max_relative_gap": 2.848142500964525e-16
+    },
+    {
+      "setting": "uncapped_8_labels",
+      "cases": 2400,
+      "budget_active_cases": 1395,
+      "matches_oracle": 2400,
+      "active_matches_oracle": 1395,
+      "truncated_cases": 0,
+      "mean_relative_gap": 1.7085425439717205e-17,
+      "max_relative_gap": 2.848142500964525e-16
+    },
+    {
+      "setting": "uncapped_32_labels",
+      "cases": 2400,
+      "budget_active_cases": 1395,
+      "matches_oracle": 2400,
+      "active_matches_oracle": 1395,
+      "truncated_cases": 0,
+      "mean_relative_gap": 1.7085425439717205e-17,
+      "max_relative_gap": 2.848142500964525e-16
+    }
+  ],
+  "stress": {
+    "graphs": 25,
+    "seed": 42,
+    "nodes_per_graph": 33,
+    "paths_per_graph": 4294967296,
+    "cases": 200,
+    "matches_oracle": 50,
+    "truncated_cases": 150,
+    "mean_relative_gap": 0.42256094910699077,
+    "max_relative_gap": 1.3596882268373323,
+    "reference": "Independent integer-distance DP; one parallel edge per stage",
+    "wall_clock_limit": null,
+    "labels": 8,
+    "expansions": 20000
+  }
+}

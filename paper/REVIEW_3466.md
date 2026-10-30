@@ -1,51 +1,43 @@
 # GeoHealth 3466 revision
 
-The revised paper is in [geohealth3466/](geohealth3466/). It uses the original
-10,000 route records recovered from Hopper on October 28, 2026.
+The revised experiment uses the original 500 OD pairs and recovered Git LFS
+inputs. All 10,000 corrected attempts succeed within the original-network
+budgets. Every method is compared on the same 2,000 pair–budget cases.
+The original shortest distances and exposure scores reproduce exactly.
 
-## Reviewer checks
+## Reviewer comments
 
-| Comment | Revision and remaining limit |
+| Comment | Change |
 | --- | --- |
-| R1: code and data | Code, OD pairs, original route records, checksums, and figure inputs are shared. Reanalysis is reproducible; complete historical graph/raster recovery is still missing. |
-| R1: presentation | All figures and tables are referenced. Figure labels are at least 8 pt at print width. Captions are shorter; Figure 2 links one recorded route comparison to all 309 matched pairs at a 20% allowance. |
-| R1/R3: contribution | The introduction identifies a computational benchmark, with established constrained-routing methods. Related work includes Skoumas et al. and CoolPaths. |
-| R2: broader evaluation | Claims are restricted to one modeled DC hour. No new city or time-period experiment has been completed. |
-| R3: unequal subsets | Table 5 uses the same 1,386 successful pair–budget records from 459 OD pairs for every method. Intervals resample whole OD pairs. |
-| R3: weights | Historical joint-weight tuning is reanalyzed on 142 common records from 81 pairs. Independent coefficient, threshold, and spacing sweeps remain unrun. |
-| R3: threshold, spacing, sidewalks | The 26°C reference is cited. The 20 m spacing is a computational choice without a convergence result. Centerline/sidewalk shade differences are explicit limitations. |
-| R4: metric and failures | The composite is identified as an uncalibrated engineering score. All 1,907 failures log the expansion limit; the paper does not equate them with geographic infeasibility. |
-| R4: walking, distances, runtime | The paper cites historical DC walking commute data, uses projected maps and original network distances, and plots complete accepted/rejected runtime distributions. |
+| R1: reproducibility | Public code, versioned inputs, exact OD pairs, raw route records, checksums, executed source, and rerun commands. |
+| R1: presentation | Three vector figures use recorded data. Each is referenced and serves a separate purpose: sample geography, route tradeoff, and search/runtime behavior. Labels are at least 8 pt at print width. |
+| R1/R3: contribution | The paper compares objective settings within one solver and credits constrained-path methods and related heat/shade routing work. |
+| R2: scope | Claims remain limited to one modeled DC hour. No cross-city or time-transfer claim. |
+| R3: unequal subsets | All 500 pairs at all four allowances; intervals resample whole OD pairs. |
+| R3: weights | Sixteen one-factor/reference settings on the same 100 pairs: 1,600 successful attempts, all rescored on a common field. |
+| R3: threshold/spacing | Thresholds 24/28°C and sampling intervals 5/10/20/40 m are tested. Moving from 20 to 5 m changes 78 of 100 paths; convergence is not claimed. |
+| R4: metric/failures | Mean exceedance and exceedance–distance are distinguished. Fallback is explicit; acceptance does not imply a cooler or optimal route. |
+| R4: context/runtime | Historical walking commute context, projected maps, original network distances, and complete runtime ECDFs. |
 
-## Reproduce the reanalysis
+## Corrections and checks
 
-```bash
-python experiments/reanalyze_geohealth3466.py --figures
-```
+The rerun fixes the original-network ceiling, shortest parallel-edge fallback,
+and sampled exceedance. The hybrid proxy now uses building height above
+ground (`max(0, DSM - DEM)`), not absolute surface elevation. 83 tests pass;
+two optional Torch tests are skipped.
 
-Inputs and checksums are under `paper_assets/review3466/raw/`; outputs are under
-`paper_assets/review3466/analysis/`. The script checks matching identifiers,
-duplicate records, distance ceilings, the OD subset, and baseline sequences.
-Figure inputs and source attribution are in
-`paper_assets/review3466/figure_inputs/`. Maps use frozen DC GIS background
-layers for context, separate from the historical routing inputs.
+Exact enumeration agrees on 2,400 small reference cases. A separate set of
+200 deliberately difficult chain cases exposes the default cap: 150 searches
+truncate, with a 42.3% mean relative cost gap. These are generated search
+checks, not estimates of the DC optimality gap.
 
-## Still needed
+## Remaining limits
 
-The exact historical code/environment and complete frozen raster/graph inputs
-are not pinned. A corrected real-data rerun, independent coefficient sweeps,
-threshold checks, sampling convergence, and additional cities/hours remain
-unfinished. The September uncertainty runs use a different design and are not
-evidence for this pilot.
+This is a reproducible pilot. At a selective main-track standard, it still
+needs independent environmental validation, denser primary routing,
+additional cities/hours, and comparison with independent constrained-path
+solvers. The weights remain uncalibrated. The modeled results do not establish
+pedestrian comfort, safety, or health benefit.
 
-With verified real inputs, run the revision config against the original OD CSV:
-
-```bash
-python experiments/run_route_benchmark.py --config configs/dc_snapshot_review3466.yaml --od-pairs paper_assets/review3466/raw/od_pairs.csv --methods shortest_distance azimuth_heuristic shadow_only heat_dose proposed_full weighted_sum
-python experiments/run_review_sensitivity.py --config configs/dc_snapshot_review3466.yaml --od-pairs paper_assets/review3466/raw/od_pairs.csv --subset-size 100
-python experiments/aggregate_results.py --config configs/dc_snapshot_review3466.yaml
-```
-
-The 35-variant sensitivity run attempts 14,000 records. It has not been run for
-this revision. The limited historical tuning changes several weights together
-and does not establish robustness to the threshold or sample spacing.
+[Experiment commands](../experiments/README.md) reproduce the artifacts.
+Historical records remain separate from the corrected result tables.

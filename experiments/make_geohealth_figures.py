@@ -130,7 +130,7 @@ def fetch_context():
     (CONTEXT / "sources.json").write_text(json.dumps(records, indent=2) + "\n", encoding="utf-8")
 
 
-def freeze_cases(geojson_path, cases):
+def freeze_cases(geojson_path, cases, *, case_dir=CONTEXT, source_label="dc_snapshot_500pair_main_methods/routes.geojson"):
     source_bytes = geojson_path.read_bytes()
     data = json.loads(source_bytes)
     required = {(c["pair_id"], .2, m) for c in cases for m in ["shortest_distance", "heat_dose"]}
@@ -143,9 +143,10 @@ def freeze_cases(geojson_path, cases):
             features.append(feature)
     if len(features) != 2:
         raise ValueError("Expected two uniquely identified archived route geometries")
-    write_gzip_json(CONTEXT / "route_cases.geojson.gz", {"type": "FeatureCollection", "features": features})
-    (CONTEXT / "route_cases_source.json").write_text(json.dumps({
-        "source_file": "dc_snapshot_500pair_main_methods/routes.geojson",
+    case_dir.mkdir(parents=True, exist_ok=True)
+    write_gzip_json(case_dir / "route_cases.geojson.gz", {"type": "FeatureCollection", "features": features})
+    (case_dir / "route_cases_source.json").write_text(json.dumps({
+        "source_file": source_label,
         "sha256_full_source": hashlib.sha256(source_bytes).hexdigest(),
         "selection": "Nearest observed paired H reduction to the median at 20% allowance, among all-method common successful records; ties by OD ID.",
         "cases": cases, "output_crs": "EPSG:32618", "geometry_changed": "Coordinate projection only."
@@ -219,9 +220,9 @@ def save_figure(fig, path):
     plt.close(fig)
 
 
-def route_comparison(cases, routes, context, out):
+def route_comparison(cases, routes, context, out, *, case_dir=CONTEXT, street_labels=None, auto_extent=False):
     records = {(r["pair_id"], float(r["detour_ratio"]), r["method"]): r for r in routes}
-    features = load_json(CONTEXT / "route_cases.geojson.gz")["features"]
+    features = load_json(case_dir / "route_cases.geojson.gz")["features"]
     geometries = {f["properties"]["method"]: shape(f["geometry"]) for f in features}
     case = cases[0]
     base = records[(case["pair_id"], .2, "shortest_distance")]
@@ -241,8 +242,9 @@ def route_comparison(cases, routes, context, out):
             shortest = records[(pair, .2, "shortest_distance")]
             matched.append({"pair_id": pair, "allowance": .2,
                             "extra_distance_percent": float(row["excess_distance_ratio"]) * 100,
-                            "delta_H_K": float(shortest["heat_dose"]) - float(row["heat_dose"])})
-    assert len(matched) == 309
+                            "delta_H_K": float(shortest["heat_dose"]) - float(row["heat_dose"]),
+                            "unchanged_edges": row["edge_ids"] == shortest["edge_ids"]})
+    assert len(matched) == case["common_records_at_budget"]
     assert len({r["pair_id"] for r in matched}) == len(matched)
     with (out / "route_tradeoff.csv").open("w", newline="", encoding="utf-8") as stream:
         writer = csv.DictWriter(stream, fieldnames=list(matched[0]))
@@ -251,7 +253,9 @@ def route_comparison(cases, routes, context, out):
     a, b = geometries["shortest_distance"], geometries["heat_dose"]
     bb = a.union(b).bounds
     cx, cy = (bb[0] + bb[2]) / 2, (bb[1] + bb[3]) / 2
-    bounds = (cx - 850, cy - 700, cx + 850, cy + 700)
+    halfwidth = max(450, (bb[2] - bb[0]) * .60, (bb[3] - bb[1]) * .60 * 850 / 700) if auto_extent else 850
+    halfheight = halfwidth * 700 / 850
+    bounds = (cx - halfwidth, cy - halfheight, cx + halfwidth, cy + halfheight)
     roads, water, district = context
     fig = plt.figure(figsize=(7, 3.25))
     ax = fig.add_axes([.02, .18, .425, .75])
@@ -268,11 +272,13 @@ def route_comparison(cases, routes, context, out):
                                          linestyles=linestyle, capstyle="round", zorder=6))
 
     # Labels follow the frozen DDOT street geometry, with small typographic offsets.
-    for name, label, fraction, offset in [
+    if street_labels is None:
+        street_labels = [
         ("VEAZEY ST NW", "Veazey St NW", .50, (0, 7)),
         ("RENO RD NW", "Reno Rd NW", .43, (7, 0)),
         ("ORDWAY ST NW", "Ordway St NW", .45, (0, -9)),
-    ]:
+        ]
+    for name, label, fraction, offset in street_labels:
         merged = unary_union([g.intersection(box(*bounds)) for g, n in roads
                               if n == name and g.intersects(box(*bounds))])
         if merged.geom_type == "MultiLineString":
@@ -307,10 +313,15 @@ def route_comparison(cases, routes, context, out):
     mapped_extra = float(alternate["excess_distance_ratio"]) * 100
     scatter.scatter([mapped_extra], [case["delta_H_K"]], s=34,
                     facecolor="white", edgecolor="#007A6E", linewidth=1.3, zorder=4)
-    scatter.text(.04, .96, "n = 309", transform=scatter.transAxes,
+    sample_label = f"n = {len(matched)}"
+    if auto_extent:
+        sample_label += f"\n{sum(r['unchanged_edges'] for r in matched)} unchanged paths"
+    scatter.text(.04, .96, sample_label, transform=scatter.transAxes,
                  fontsize=8.5, va="top")
-    scatter.set(xlim=(-.6, 20.6), ylim=(-1.5, 3.5), xticks=[0, 5, 10, 15, 20],
-                yticks=[-1, 0, 1, 2, 3], xlabel="Extra distance (%)",
+    lower = min(-.15, delta.min() - .15) if auto_extent else min(-1.5, delta.min() - .2)
+    upper = max(.5, delta.max() + .2) if auto_extent else max(3.5, delta.max() + .2)
+    scatter.set(xlim=(-.6, 20.6), ylim=(lower, upper), xticks=[0, 5, 10, 15, 20],
+                xlabel="Extra distance (%)",
                 ylabel="Exceedance reduction, ΔH (K)")
     scatter.spines[["top", "right"]].set_visible(False)
     fig.text(.02, .965, "(a) Recorded routes", fontsize=10)
