@@ -2,7 +2,7 @@
 %%% Do NOT edit. File created by BibTeX with style
 %%% ACM-Reference-Format-Journals [18-Jan-2012].
 
-\begin{thebibliography}{27}
+\begin{thebibliography}{28}
 
 %%% ====================================================================
 %%% NOTE TO THE USER: you can override these defaults by providing
@@ -222,6 +222,19 @@
 \href{https://doi.org/10.25080/TCWV9851}{doi:\nolinkurl{10.25080/TCWV9851}}
 
 
+\bibitem[Irnich and Desaulniers(2005)]%
+        {irnich2005}
+\bibfield{author}{\bibinfo{person}{Stefan Irnich} {and} \bibinfo{person}{Guy
+  Desaulniers}.} \bibinfo{year}{2005}\natexlab{}.
+\newblock \showarticletitle{Shortest Path Problems with Resource Constraints}.
+\newblock In \bibinfo{booktitle}{\emph{Column Generation}},
+  \bibfield{editor}{\bibinfo{person}{Guy Desaulniers}, \bibinfo{person}{Jacques
+  Desrosiers}, {and} \bibinfo{person}{Marius~M. Solomon}} (Eds.).
+  \bibinfo{publisher}{Springer}, \bibinfo{pages}{33--65}.
+\newblock
+\href{https://doi.org/10.1007/0-387-25486-2_2}{doi:\nolinkurl{10.1007/0-387-25486-2_2}}
+
+
 \bibitem[Kamath et~al\mbox{.}(2026)]%
         {kamath2026}
 \bibfield{author}{\bibinfo{person}{H.~G. Kamath}, \bibinfo{person}{N.
@@ -327,11 +340,11 @@
         {patel2026}
 \bibfield{author}{\bibinfo{person}{A. Patel}, \bibinfo{person}{N. Sudharsan},
   \bibinfo{person}{T. Brooks}, \bibinfo{person}{H. Kamath}, \bibinfo{person}{D.
-  Crawley}, \bibinfo{person}{Z. Baumer}, \bibinfo{person}{M. Coudert}, {and}
+  Crawley}, \bibinfo{person}{M. Coudert}, \bibinfo{person}{Z. Baumer}, {and}
   \bibinfo{person}{D. Niyogi}.} \bibinfo{year}{2026}\natexlab{}.
-\newblock \bibinfo{title}{Thermal comfort path planning tool for urban mobility
-  in {Austin, Texas}}.
-\newblock \bibinfo{howpublished}{arXiv preprint arXiv:2602.02540}.
+\newblock \bibinfo{title}{{CoolPath Tool}: A Thermal Comfort Path Planning Tool
+  for Urban Mobility}.
+\newblock \bibinfo{howpublished}{arXiv preprint}.
 \newblock
 \showeprint[arxiv]{2602.02540}
 \href{https://doi.org/10.48550/arXiv.2602.02540}{doi:\nolinkurl{10.48550/arXiv.2602.02540}}
