@@ -1,0 +1,23 @@
+{
+  "attempts": 10000,
+  "successes": 10000,
+  "common_pair_budget_cases": 2000,
+  "common_od_pairs": 500,
+  "raw_main_sha256": "0f14ed111f54d8d20b5b167acbf4ef8c5941432c47bdc8b7d30fe0ed8725f8c3",
+  "note": "Primary 5 m run; frozen 20 m paths are compared on the same 5 m field.",
+  "sensitivity_attempts": 1600,
+  "sensitivity_successes": 1600,
+  "dense_check_successes": 1600,
+  "sensitivity_common_pairs": 100,
+  "reference_control_path_changes": 0,
+  "baseline_native_H_change_vs_historical_20m_K": 1.0558463762339834,
+  "shared_input_checksums_match": true,
+  "shared_routing_code_matches_after_LF_normalization": true,
+  "source_files_with_line_ending_only_differences": [
+    "src/routing_backend/review_sensitivity.py"
+  ],
+  "paired_grid_cases": 2000,
+  "paired_grid_od_pairs": 500,
+  "baseline_common_field_max_error_K": 0.0,
+  "reference_paths_rescored": 10000
+}

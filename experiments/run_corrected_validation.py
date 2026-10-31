@@ -42,13 +42,19 @@ def main() -> None:
     parser.add_argument("--limit", type=int)
     parser.add_argument("--shard", type=int, default=0)
     parser.add_argument("--shards", type=int, default=1)
+    parser.add_argument("--sample-spacing", type=float)
+    parser.add_argument("--run-id")
     args = parser.parse_args()
     if args.shards < 1 or not 0 <= args.shard < args.shards:
         parser.error("require 0 <= shard < shards")
+    if args.sample_spacing is not None and not 0 < args.sample_spacing < float("inf"):
+        parser.error("sample spacing must be finite and positive")
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
     config = load_experiment_config(ROOT / "configs/dc_snapshot_review3466.yaml")
     config = replace(config, output_dir=output)
+    if args.sample_spacing is not None:
+        config = replace(config, sample_spacing_m=args.sample_spacing)
     config.require_existing_inputs()
     od_path = ROOT / "paper_assets/review3466/raw/od_pairs.csv"
     with od_path.open(newline="", encoding="utf-8") as stream:
@@ -115,7 +121,7 @@ def main() -> None:
     started = time.monotonic()
     print(f"Starting {len(selected)} pairs; four budgets; five methods", flush=True)
     run_route_benchmark(config, od_pairs_path=selected_path, methods=METHODS,
-                        run_id=f"corrected-20261029-shard{args.shard}of{args.shards}")
+                        run_id=args.run_id or f"corrected-20261029-shard{args.shard}of{args.shards}")
     metadata["elapsed_seconds"] = time.monotonic() - started
     metadata["finished_utc"] = datetime.now(timezone.utc).isoformat()
     metadata["outputs"] = {p.name: sha256(p) for p in output.iterdir()

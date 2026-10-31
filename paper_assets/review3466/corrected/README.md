@@ -1,4 +1,6 @@
-# Corrected DC run
+# Corrected 20 m reference run
+
+This is the 20 m reference for the primary 5 m experiment in `../sampling5/`.
 
 `raw/` contains 10,000 routing attempts and 1,600 one-factor sensitivity
 attempts. All succeed; all sensitivity paths also have 5 m rescoring.

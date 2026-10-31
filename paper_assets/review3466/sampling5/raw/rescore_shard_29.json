@@ -1,0 +1,66 @@
+{
+  "started_utc": "2026-10-31T19:00:22.062155+00:00",
+  "reference_sha256": "5024e1f296faa6a7a59c562fc8ed808c6ed6563aec08be80000e7ca512ab7cbb",
+  "script_sha256": "74cc9c8a3e0f02273a310019d64ad0d3b52df4c15c840c390396490496cbfdc1",
+  "config": {
+    "study_name": "dc_snapshot_review3466",
+    "city": "Washington, District of Columbia, USA",
+    "mode": "walk",
+    "departure_time": "2026-06-19T14:00:00-04:00",
+    "graph_path": "/scratch/klee206/work/routing-validation-20261031/data/processed/streets/dc_walk_graph.graphml",
+    "utci_raster_path": "/scratch/klee206/work/routing-validation-20261031/data/processed/solweig_outputs/utci_2026-06-19_14.tif",
+    "shadow_raster_path": "/scratch/klee206/work/routing-validation-20261031/data/processed/solweig_outputs/shadow_2026-06-19_14.tif",
+    "dem_raster_path": "/scratch/klee206/work/routing-validation-20261031/data/processed/rasters/dem_1m.tif",
+    "canopy_raster_paths": [
+      "/scratch/klee206/work/routing-validation-20261031/data/processed/rasters/canopy_height_1m.tif"
+    ],
+    "traffic_geojson_path": "/scratch/klee206/work/routing-validation-20261031/data/raw/traffic_noise/ddot_traffic_volume_2023.geojson",
+    "output_dir": "/scratch/klee206/work/routing-validation-20261031/results/sampling-validation/rescore-29",
+    "random_seed": 42,
+    "od_pair_count": 500,
+    "min_shortest_distance_m": 400.0,
+    "max_shortest_distance_m": 3000.0,
+    "detour_ratios": [
+      0.05,
+      0.1,
+      0.2,
+      0.3
+    ],
+    "comfort_threshold_c": 26.0,
+    "sample_spacing_m": 5.0,
+    "route_search_seconds": 1.5,
+    "route_search_expansions": 20000,
+    "route_search_labels_per_node": 8,
+    "landcover_raster_paths": [
+      "/scratch/klee206/work/routing-validation-20261031/data/processed/rasters/landcover_1m_center_tile.tif"
+    ],
+    "building_height_raster_paths": [
+      "/scratch/klee206/work/routing-validation-20261031/data/processed/rasters/building_height_1m.tif"
+    ]
+  },
+  "shard": 29,
+  "shards": 32,
+  "pair_ids": [
+    "od_00029",
+    "od_00061",
+    "od_00093",
+    "od_00125",
+    "od_00157",
+    "od_00189",
+    "od_00221",
+    "od_00253",
+    "od_00285",
+    "od_00317",
+    "od_00349",
+    "od_00381",
+    "od_00413",
+    "od_00445",
+    "od_00477"
+  ],
+  "purpose": "Same-path scoring at the reporting spacing; no path selection.",
+  "elapsed_seconds": 251.95414169691503,
+  "finished_utc": "2026-10-31T19:04:34.067812+00:00",
+  "rows": 300,
+  "successes": 300,
+  "output_sha256": "da799c0ee9467520322e1582cff398b9cbc57988b24afea38280fe563ba10576"
+}

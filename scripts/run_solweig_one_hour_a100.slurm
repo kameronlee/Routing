@@ -107,9 +107,3 @@ fi
 
 echo "Published SOLWEIG outputs:"
 ls -lh data/processed/solweig_outputs || true
-
-python - <<'PY'
-from routing_backend.api import build_data_status
-
-print(build_data_status().model_dump())
-PY

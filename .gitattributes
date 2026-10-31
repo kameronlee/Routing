@@ -13,3 +13,5 @@ paper/geohealth3466/ACM-Reference-Format.bst -text -diff linguist-vendored
 # Frozen record checksums refer to bytes, including original CSV line endings.
 paper_assets/review3466/raw/** -text
 paper_assets/review3466/corrected/raw/** -text
+paper_assets/review3466/sampling5/raw/** -text
+paper_assets/review3466/sampling5/analysis/** -text

@@ -1,0 +1,28 @@
+{
+  "started_utc": "2026-10-31T18:47:29.297773+00:00",
+  "source_commit": "34dcabe5746730a67a1822a281b81de9543277b9",
+  "od_pairs": 500,
+  "methods": 5,
+  "allowances": [
+    0.05,
+    0.1,
+    0.2,
+    0.3
+  ],
+  "attempts": 10000,
+  "selection_spacing_m": 5,
+  "reporting_spacing_m": 5,
+  "reference_selection_spacing_m": 20,
+  "reference_sha256": "5024e1f296faa6a7a59c562fc8ed808c6ed6563aec08be80000e7ca512ab7cbb",
+  "analysis": [
+    "Retain every attempt and fallback; verify original-network budgets.",
+    "Rescore frozen 20 m paths on the same 5 m field.",
+    "Compare paired route changes and exposure improvements on the common reporting field.",
+    "Bootstrap whole OD pairs for pooled exposure contrasts."
+  ],
+  "source_sha256": {
+    "experiments/run_corrected_validation.py": "02780947f3b92e692d28c5c28b83b9bb8b19a64a94043f6ce8daef1fa4241477",
+    "experiments/rescore_recorded_paths.py": "74cc9c8a3e0f02273a310019d64ad0d3b52df4c15c840c390396490496cbfdc1",
+    "scripts/run_sampling_validation.slurm": "f7dbf52e133dc1cb214eb3553c63a54584efd839335508a0f6cdfb5ad0741e14"
+  }
+}

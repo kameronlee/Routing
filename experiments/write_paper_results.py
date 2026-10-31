@@ -13,7 +13,7 @@ import re
 from statistics import fmean
 
 ROOT = Path(__file__).resolve().parents[1]
-ASSETS = ROOT / "paper_assets/review3466/corrected"
+ASSETS = ROOT / "paper_assets/review3466/sampling5"
 METHODS = ["shortest_distance", "azimuth_heuristic", "shadow_only", "heat_dose", "proposed_full"]
 NAMES = ["Shortest", "Hybrid azimuth", "Direct shadow", "UTCI exceedance", "Composite"]
 
@@ -53,6 +53,9 @@ def main():
     routes = read_csv(raw / "routes_summary.csv.gz")
     runtimes = read_csv(analysis / "runtime_summary.csv")
     sources = read_csv(analysis / "route_sources.csv")
+    base_spacing = json.loads((raw / "inputs.json").read_text())["config"]["sample_spacing_m"]
+    sampling_rows = (read_csv(analysis / "sampling_comparison.csv")
+                     if (analysis / "sampling_comparison.csv").exists() else [])
     example = figure["cases"][0]
     example_route = next(r for r in routes if r["pair_id"] == example["pair_id"] and
                          float(r["detour_ratio"]) == .2 and r["method"] == "heat_dose")
@@ -67,6 +70,7 @@ def main():
         put(key, f"{number(min(numbers), digits)}--{number(max(numbers), digits)}")
 
     put("ArtifactCommit", args.artifact_commit)
+    put("SelectionSpacing", number(base_spacing, 0))
     put("CommonCases", f"{audit['common_pair_budget_cases']:,}")
     put("CommonPairs", audit["common_od_pairs"])
     put("AcceptedCount", f"{audit['successes']:,}")
@@ -113,13 +117,23 @@ def main():
         change = float(row["mean_reference_H_minus_variant_H_5m_K"])
         put(f"Threshold{label}Magnitude", number(abs(change)))
         put(f"Threshold{label}Direction", "lower" if change >= 0 else "higher")
-    put("SamplingFiveChanges", sensitivity["sampling_5m"]["path_changes"])
-    put("SpacingMedian", number(sensitivity["reference"]["median_abs_spacing_error_K"]))
-    put("SpacingPninety", number(sensitivity["reference"]["p90_abs_spacing_error_K"]))
+    put("SamplingFiveChanges", sensitivity.get("sampling_5m", sensitivity["reference"])["path_changes"])
+    coarse = sensitivity.get("sampling_20m", sensitivity["reference"])
+    put("SamplingTwentyChanges", coarse["path_changes"])
+    put("SpacingMedian", number(coarse["median_abs_spacing_error_K"]))
+    put("SpacingPninety", number(coarse["p90_abs_spacing_error_K"]))
     put("ControlChanges", audit["reference_control_path_changes"])
+    put("ShadowHigherHCount", all_outcomes["shadow_only"]["higher_H"])
     span("RuntimeMedianRange", [r["median_s"] for r in runtimes], 3)
     span("RuntimePninetyRange", [r["p90_s"] for r in runtimes], 3)
     put("RuntimeMaximum", number(max(float(r["max_s"]) for r in runtimes)))
+    if sampling_rows:
+        composite_sampling = next(r for r in sampling_rows if r["method"] == "proposed_full")
+        put("FullCompositeChangedPct", number(composite_sampling["changed_percent"], 1))
+        put("FullGridCases", f"{audit['paired_grid_cases']:,}")
+        put("FullReferenceRescored", f"{audit['reference_paths_rescored']:,}")
+        span("FullChangedRange", [r["changed_percent"] for r in sampling_rows if r["method"] != "shortest_distance"], 0)
+        span("FullGainRange", [r["mean_H_20m_route_minus_5m_route_K"] for r in sampling_rows if r["method"] != "shortest_distance"], 2)
 
     main_lines = []
     for method, name in zip(METHODS, NAMES):
@@ -130,12 +144,14 @@ def main():
             comparison = contrasts[("shortest_distance", method)]
             heat = "$" + number(row["mean_delta_H_K"]) + "$ " + interval(-float(comparison["ci95_high_K"]), -float(comparison["ci95_low_K"]))
         shade = "---" if method == "azimuth_heuristic" else "$" + number(row["mean_delta_S"]) + "$"
-        main_lines.append(name + " & " + heat + " & $" + number(float(row["mean_delta_J_K_m"]) / 1000) + "$ & " + shade + " & $" + number(row["mean_extra_percent"], 2) + r"$\\")
+        fallback_percent = sum(int(r["count"]) for r in sources
+                               if r["method"] == method and r["route_source"] == "shortest_fallback") / 20
+        main_lines.append(name + " & " + heat + " & $" + number(float(row["mean_delta_J_K_m"]) / 1000) + "$ & " + shade + " & $" + number(row["mean_extra_percent"], 2) + "$ & $" + number(fallback_percent, 1) + r"$\\")
     main_table = r"""\begin{table*}[t]
-\caption{Matched outcomes on the same \CommonCases{} OD--budget cases. Positive $\Delta H$ and $\Delta J$ favor the environmental route; $\Delta S$ is added shade. Intervals resample whole OD pairs. Hybrid shade uses a different surrogate, so its comparison is omitted. Fallbacks are included.}
+\caption{Matched outcomes at \SelectionSpacing{} m sampling on \CommonCases{} OD--budget cases. Positive $\Delta H$ and $\Delta J$ favor the environmental route; $\Delta S$ is added shade. Intervals resample whole OD pairs. The hybrid's shade comparison is omitted because it uses a different surrogate. Fallbacks remain in the outcomes; their percentages use all 2,000 attempts per method.}
 \label{tab:common}\centering\small
-\begin{tabular}{@{}lrrrr@{}}\toprule
-Method & Mean $\Delta H$ (K) [95\% interval] & Mean $\Delta J$ (K\,km) & Mean $\Delta S$ & Extra distance (\%)\\\midrule
+\begin{tabular}{@{}lrrrrr@{}}\toprule
+Method & Mean $\Delta H$ (K) [95\% interval] & Mean $\Delta J$ (K\,km) & Mean $\Delta S$ & Extra (\%) & Fallback (\%)\\\midrule
 """ + "\n".join(main_lines) + r"""
 \bottomrule\end{tabular}
 \end{table*}"""
@@ -144,7 +160,7 @@ Method & Mean $\Delta H$ (K) [95\% interval] & Mean $\Delta J$ (K\,km) & Mean $\
         zero, twice = sensitivity[f"weight_{field}_x0"], sensitivity[f"weight_{field}_x2"]
         weight_lines.append(f"{label} & {zero['path_changes']}/{twice['path_changes']} & $" + number(zero["mean_reference_H_minus_variant_H_5m_K"]) + "/" + number(twice["mean_reference_H_minus_variant_H_5m_K"]) + r"$\\")
     weight_table = r"""\begin{table}[t]
-\caption{One-factor composite sensitivity on \SensitivityPairs{} complete paired paths, scored at 5 m and $26^\circ$C. Entries show removed/doubled coefficients. Positive $\Delta H$ means lower exceedance than the default.}
+\caption{Composite sensitivity on \SensitivityPairs{} paired paths at 5 m and $26^\circ$C. Entries show removed/doubled coefficients. Positive $\Delta H$ means lower exceedance than the default.}
 \label{tab:sensitivity}\centering\small
 \begin{tabular}{@{}lrr@{}}\toprule
 Coefficient & Changed paths & $\Delta H$ (K)\\\midrule
@@ -152,7 +168,8 @@ Coefficient & Changed paths & $\Delta H$ (K)\\\midrule
 \bottomrule\end{tabular}
 \end{table}"""
     sampling_lines = []
-    for spacing, method in ((5, "sampling_5m"), (10, "sampling_10m"), (20, "reference"), (40, "sampling_40m")):
+    for spacing in (5, 10, 20, 40):
+        method = "reference" if spacing == base_spacing else f"sampling_{spacing}m"
         row = sensitivity[method]
         sampling_lines.append(f"{spacing} & " + number(row["median_abs_spacing_error_K"]) + " & " + number(row["p90_abs_spacing_error_K"]) + " & " + row["path_changes"] + r"\\")
     sampling_table = r"""\begin{table}[t]
@@ -168,13 +185,31 @@ Spacing (m) & Median error (K) & 90th pct. (K) & Changed\\\midrule
     definitions += [r"\newcommand{\MainResultsTable}{" + main_table + "}",
                     r"\newcommand{\WeightResultsTable}{" + weight_table + "}",
                     r"\newcommand{\SamplingResultsTable}{" + sampling_table + "}"]
+    if sampling_rows:
+        lines = []
+        for method, name in zip(METHODS[1:], NAMES[1:]):
+            row = next(r for r in sampling_rows if r["method"] == method)
+            lines.append(name + " & " + number(row["changed_percent"], 2) + " & " +
+                         number(row["mean_delta_H_20m_routes_at_5m_K"]) + " & " +
+                         number(row["mean_delta_H_5m_routes_K"]) + " & " +
+                         number(row["mean_H_20m_route_minus_5m_route_K"]) + " " +
+                         interval(row["ci95_low_K"], row["ci95_high_K"]) + r"\\")
+        table = r"""\begin{table*}[t]
+\caption{Full-cohort sampling comparison on \FullGridCases{} common OD--budget cases. Both sets of routes are scored at 5 m. The final column is $H(P_{20})-H(P_5)$; positive values favor 5 m selection. Intervals resample whole OD pairs.}
+\label{tab:full-sampling}\centering\small
+\begin{tabular}{@{}lrrrr@{}}\toprule
+Method & Changed paths (\%) & $\Delta H$, 20 m routes (K) & $\Delta H$, 5 m routes (K) & 5 m gain (K) [95\% interval]\\\midrule
+""" + "\n".join(lines) + r"""
+\bottomrule\end{tabular}
+\end{table*}"""
+        definitions.append(r"\newcommand{\FullSamplingTable}{" + table + "}")
     args.paper.mkdir(parents=True, exist_ok=True)
     (args.paper / "results.tex").write_text("\n".join(definitions) + "\n", encoding="utf-8")
     (args.paper / "results_generation.json").write_text(json.dumps({
         "artifact_commit": args.artifact_commit, "script_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "input_sha256": {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(analysis.glob("*.csv"))},
         "macros": values}, indent=2) + "\n")
-    print(f"Wrote {len(values)} numerical macros and three tables")
+    print(f"Wrote {len(values)} numerical macros and {4 if sampling_rows else 3} tables")
 
 
 if __name__ == "__main__":

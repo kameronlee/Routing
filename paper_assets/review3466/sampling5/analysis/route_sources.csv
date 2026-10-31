@@ -1,0 +1,14 @@
+method,success,route_source,stop_reason,count
+shortest_distance,true,shortest_distance,,2000
+azimuth_heuristic,true,cost_shortest,unconstrained_cost_path_within_budget,1579
+azimuth_heuristic,true,label_search,candidate_limit,268
+azimuth_heuristic,true,shortest_fallback,expansion_limit,153
+shadow_only,true,cost_shortest,unconstrained_cost_path_within_budget,1340
+shadow_only,true,label_search,candidate_limit,400
+shadow_only,true,shortest_fallback,expansion_limit,260
+heat_dose,true,cost_shortest,unconstrained_cost_path_within_budget,1353
+heat_dose,true,label_search,candidate_limit,390
+heat_dose,true,shortest_fallback,expansion_limit,257
+proposed_full,true,cost_shortest,unconstrained_cost_path_within_budget,1684
+proposed_full,true,label_search,candidate_limit,218
+proposed_full,true,shortest_fallback,expansion_limit,98

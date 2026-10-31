@@ -1,23 +1,9 @@
-# Paper Assets
+# Experiment records
 
-This directory contains small, commit-safe assets for the heat-routing pilot paper.
+`review3466/` contains the fixed OD sample, recorded routes, input checksums,
+paired analysis, map inputs, and exact-reference checks used in the paper.
+The current manuscript and its two figures are under `paper/geohealth3466/`.
 
-## Root Assets
-
-The root-level CSV and PNG files are manuscript-ready convenience copies used by `paper/manuscript_draft.md`.
-
-- `main_method_comparison.csv`
-- `detour_tradeoff.csv`
-- `success_by_method.png`
-- `heat_reduction_vs_detour.png`
-- `method_comparison.png`
-
-## Frozen 500-Pair Main Snapshot
-
-`500pair_main/` is the source-of-truth archive for the frozen 500-pair experiment used in the first manuscript draft.
-
-- `500pair_main/tables/`: copied paper tables from `results/dc_snapshot_500pair_main_methods/tables/`
-- `500pair_main/figures/`: copied small PNG figures from `results/dc_snapshot_500pair_main_methods/figures/`
-- `500pair_main/reports/`: copied summary report for the frozen run
-
-Full generated outputs remain ignored under `results/`, and source data remains under `data/`.
+The raw historical and corrected runs remain separate. Their manifests and
+checksums preserve the original records; generated tables can be rebuilt with
+the commands in [experiments](../experiments/README.md).

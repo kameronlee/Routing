@@ -26,7 +26,7 @@ from routing_backend.review_sensitivity import run_review_sensitivity
 from routing_backend.route_engine import summarize_route
 
 
-def protocol():
+def protocol(base_spacing=20):
     variants = [("reference", {})]
     defaults = get_method_config("proposed_full", comfort_threshold=26.0).preference
     # One coefficient changes at a time; distance/time terms remain fixed.
@@ -35,7 +35,8 @@ def protocol():
             variants.append((f"{field}_x{factor:g}", {
                 "preference_overrides": {field: getattr(defaults, field) * factor}}))
     variants += [(f"threshold_{threshold}C", {"threshold": threshold}) for threshold in (24, 28)]
-    variants += [(f"sampling_{spacing}m", {"spacing": spacing}) for spacing in (5, 10, 40)]
+    variants += [(f"sampling_{spacing}m", {"spacing": spacing})
+                 for spacing in (5, 10, 20, 40) if spacing != base_spacing]
     return variants
 
 
@@ -45,6 +46,7 @@ def main():
     parser.add_argument("--subset-size", type=int, default=100)
     parser.add_argument("--shard", type=int, default=0)
     parser.add_argument("--shards", type=int, default=1)
+    parser.add_argument("--base-spacing", type=float, choices=(5, 20), default=20)
     args = parser.parse_args()
     if args.subset_size < 1 or args.shards < 1 or not 0 <= args.shard < args.shards:
         parser.error("invalid subset or shard")
@@ -55,15 +57,15 @@ def main():
     od_path = output / "od_pairs.csv"
     write_csv(od_path, pairs, list(pairs[0]))
     config = replace(load_experiment_config(ROOT / "configs/dc_snapshot_review3466.yaml"),
-                     output_dir=output, detour_ratios=(0.20,))
-    metadata = {"protocol": protocol(), "selected_pair_ids": [p["pair_id"] for p in pairs],
-                "config": config.to_dict(), "reporting_spacing_m": 20, "dense_check_spacing_m": 5,
+                     output_dir=output, detour_ratios=(0.20,), sample_spacing_m=args.base_spacing)
+    metadata = {"protocol": protocol(args.base_spacing), "selected_pair_ids": [p["pair_id"] for p in pairs],
+                "config": config.to_dict(), "reporting_spacing_m": args.base_spacing, "dense_check_spacing_m": 5,
                 "script_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                 "reference_role": "5 m is a numerical comparator, not ground truth"}
     (output / "validation_protocol.json").write_text(json.dumps(metadata, indent=2) + "\n")
     started = time.monotonic()
     summary = run_review_sensitivity(config, od_pairs_path=od_path,
-                                     subset_size=len(pairs), variant_settings=protocol())
+                                     subset_size=len(pairs), variant_settings=protocol(args.base_spacing))
     print(f"Reroutes complete after {time.monotonic() - started:.1f} s", flush=True)
     with summary.open(newline="") as stream:
         rows = list(csv.DictReader(stream))
@@ -84,7 +86,7 @@ def main():
                     continue
                 result = {"pair_id": pair["pair_id"], "method": row["method"],
                           "route_success": row["success"], "dense_success": False,
-                          "H_20m_K": row["heat_dose"], "H_selection_spacing_K": row["variant_spacing_heat_dose"],
+                          "H_reference_K": row["heat_dose"], "H_selection_spacing_K": row["variant_spacing_heat_dose"],
                           "H_5m_K": None, "J_5m_K_m": None, "distance_m": row["route_distance_m"],
                           "error": ""}
                 if row["success"].lower() in ("true", "1"):

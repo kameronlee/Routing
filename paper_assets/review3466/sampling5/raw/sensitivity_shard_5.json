@@ -1,0 +1,170 @@
+{
+  "protocol": [
+    [
+      "reference",
+      {}
+    ],
+    [
+      "weight_cool_x0",
+      {
+        "preference_overrides": {
+          "weight_cool": 0.0
+        }
+      }
+    ],
+    [
+      "weight_cool_x2",
+      {
+        "preference_overrides": {
+          "weight_cool": 2.0
+        }
+      }
+    ],
+    [
+      "weight_shade_x0",
+      {
+        "preference_overrides": {
+          "weight_shade": 0.0
+        }
+      }
+    ],
+    [
+      "weight_shade_x2",
+      {
+        "preference_overrides": {
+          "weight_shade": 2.0
+        }
+      }
+    ],
+    [
+      "weight_scenic_x0",
+      {
+        "preference_overrides": {
+          "weight_scenic": 0.0
+        }
+      }
+    ],
+    [
+      "weight_scenic_x2",
+      {
+        "preference_overrides": {
+          "weight_scenic": 0.9
+        }
+      }
+    ],
+    [
+      "weight_quiet_x0",
+      {
+        "preference_overrides": {
+          "weight_quiet": 0.0
+        }
+      }
+    ],
+    [
+      "weight_quiet_x2",
+      {
+        "preference_overrides": {
+          "weight_quiet": 0.9
+        }
+      }
+    ],
+    [
+      "weight_slope_x0",
+      {
+        "preference_overrides": {
+          "weight_slope": 0.0
+        }
+      }
+    ],
+    [
+      "weight_slope_x2",
+      {
+        "preference_overrides": {
+          "weight_slope": 0.7
+        }
+      }
+    ],
+    [
+      "threshold_24C",
+      {
+        "threshold": 24
+      }
+    ],
+    [
+      "threshold_28C",
+      {
+        "threshold": 28
+      }
+    ],
+    [
+      "sampling_10m",
+      {
+        "spacing": 10
+      }
+    ],
+    [
+      "sampling_20m",
+      {
+        "spacing": 20
+      }
+    ],
+    [
+      "sampling_40m",
+      {
+        "spacing": 40
+      }
+    ]
+  ],
+  "selected_pair_ids": [
+    "od_00005",
+    "od_00013",
+    "od_00021",
+    "od_00029",
+    "od_00037",
+    "od_00045",
+    "od_00053",
+    "od_00061",
+    "od_00069",
+    "od_00077",
+    "od_00085",
+    "od_00093"
+  ],
+  "config": {
+    "study_name": "dc_snapshot_review3466",
+    "city": "Washington, District of Columbia, USA",
+    "mode": "walk",
+    "departure_time": "2026-06-19T14:00:00-04:00",
+    "graph_path": "/scratch/klee206/work/routing-validation-20261031/data/processed/streets/dc_walk_graph.graphml",
+    "utci_raster_path": "/scratch/klee206/work/routing-validation-20261031/data/processed/solweig_outputs/utci_2026-06-19_14.tif",
+    "shadow_raster_path": "/scratch/klee206/work/routing-validation-20261031/data/processed/solweig_outputs/shadow_2026-06-19_14.tif",
+    "dem_raster_path": "/scratch/klee206/work/routing-validation-20261031/data/processed/rasters/dem_1m.tif",
+    "canopy_raster_paths": [
+      "/scratch/klee206/work/routing-validation-20261031/data/processed/rasters/canopy_height_1m.tif"
+    ],
+    "traffic_geojson_path": "/scratch/klee206/work/routing-validation-20261031/data/raw/traffic_noise/ddot_traffic_volume_2023.geojson",
+    "output_dir": "/scratch/klee206/work/routing-validation-20261031/results/sampling-validation/sensitivity-5",
+    "random_seed": 42,
+    "od_pair_count": 500,
+    "min_shortest_distance_m": 400.0,
+    "max_shortest_distance_m": 3000.0,
+    "detour_ratios": [
+      0.2
+    ],
+    "comfort_threshold_c": 26.0,
+    "sample_spacing_m": 5.0,
+    "route_search_seconds": 1.5,
+    "route_search_expansions": 20000,
+    "route_search_labels_per_node": 8,
+    "landcover_raster_paths": [
+      "/scratch/klee206/work/routing-validation-20261031/data/processed/rasters/landcover_1m_center_tile.tif"
+    ],
+    "building_height_raster_paths": [
+      "/scratch/klee206/work/routing-validation-20261031/data/processed/rasters/building_height_1m.tif"
+    ]
+  },
+  "reporting_spacing_m": 5.0,
+  "dense_check_spacing_m": 5,
+  "script_sha256": "267110abb5826f0772774e15193b782e51976d0837ef736c8b163f227f1cf111",
+  "reference_role": "5 m is a numerical comparator, not ground truth",
+  "elapsed_seconds": 513.7532314602286
+}

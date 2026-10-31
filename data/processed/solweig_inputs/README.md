@@ -1,17 +1,14 @@
-# SOLWEIG Inputs
+# SOLWEIG inputs
 
-This directory is for rasters prepared for SOLWEIG or SOLWEIG-GPU.
+The model runner uses aligned `building_dsm_1m.tif`, `dem_1m.tif`, and
+`trees_cdsm_1m.tif`, with hourly meteorological forcing in UMEP metfile format.
+The LiDAR sources and preparation steps are recorded under `data/metadata/`
+and in `scripts/build_lidar_products.py`.
 
-Current staged inputs:
+The building DSM contains absolute surface elevation. The routing height
+proxy is a separate `max(0, DSM - DEM)` product made by
+`scripts/derive_building_height.py`.
 
-- `dem_1m.tif`: NOAA 2022 DC OCTO full-city DEM/DTM.
-- `dsm_1m.tif`: full-city surface DSM rasterized from classified COPC LAZ tiles.
-- `building_dsm_1m.tif`: full-city building-only DSM rasterized from class 6 points.
-- `trees_cdsm_1m.tif`: full-city vegetation canopy DSM/raster height from classes 3, 4 and 5.
-- `met_forcing_2026-05-23_2026-05-23.txt`: real Open-Meteo forcing in SOLWEIG metfile format.
-- `landcover_1m_center_tile.tif`: DC 2020 generalized land-cover center tile.
-- `trees_cdsm_1m_center_tile.tif`: DC 2020 urban tree canopy center tile.
-
-Still needed for full-fidelity microclimate:
-
-- Full production SOLWEIG/SOLWEIG-GPU run outputs in `data/processed/solweig_outputs/`.
+Frozen source files are stored through Git LFS. Their paths and checksums are
+listed in the experiment manifests; local presence must be checked after
+fetching them.
