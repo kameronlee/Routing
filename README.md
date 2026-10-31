@@ -28,7 +28,7 @@ python experiments/make_corrected_figures.py
 
 ## Paper and data
 
-- [Latest paper](https://github.com/kameronlee/Routing/tree/codex/geohealth-3466-revisions/paper/geohealth3466)
+- [Paper (PDF)](paper/geohealth3466/main.pdf)
 - [Corrected records, checksums, and analysis](paper_assets/review3466/corrected/)
 - [Original OD pairs and historical records](paper_assets/review3466/raw/)
 - [Exact-reference checks](paper_assets/review3466/solver_validation/)
