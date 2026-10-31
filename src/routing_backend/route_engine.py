@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime
 import heapq
 import itertools
@@ -51,6 +51,9 @@ class EdgeFeatures:
     elevation_change_m: float
     poi_density: float = 0.0
     uncertainty: float = 0.0
+    utci_samples: tuple[float, ...] = ()
+    utci_threshold_c: float = 26.0
+    shade_source: str = "unknown"
 
 
 @dataclass(frozen=True)
@@ -78,6 +81,17 @@ class RouteCandidate:
     noise_score: float
     slope_penalty: float
     cost: float
+    route_source: str = "unknown"
+    search_truncated: bool = False
+    search_stop_reason: str = ""
+    expanded_labels: int = 0
+    retained_labels: int = 0
+    maximum_distance_m: float | None = None
+    shade_fallback_fraction: float | None = None
+
+
+class NoPathWithinBudget(nx.NetworkXNoPath):
+    """The feature graph has paths, but none meets the supplied distance ceiling."""
 
 
 def _mode_speed_mps(mode: str) -> float:
@@ -255,6 +269,7 @@ def build_edge_features(
         data.update(real_feature_context.edge_attributes(points, data, length_m))
     travel_time_s = float(data.get("travel_time") or length_m / _mode_speed_mps(mode))
     dense_points = None
+    values: Sequence[float] = ()
     if real_feature_context is not None and hasattr(real_feature_context, "utci_values"):
         dense_points = densify_geometry(points, spacing_m=sample_spacing_m)
         values = real_feature_context.utci_values(dense_points)
@@ -274,12 +289,14 @@ def build_edge_features(
             raster_path=utci_raster_path,
         )
     shade_fraction = climate.shade_fraction
+    shade_source = "hybrid_surrogate"
     if real_feature_context is not None and hasattr(real_feature_context, "shadow_values"):
         if dense_points is None:
             dense_points = densify_geometry(points, spacing_m=sample_spacing_m)
         direct_shade_fraction = _direct_shade_fraction(real_feature_context.shadow_values(dense_points))
         if direct_shade_fraction is not None:
             shade_fraction = direct_shade_fraction
+            shade_source = "direct_shadow"
         else:
             azimuth_shade_fraction = _azimuth_shade_fraction(points, data, departure_time)
             if azimuth_shade_fraction is not None:
@@ -310,6 +327,9 @@ def build_edge_features(
         elevation_change_m=elevation_change_m,
         poi_density=float(data.get("poi_density", 0.0)),
         uncertainty=float(data.get("feature_uncertainty", 0.15 if data.get("source") == "synthetic" else 0.05)),
+        utci_samples=tuple(values),
+        utci_threshold_c=comfort_threshold,
+        shade_source=shade_source,
     )
 
 
@@ -411,6 +431,7 @@ def _assign_batched_real_features(
             comfort_threshold=comfort_threshold,
         )
         shade_fraction = _direct_shade_fraction(shadow_values)
+        shade_source = "direct_shadow" if shade_fraction is not None else "hybrid_surrogate"
         if shade_fraction is None:
             shade_fraction = climate.shade_fraction
             azimuth_shade_fraction = _azimuth_shade_fraction(points, data, departure_time)
@@ -437,6 +458,9 @@ def _assign_batched_real_features(
             elevation_change_m=elevation_change_m,
             poi_density=float(data.get("poi_density", 0.0)),
             uncertainty=float(data.get("feature_uncertainty", 0.15 if data.get("source") == "synthetic" else 0.05)),
+            utci_samples=tuple(utci_values),
+            utci_threshold_c=comfort_threshold,
+            shade_source=shade_source,
         )
         data["features"] = features
         data["length"] = features.length_m
@@ -731,6 +755,7 @@ def resource_constrained_routes(
     max_seconds: float | None = None,
     departure_time: datetime | float | int | None = None,
     utci_raster_path: str | Path | None = None,
+    maximum_distance_m: float | None = None,
 ) -> list[RouteCandidate]:
     """Find low-cost routes subject to a detour budget.
 
@@ -739,10 +764,16 @@ def resource_constrained_routes(
     dominated labels are pruned at every node.
     """
 
-    if delta < 0:
+    if not math.isfinite(delta) or delta < 0:
         raise ValueError("delta must be non-negative")
     if max_candidates < 1:
         raise ValueError("max_candidates must be at least 1")
+    if max_labels_per_node < 1:
+        raise ValueError("max_labels_per_node must be at least 1")
+    if maximum_distance_m is not None and (
+        not math.isfinite(maximum_distance_m) or maximum_distance_m < 0
+    ):
+        raise ValueError("maximum_distance_m must be finite and non-negative")
     if max_expansions is not None and max_expansions < 0:
         raise ValueError("max_expansions must be non-negative")
     search_seconds = max_seconds if max_seconds is not None else max_search_seconds
@@ -766,11 +797,23 @@ def resource_constrained_routes(
                 noise_score=0.0,
                 slope_penalty=0.0,
                 cost=0.0,
+                route_source="stationary",
+                maximum_distance_m=maximum_distance_m,
             )
         ]
 
     baseline_distance = baseline_shortest_path_distance(graph, origin_node, destination_node)
-    maximum_distance = baseline_distance * (1.0 + delta)
+    # A caller with an original-graph reference must propagate that exact
+    # ceiling; raster coverage must never silently enlarge the user's budget.
+    maximum_distance = (
+        maximum_distance_m if maximum_distance_m is not None
+        else baseline_distance * (1.0 + delta)
+    )
+    if baseline_distance > maximum_distance + 1e-9:
+        raise NoPathWithinBudget(
+            f"Feature-graph shortest distance {baseline_distance:.6f} m exceeds "
+            f"the supplied budget {maximum_distance:.6f} m"
+        )
     fast_candidate = _cost_shortest_candidate_within_budget(
         graph,
         origin_node,
@@ -781,7 +824,11 @@ def resource_constrained_routes(
         utci_raster_path,
     )
     if max_candidates == 1 and fast_candidate is not None:
-        return [fast_candidate]
+        return [replace(
+            fast_candidate, route_source="cost_shortest",
+            search_stop_reason="unconstrained_cost_path_within_budget",
+            maximum_distance_m=maximum_distance,
+        )]
 
     try:
         distance_to_destination = nx.single_source_dijkstra_path_length(
@@ -805,13 +852,17 @@ def resource_constrained_routes(
         ]
     ] = [(0.0, next(counter), origin_node, 0.0, [origin_node], [])]
     labels: dict[Hashable, list[tuple[float, float]]] = {origin_node: [(0.0, 0.0)]}
-    candidates: list[RouteCandidate] = [fast_candidate] if fast_candidate is not None else []
+    candidates: list[RouteCandidate] = (
+        [replace(fast_candidate, route_source="cost_shortest")]
+        if fast_candidate is not None else []
+    )
     seen_edge_sequences: set[tuple[str, ...]] = {
         tuple(fast_candidate.edge_ids)
     } if fast_candidate is not None else set()
     search_started = time.monotonic()
     expansions = 0
     search_truncated = False
+    search_stop_reason = "queue_exhausted"
 
     while queue and len(candidates) < max_candidates:
         if (
@@ -819,6 +870,10 @@ def resource_constrained_routes(
             or (search_seconds is not None and time.monotonic() - search_started >= search_seconds)
         ):
             search_truncated = True
+            search_stop_reason = (
+                "expansion_limit" if max_expansions is not None and expansions >= max_expansions
+                else "time_limit"
+            )
             break
         expansions += 1
         path_cost, _order, node, length_m, path_nodes, path_edges = heapq.heappop(queue)
@@ -835,7 +890,7 @@ def resource_constrained_routes(
             signature = tuple(candidate.edge_ids)
             if signature not in seen_edge_sequences:
                 seen_edge_sequences.add(signature)
-                candidates.append(candidate)
+                candidates.append(replace(candidate, route_source="label_search"))
             continue
 
         for u, v, key, data in _out_edges(graph, node):
@@ -869,20 +924,27 @@ def resource_constrained_routes(
 
     graph.graph["route_search_expansions"] = expansions
     graph.graph["route_search_truncated"] = search_truncated
+    if len(candidates) >= max_candidates and not search_truncated:
+        search_stop_reason = "candidate_limit"
 
     if not candidates:
         candidates.append(
-            shortest_path_candidate(
+            replace(shortest_path_candidate(
                 graph,
                 origin_node,
                 destination_node,
                 preference,
                 departure_time=departure_time,
                 utci_raster_path=utci_raster_path,
-            )
+            ), route_source="shortest_fallback")
         )
 
-    return candidates
+    return [replace(
+        candidate, search_truncated=search_truncated,
+        search_stop_reason=search_stop_reason, expanded_labels=expansions,
+        retained_labels=sum(len(values) for values in labels.values()),
+        maximum_distance_m=maximum_distance,
+    ) for candidate in candidates]
 
 
 def _data_for_traversal(graph: nx.Graph, traversal: EdgeTraversal) -> dict[str, Any]:
@@ -974,6 +1036,11 @@ def summarize_route(
         noise_score=noise_score,
         slope_penalty=slope_penalty,
         cost=scalar_cost,
+        shade_fallback_fraction=(
+            sum(weight for feature, weight in zip(features, weights)
+                if feature.shade_source == "hybrid_surrogate") / total_weight
+            if all(feature.shade_source != "unknown" for feature in features) else None
+        ),
     )
 
 
@@ -989,7 +1056,7 @@ def shortest_path_candidate(
 
     path_nodes = nx.shortest_path(graph, origin_node, destination_node, weight="length")
     traversals = [
-        _best_edge_between(graph, u, v, preference)
+        _shortest_edge_between(graph, u, v)
         for u, v in zip(path_nodes, path_nodes[1:])
     ]
     return summarize_route(

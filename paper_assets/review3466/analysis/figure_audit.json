@@ -1,0 +1,32 @@
+{
+  "cases": [
+    {
+      "panel": "a",
+      "quantile": 0.5,
+      "target_delta_H_K": 0.6544660580057577,
+      "delta_H_K": 0.6544660580057577,
+      "pair_id": "od_00497",
+      "budget": 0.2,
+      "common_records_at_budget": 309
+    }
+  ],
+  "context_scope": "Geographic display only; not an input to routing or exposure evaluation.",
+  "context_sha256": {
+    "district.geojson.gz": "be723ffb0217c760732b146e58284ea7ea85bcdddec8b73ab185a14e920c0dd7",
+    "roads.geojson.gz": "80208ce0f981fceed0783b8229d92fae55170a1ae912d6f874cfb4fb8c06f2ce",
+    "route_cases.geojson.gz": "52227a99c4a5e3e407b4da3832b24a480f98f19ca7bf52d049ec112cff1a0923",
+    "water.geojson.gz": "27da64a8c43480da8aa5561549a5bda3578ef24885af277fb381330c2d42df82"
+  },
+  "map_crs": "EPSG:32618",
+  "map_case_extent_m": [
+    1700,
+    1400
+  ],
+  "runtime_records": 10000,
+  "runtime_success_records": 8093,
+  "runtime_values_plotted": "All observed finite positive runtimes; one ECDF per method and status.",
+  "software": {
+    "matplotlib": "3.11.2",
+    "numpy": "2.5.4"
+  }
+}

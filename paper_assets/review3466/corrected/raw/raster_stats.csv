@@ -1,0 +1,3 @@
+raster,path,valid_count,nodata_count,min,max,mean,median,p5,p25,p75,p95,quantile_sample_count,quantiles_approximate
+utci,/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/solweig_outputs/utci_2026-06-19_14.tif,460800000,0,24.71098518371582,35.27933883666992,31.48359836347492,32.976558685302734,25.848739624023438,31.872093677520752,32.98196792602539,33.20552444458008,1000000,true
+shadow,/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/solweig_outputs/shadow_2026-06-19_14.tif,460800000,0,0.0,1.0,0.8309821650796849,1.0,0.029999971389770508,1.0,1.0,1.0,1000000,true

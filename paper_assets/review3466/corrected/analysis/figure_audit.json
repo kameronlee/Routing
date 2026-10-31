@@ -1,0 +1,56 @@
+{
+  "cases": [
+    {
+      "panel": "a",
+      "quantile": 0.5,
+      "target_delta_H_K": 1.0620902845756224,
+      "delta_H_K": 1.0600330556767403,
+      "pair_id": "od_00000",
+      "budget": 0.2,
+      "common_records_at_budget": 500
+    }
+  ],
+  "street_labels": [
+    [
+      "VIRGINIA AVE NW",
+      "Virginia Ave NW",
+      0.5,
+      [
+        0,
+        7
+      ]
+    ],
+    [
+      "MAINE AVE SW",
+      "Maine Ave SW",
+      0.5,
+      [
+        0,
+        7
+      ]
+    ],
+    [
+      "CONSTITUTION AVE NW",
+      "Constitution Ave NW",
+      0.5,
+      [
+        0,
+        7
+      ]
+    ]
+  ],
+  "map_extent_m": [
+    [
+      321566.63624903304,
+      4305416.482040713,
+      324212.5368607119,
+      4307595.459015036
+    ]
+  ],
+  "map_crs": "EPSG:32618",
+  "context_scope": "Frozen DC GIS display layers; excluded from routing and exposure calculation",
+  "routes_sha256": "5024e1f296faa6a7a59c562fc8ed808c6ed6563aec08be80000e7ca512ab7cbb",
+  "all_runtime_observations": 10000,
+  "matplotlib": "3.11.2",
+  "numpy": "2.5.4"
+}

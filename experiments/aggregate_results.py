@@ -21,6 +21,9 @@ from routing_backend.result_metrics import (
     shade_fraction_increase,
     summarize_by_group,
 )
+from routing_backend.paired_comparison import (
+    common_accepted_rows, index_records, paired_heat_contrasts, record_key, succeeded,
+)
 
 
 DERIVED_METRICS = [
@@ -41,6 +44,9 @@ def main() -> None:
     parser.add_argument("--routes-summary")
     parser.add_argument("--ablations-summary")
     parser.add_argument("--sensitivity-summary")
+    parser.add_argument("--common-methods", nargs="+", default=[
+        "shortest_distance", "azimuth_heuristic", "shadow_only", "heat_dose", "proposed_full",
+    ])
     args = parser.parse_args()
 
     config = load_experiment_config(args.config)
@@ -49,9 +55,11 @@ def main() -> None:
     ablations_path = Path(args.ablations_summary or config.output_dir / "ablations_summary.csv")
     sensitivity_path = Path(args.sensitivity_summary or config.output_dir / "sensitivity_summary.csv")
 
-    routes = read_csv(routes_path) if routes_path.exists() else []
+    if not routes_path.exists():
+        raise FileNotFoundError(f"Raw route records are required: {routes_path}")
+    routes = read_csv(routes_path)
     derived_routes = _add_shortest_comparisons(routes)
-    success_routes = [row for row in derived_routes if row.get("success", "").lower() == "true"]
+    success_routes = [row for row in derived_routes if succeeded(row)]
     main_table = summarize_by_group(success_routes, ["method"], DERIVED_METRICS)
     detour_table = summarize_by_group(
         [row for row in success_routes if row.get("method") == "proposed_full"],
@@ -61,6 +69,17 @@ def main() -> None:
     baseline_table = summarize_by_group(success_routes, ["method", "detour_ratio"], DERIVED_METRICS)
     runtime_table = summarize_by_group(success_routes, ["method"], ["runtime_ms"])
     failure_table = _failure_table(routes)
+    common = common_accepted_rows(derived_routes, args.common_methods)
+    write_csv(config.output_dir / "tables" / "common_accepted_records.csv", common)
+    write_csv(config.output_dir / "tables" / "common_accepted_comparison.csv",
+              summarize_by_group(common, ["method", "detour_ratio"], DERIVED_METRICS))
+    write_csv(config.output_dir / "tables" / "paired_heat_contrasts.csv",
+              paired_heat_contrasts(derived_routes, args.common_methods, seed=config.random_seed))
+    write_csv(config.output_dir / "tables" / "runtime_all_attempts.csv",
+              summarize_by_group(derived_routes, ["method", "success"], ["runtime_ms"]))
+    write_csv(config.output_dir / "tables" / "failure_reasons.csv",
+              summarize_by_group([row for row in routes if not succeeded(row)],
+                                 ["method", "failure_type", "failure_reason"], ["runtime_ms"]))
 
     write_csv(config.output_dir / "tables" / "main_method_comparison.csv", main_table)
     write_csv(config.output_dir / "tables" / "detour_tradeoff.csv", detour_table)
@@ -95,25 +114,30 @@ These tables summarize modeled UTCI/direct-shadow route experiments. They do not
 
 - Route rows: {len(routes)}
 - Successful route rows: {len(success_routes)}
+- Common accepted route rows: {len(common)} (the same pair-budget set for every selected method)
 - Methods in main table: {len(main_table)}
 - Detour tradeoff rows: {len(detour_table)}{sensitivity_note}
 
-Primary tables are written under `tables/`.
+Primary tables are written under `tables/`. Method-specific accepted summaries
+must not be used to rank methods. Use `common_accepted_comparison.csv` and
+`paired_heat_contrasts.csv` for paired comparisons. Confidence intervals
+resample whole OD pairs, including all their budgets, within the study snapshot.
 """,
     )
 
 
 def _add_shortest_comparisons(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
+    index_records(rows)  # Fail rather than silently overwrite duplicate records.
     shortest = {
-        (row.get("pair_id"), row.get("detour_ratio")): row
+        record_key(row): row
         for row in rows
-        if row.get("method") == "shortest_distance" and row.get("success", "").lower() == "true"
+        if row.get("method") == "shortest_distance" and succeeded(row)
     }
     derived: list[dict[str, Any]] = []
     for row in rows:
         output: dict[str, Any] = dict(row)
-        base = shortest.get((row.get("pair_id"), row.get("detour_ratio")))
-        if base and row.get("success", "").lower() == "true":
+        base = shortest.get(record_key(row))
+        if base and succeeded(row):
             shortest_heat = safe_float(base.get("heat_dose"))
             method_heat = safe_float(row.get("heat_dose"))
             shortest_mean = safe_float(base.get("mean_utci"))

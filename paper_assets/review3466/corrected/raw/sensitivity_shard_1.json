@@ -1,0 +1,208 @@
+{
+  "protocol": [
+    [
+      "reference",
+      {}
+    ],
+    [
+      "weight_cool_x0",
+      {
+        "preference_overrides": {
+          "weight_cool": 0.0
+        }
+      }
+    ],
+    [
+      "weight_cool_x2",
+      {
+        "preference_overrides": {
+          "weight_cool": 2.0
+        }
+      }
+    ],
+    [
+      "weight_shade_x0",
+      {
+        "preference_overrides": {
+          "weight_shade": 0.0
+        }
+      }
+    ],
+    [
+      "weight_shade_x2",
+      {
+        "preference_overrides": {
+          "weight_shade": 2.0
+        }
+      }
+    ],
+    [
+      "weight_scenic_x0",
+      {
+        "preference_overrides": {
+          "weight_scenic": 0.0
+        }
+      }
+    ],
+    [
+      "weight_scenic_x2",
+      {
+        "preference_overrides": {
+          "weight_scenic": 0.9
+        }
+      }
+    ],
+    [
+      "weight_quiet_x0",
+      {
+        "preference_overrides": {
+          "weight_quiet": 0.0
+        }
+      }
+    ],
+    [
+      "weight_quiet_x2",
+      {
+        "preference_overrides": {
+          "weight_quiet": 0.9
+        }
+      }
+    ],
+    [
+      "weight_slope_x0",
+      {
+        "preference_overrides": {
+          "weight_slope": 0.0
+        }
+      }
+    ],
+    [
+      "weight_slope_x2",
+      {
+        "preference_overrides": {
+          "weight_slope": 0.7
+        }
+      }
+    ],
+    [
+      "threshold_24C",
+      {
+        "threshold": 24
+      }
+    ],
+    [
+      "threshold_28C",
+      {
+        "threshold": 28
+      }
+    ],
+    [
+      "sampling_5m",
+      {
+        "spacing": 5
+      }
+    ],
+    [
+      "sampling_10m",
+      {
+        "spacing": 10
+      }
+    ],
+    [
+      "sampling_40m",
+      {
+        "spacing": 40
+      }
+    ]
+  ],
+  "selected_pair_ids": [
+    "od_00001",
+    "od_00003",
+    "od_00005",
+    "od_00007",
+    "od_00009",
+    "od_00011",
+    "od_00013",
+    "od_00015",
+    "od_00017",
+    "od_00019",
+    "od_00021",
+    "od_00023",
+    "od_00025",
+    "od_00027",
+    "od_00029",
+    "od_00031",
+    "od_00033",
+    "od_00035",
+    "od_00037",
+    "od_00039",
+    "od_00041",
+    "od_00043",
+    "od_00045",
+    "od_00047",
+    "od_00049",
+    "od_00051",
+    "od_00053",
+    "od_00055",
+    "od_00057",
+    "od_00059",
+    "od_00061",
+    "od_00063",
+    "od_00065",
+    "od_00067",
+    "od_00069",
+    "od_00071",
+    "od_00073",
+    "od_00075",
+    "od_00077",
+    "od_00079",
+    "od_00081",
+    "od_00083",
+    "od_00085",
+    "od_00087",
+    "od_00089",
+    "od_00091",
+    "od_00093",
+    "od_00095",
+    "od_00097",
+    "od_00099"
+  ],
+  "config": {
+    "study_name": "dc_snapshot_review3466",
+    "city": "Washington, District of Columbia, USA",
+    "mode": "walk",
+    "departure_time": "2026-06-19T14:00:00-04:00",
+    "graph_path": "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/streets/dc_walk_graph.graphml",
+    "utci_raster_path": "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/solweig_outputs/utci_2026-06-19_14.tif",
+    "shadow_raster_path": "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/solweig_outputs/shadow_2026-06-19_14.tif",
+    "dem_raster_path": "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/rasters/dem_1m.tif",
+    "canopy_raster_paths": [
+      "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/rasters/canopy_height_1m.tif"
+    ],
+    "traffic_geojson_path": "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/raw/traffic_noise/ddot_traffic_volume_2023.geojson",
+    "output_dir": "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/results/review3466-final-sensitivity-1",
+    "random_seed": 42,
+    "od_pair_count": 500,
+    "min_shortest_distance_m": 400.0,
+    "max_shortest_distance_m": 3000.0,
+    "detour_ratios": [
+      0.2
+    ],
+    "comfort_threshold_c": 26.0,
+    "sample_spacing_m": 20.0,
+    "route_search_seconds": 1.5,
+    "route_search_expansions": 20000,
+    "route_search_labels_per_node": 8,
+    "landcover_raster_paths": [
+      "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/rasters/landcover_1m_center_tile.tif"
+    ],
+    "building_height_raster_paths": [
+      "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/rasters/building_height_1m.tif"
+    ]
+  },
+  "reporting_spacing_m": 20,
+  "dense_check_spacing_m": 5,
+  "script_sha256": "74fc9a9d58acc8a1ca43a63f5453a314cc7ce351d47bbe8803ef7f1ed43a31ec",
+  "reference_role": "5 m is a numerical comparator, not ground truth",
+  "elapsed_seconds": 1281.1521914750338
+}

@@ -1,0 +1,14 @@
+{
+  "attempts": 10000,
+  "successes": 10000,
+  "common_pair_budget_cases": 2000,
+  "common_od_pairs": 500,
+  "baseline_max_abs_H_error_K_vs_archive": 0.0,
+  "raw_main_sha256": "5024e1f296faa6a7a59c562fc8ed808c6ed6563aec08be80000e7ca512ab7cbb",
+  "note": "Shards retain their original configuration/run identifiers; matching stays within each shard.",
+  "sensitivity_attempts": 1600,
+  "sensitivity_successes": 1600,
+  "dense_check_successes": 1600,
+  "sensitivity_common_pairs": 100,
+  "reference_control_path_changes": 0
+}

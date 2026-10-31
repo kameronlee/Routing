@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 from enum import Enum
+import math
 from typing import Any
 
 import networkx as nx
@@ -211,34 +212,42 @@ def route_with_method(
     max_labels_per_node: int = 8,
     max_expansions: int | None = None,
     max_seconds: float | None = None,
+    maximum_distance_m: float | None = None,
+    preference_overrides: dict[str, float] | None = None,
 ) -> tuple[RouteCandidate, MethodConfig]:
     """Run one benchmark method on an already-featured graph."""
 
     method_config = get_method_config(method, comfort_threshold=comfort_threshold)
+    if preference_overrides:
+        if any(not math.isfinite(value) or value < 0 for value in preference_overrides.values()):
+            raise ValueError("Preference weights must be finite and non-negative")
+        if any(not name.startswith("weight_") and name != "uncertainty_penalty" for name in preference_overrides):
+            raise ValueError("Only objective weights may be overridden")
+        method_config = replace(method_config, preference=method_config.preference.with_overrides(**preference_overrides))
     preference = method_config.preference
     route_method = method_config.method
     if route_method == RouteMethod.SHORTEST_DISTANCE:
         return (
-            length_shortest_route_candidate(
+            replace(length_shortest_route_candidate(
                 graph,
                 origin_node,
                 destination_node,
                 preference,
                 departure_time=departure_time,
                 utci_raster_path=utci_raster_path,
-            ),
+            ), route_source="shortest_distance", maximum_distance_m=maximum_distance_m),
             method_config,
         )
     if route_method == RouteMethod.WEIGHTED_SUM:
         return (
-            _unconstrained_cost_shortest_route(
+            replace(_unconstrained_cost_shortest_route(
                 graph,
                 origin_node,
                 destination_node,
                 preference,
                 departure_time=departure_time,
                 utci_raster_path=utci_raster_path,
-            ),
+            ), route_source="unconstrained_weighted_sum"),
             method_config,
         )
 
@@ -259,6 +268,7 @@ def route_with_method(
         max_seconds=max_seconds,
         departure_time=departure_time,
         utci_raster_path=utci_raster_path,
+        maximum_distance_m=maximum_distance_m,
     )
     reported_candidate = _rescore_candidate_on_graph(
         graph,
@@ -283,7 +293,16 @@ def _apply_common_feature_perturbations(
 ) -> EdgeFeatures:
     mean_utci = features.mean_utci + utci_offset_c
     max_utci = features.max_utci + utci_offset_c
-    heat_dose = max(0.0, mean_utci - comfort_threshold)
+    # E[max(0, U-tau)] is not max(0, E[U]-tau). A no-op must
+    # preserve the sampled exceedance, and threshold/offset sweeps need samples.
+    heat_dose = features.heat_dose
+    samples = features.utci_samples
+    if utci_offset_c != 0.0 or comfort_threshold != features.utci_threshold_c:
+        if not samples and not disable_utci:
+            raise ValueError("UTCI perturbations require retained edge samples; rebuild the feature graph")
+        samples = tuple(value + utci_offset_c for value in samples)
+        if samples:
+            heat_dose = sum(max(0.0, value - comfort_threshold) for value in samples) / len(samples)
     if disable_utci:
         mean_utci = comfort_threshold
         max_utci = comfort_threshold
@@ -302,6 +321,8 @@ def _apply_common_feature_perturbations(
         scenic_score=0.5 if disable_scenic else features.scenic_score,
         noise_score=0.0 if disable_noise else features.noise_score,
         uncertainty=0.0 if disable_uncertainty else features.uncertainty,
+        utci_samples=samples,
+        utci_threshold_c=comfort_threshold,
     )
 
 
@@ -364,6 +385,13 @@ def _rescore_candidate_on_graph(
         noise_score=rescored.noise_score,
         slope_penalty=rescored.slope_penalty,
         cost=candidate.cost,
+        route_source=candidate.route_source,
+        search_truncated=candidate.search_truncated,
+        search_stop_reason=candidate.search_stop_reason,
+        expanded_labels=candidate.expanded_labels,
+        retained_labels=candidate.retained_labels,
+        maximum_distance_m=candidate.maximum_distance_m,
+        shade_fallback_fraction=rescored.shade_fallback_fraction,
     )
 
 

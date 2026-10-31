@@ -1,0 +1,89 @@
+{
+  "started_utc": "2026-10-30T01:57:07.438865+00:00",
+  "stage": "routes",
+  "python": "3.12.10 | packaged by conda-forge | (main, Apr 10 2025, 22:21:13) [GCC 13.3.0]",
+  "platform": "Linux-4.18.0-553.137.1.el8_10.x86_64-x86_64-with-glibc2.28",
+  "networkx": "3.6.1",
+  "rasterio": "1.5.1",
+  "git_commit": "200d82a3a5d2bdf79099cca1ad93237e440757fd",
+  "source_sha256": {
+    "src/routing_backend/__init__.py": "cbcc91c41140e856d60faec614424efc1055423264da7596bd3bcbfd2815abfc",
+    "src/routing_backend/api.py": "49bb1387bfdc95d62c249d301552e56dd220b9e7e23250b157461746692d2065",
+    "src/routing_backend/audit_exports.py": "da4a0433a189d9b44492abf80b52ac0ed2d52a7b2803f86273389446a984a81a",
+    "src/routing_backend/baseline_methods.py": "4f8a7bce886d879876c07f21c88f790e25874af72749362dea381ece0511b166",
+    "src/routing_backend/benchmark_runner.py": "69328355916936b3bdc012111c9762c10d4cba57a6243dbd0951e3de97633895",
+    "src/routing_backend/data_ingestion.py": "58d98e26f0db4c1e9c8bfacdbee3dff8744329836cc636fb36ab615bcf1126b7",
+    "src/routing_backend/experiment_config.py": "2a15fcccbffe6d36f96828e325a4d816e896fa2407b82befdced19b8946f81dd",
+    "src/routing_backend/experiment_io.py": "d34abb20d487c67fe08b82c64faab5fe23e4c32db9ec581fd1580e92484f38d2",
+    "src/routing_backend/microclimate_model.py": "051ee3b48a8c149df09e77b460a8c327bed1176161f599dc6d0179daadcdfb41",
+    "src/routing_backend/od_sampling.py": "d19cf588b1b86250b5180880648b4a2357293d8fede895a95345d9cfc7c180c6",
+    "src/routing_backend/paired_comparison.py": "562614312887ea9fa100d5ffd7f946eaf204904971b9971f05d1de34375ca2ca",
+    "src/routing_backend/perception_model.py": "5b570e057796742067a4a9c9ea4eee852a9b1fd7a2e3400fa36e45e9eb99efb6",
+    "src/routing_backend/preferences.py": "c7928ca8c9d072721db0b79396330a308115dfb82afdf458db4defe868ab4c37",
+    "src/routing_backend/raster_data.py": "d5629a871cdae247d5547a93fa538092165872e1181c828e2244d0d3d5dcc7b0",
+    "src/routing_backend/raster_validation.py": "b083e7abf222f2083d96f4f264452a331ea98170e1730abe37329b52954f27b0",
+    "src/routing_backend/real_features.py": "ee31f4526bd3102192630b8109d6fecda506a1d6f2a18132e9773dd8dc92953b",
+    "src/routing_backend/result_metrics.py": "21ee9c69285192cc1730a5954a0041a3a8e422ebd96917471d01ea4dea8f8e8f",
+    "src/routing_backend/review_sensitivity.py": "3a157dfd6d19f0bf9808f80844a67a87a1d1cf39a54c06b7ee54ddfb18bb6187",
+    "src/routing_backend/route_engine.py": "2107553f3a8ee9a0475f843becb61967ee3ae59b5c6afd81eda441748b98a2e8"
+  },
+  "runner_sha256": "00a220ae0f85225f4476caffbc17924b01412a3a852668f2b7adb1ee074fe10a",
+  "od_pairs_sha256": "7a529d8f787e09d0cacdbf3d267b0bf90c2dab1eab1c0dfaca26c46d07c5c809",
+  "config": {
+    "study_name": "dc_snapshot_review3466",
+    "city": "Washington, District of Columbia, USA",
+    "mode": "walk",
+    "departure_time": "2026-06-19T14:00:00-04:00",
+    "graph_path": "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/streets/dc_walk_graph.graphml",
+    "utci_raster_path": "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/solweig_outputs/utci_2026-06-19_14.tif",
+    "shadow_raster_path": "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/solweig_outputs/shadow_2026-06-19_14.tif",
+    "dem_raster_path": "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/rasters/dem_1m.tif",
+    "canopy_raster_paths": [
+      "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/rasters/canopy_height_1m.tif"
+    ],
+    "traffic_geojson_path": "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/raw/traffic_noise/ddot_traffic_volume_2023.geojson",
+    "output_dir": "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/results/review3466-final-2",
+    "random_seed": 42,
+    "od_pair_count": 500,
+    "min_shortest_distance_m": 400.0,
+    "max_shortest_distance_m": 3000.0,
+    "detour_ratios": [
+      0.05,
+      0.1,
+      0.2,
+      0.3
+    ],
+    "comfort_threshold_c": 26.0,
+    "sample_spacing_m": 20.0,
+    "route_search_seconds": 1.5,
+    "route_search_expansions": 20000,
+    "route_search_labels_per_node": 8,
+    "landcover_raster_paths": [
+      "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/rasters/landcover_1m_center_tile.tif"
+    ],
+    "building_height_raster_paths": [
+      "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/rasters/building_height_1m.tif"
+    ]
+  },
+  "limit": null,
+  "shard": 2,
+  "shards": 8,
+  "method_order": [
+    "shortest_distance",
+    "azimuth_heuristic",
+    "shadow_only",
+    "heat_dose",
+    "proposed_full"
+  ],
+  "selected_od_pairs_sha256": "905e4c9183740518ca502ef14165bcb0b72327769d4c7613520b9e5798d61b36",
+  "selected_pair_count": 63,
+  "elapsed_seconds": 826.2799033466727,
+  "finished_utc": "2026-10-30T02:10:53.758228+00:00",
+  "outputs": {
+    "benchmark_failures.csv": "6edf3318b5c680a6886643130eee8b9456384c3515043a0ba46a261b1a6467db",
+    "benchmark_report.md": "a7d712c68850829b9b633b0da885af8096737cfbf262f32f09cf12055cdb1406",
+    "od_pairs.csv": "905e4c9183740518ca502ef14165bcb0b72327769d4c7613520b9e5798d61b36",
+    "routes.geojson": "91ea9acc86a8d65bc4fd76d9824bb1492104b1ab1332dee7d1f2978f3b8f9df8",
+    "routes_summary.csv": "0655e79985519ec77994445acaee4f67279b873684e5bfab8f69001b00e3b849"
+  }
+}

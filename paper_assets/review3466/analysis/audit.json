@@ -1,0 +1,32 @@
+{
+  "analysis_type": "reanalysis of historical records; no corrected routing rerun",
+  "source_sha256": {
+    "routes_summary.csv": "220f908e705980cd1806df128862d80b21fd57267ea8e662b0ddf9f06349d0b2",
+    "proposed_tuning_summary.csv": "b4d7d5f10a901c7074b4de8385250a4e5323ff932276f864fccc6078bea27a59",
+    "od_pairs.csv": "8dbde4baa4f3d0ac0f2358abc1cd52a4168a2c19dcf2649b237fa03d15f5cff3"
+  },
+  "records": 10000,
+  "accepted": 8093,
+  "common_records_per_method": 1386,
+  "common_od_pairs": 459,
+  "common_by_budget": {
+    "0.05": 389,
+    "0.3": 370,
+    "0.2": 309,
+    "0.1": 318
+  },
+  "failure_reasons": {
+    "Route search exceeded expansion budget of 20000 before finding a route within the detour budget": 1907
+  },
+  "baseline_sequences_identical_across_budgets": true,
+  "tuning_common_records_per_variant": 142,
+  "tuning_common_od_pairs": 81,
+  "tuning_success_counts": {
+    "proposed_full_v1_current": 145,
+    "proposed_full_v2_heat_heavy": 146,
+    "proposed_full_v3_shade_heavy": 146,
+    "proposed_full_v4_heat_low_distance_penalty": 144
+  },
+  "bootstrap_replicates": 2000,
+  "bootstrap_seed": 42
+}

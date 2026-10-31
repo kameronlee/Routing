@@ -1,0 +1,20 @@
+{
+  "roads": {
+    "url": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Transportation_WebMercator/MapServer/163",
+    "feature_count": 13833,
+    "retrieved": "2026-10-28",
+    "sha256": "80208ce0f981fceed0783b8229d92fae55170a1ae912d6f874cfb4fb8c06f2ce"
+  },
+  "water": {
+    "url": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Planimetrics_2023/MapServer/14",
+    "feature_count": 1562,
+    "retrieved": "2026-10-28",
+    "sha256": "27da64a8c43480da8aa5561549a5bda3578ef24885af277fb381330c2d42df82"
+  },
+  "district": {
+    "source": "Existing DC GIS boundary in data/raw/boundary/dc_boundary.geojson",
+    "sha256": "be723ffb0217c760732b146e58284ea7ea85bcdddec8b73ab185a14e920c0dd7"
+  },
+  "scope": "Context only; not the historical routing graph, shade map, or UTCI field.",
+  "attribution": "Roadway Block: DDOT, CC BY 4.0. Waterbodies 2023 and district boundary: DC OCTO/DC GIS."
+}

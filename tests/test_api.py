@@ -14,6 +14,18 @@ def _transport_client(app) -> httpx.AsyncClient:
     return httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://testserver")
 
 
+@pytest.fixture
+def demo_dem(tmp_path, monkeypatch):
+    """Demo route tests use a tiny test DEM, never the checkout's LFS pointers."""
+    path = tmp_path / "demo_dem.tif"
+    with rasterio.open(path, "w", driver="GTiff", height=10, width=10,
+                       count=1, dtype="float32", crs="EPSG:4326",
+                       transform=from_origin(-77.2, 39.0, 0.05, 0.05)) as dataset:
+        dataset.write(np.zeros((10, 10), dtype=np.float32), 1)
+    monkeypatch.setattr(api_module, "default_dem_path", lambda _data_dir: path)
+    return path
+
+
 @pytest.mark.anyio
 async def test_health_endpoint() -> None:
     async with _transport_client(create_app(Settings(prefer_local_data=False))) as client:
@@ -53,7 +65,7 @@ async def test_health_does_not_wait_for_background_preload(monkeypatch) -> None:
 
 
 @pytest.mark.anyio
-async def test_route_endpoint_returns_candidate() -> None:
+async def test_route_endpoint_returns_candidate(demo_dem) -> None:
     async with _transport_client(
         create_app(
             Settings(
@@ -88,7 +100,7 @@ async def test_route_endpoint_returns_candidate() -> None:
 
 
 @pytest.mark.anyio
-async def test_route_rejects_locations_beyond_snap_limit() -> None:
+async def test_route_rejects_locations_beyond_snap_limit(demo_dem) -> None:
     async with _transport_client(
         create_app(
             Settings(
@@ -112,7 +124,7 @@ async def test_route_rejects_locations_beyond_snap_limit() -> None:
 
 
 @pytest.mark.anyio
-async def test_route_accepts_bounded_landmark_snap_tolerance() -> None:
+async def test_route_accepts_bounded_landmark_snap_tolerance(demo_dem) -> None:
     async with _transport_client(
         create_app(
             Settings(
@@ -151,7 +163,7 @@ async def test_route_rejects_excessive_landmark_snap_tolerance() -> None:
 
 
 @pytest.mark.anyio
-async def test_single_priority_scenic_route_never_ranks_below_baseline() -> None:
+async def test_single_priority_scenic_route_never_ranks_below_baseline(demo_dem) -> None:
     async with _transport_client(
         create_app(
             Settings(
@@ -176,7 +188,7 @@ async def test_single_priority_scenic_route_never_ranks_below_baseline() -> None
 
 
 @pytest.mark.anyio
-async def test_candidate_response_limit_does_not_change_primary_route() -> None:
+async def test_candidate_response_limit_does_not_change_primary_route(demo_dem) -> None:
     async with _transport_client(
         create_app(
             Settings(

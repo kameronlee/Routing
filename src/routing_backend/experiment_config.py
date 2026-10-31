@@ -185,6 +185,15 @@ class ExperimentConfig:
                 "Missing required real-data experiment input(s). Update the config or generate the data first: "
                 + "; ".join(missing)
             )
+        all_paths = [*required_paths.values(), *self.canopy_raster_paths,
+                     *self.landcover_raster_paths, *self.building_height_raster_paths]
+        for path in all_paths:
+            with path.open("rb") as handle:
+                if handle.read(80).startswith(b"version https://git-lfs.github.com/spec/v1"):
+                    raise FileNotFoundError(
+                        f"Input is a Git LFS pointer, not the downloaded data: {path}. "
+                        "Restore the matching LFS object or use the complete Hopper data bundle."
+                    )
 
 
 def _resolve_path(value: Any, base_dir: Path) -> Path:

@@ -1,0 +1,125 @@
+{
+  "detour_ratios": [
+    0.2
+  ],
+  "note": "All variant routes are rescored on the unperturbed reference feature graph. No field validation.",
+  "od_subset_size": 50,
+  "reporting_spacing_m": 20.0,
+  "reporting_threshold_c": 26.0,
+  "variants": [
+    [
+      "reference",
+      {}
+    ],
+    [
+      "weight_cool_x0",
+      {
+        "preference_overrides": {
+          "weight_cool": 0.0
+        }
+      }
+    ],
+    [
+      "weight_cool_x2",
+      {
+        "preference_overrides": {
+          "weight_cool": 2.0
+        }
+      }
+    ],
+    [
+      "weight_shade_x0",
+      {
+        "preference_overrides": {
+          "weight_shade": 0.0
+        }
+      }
+    ],
+    [
+      "weight_shade_x2",
+      {
+        "preference_overrides": {
+          "weight_shade": 2.0
+        }
+      }
+    ],
+    [
+      "weight_scenic_x0",
+      {
+        "preference_overrides": {
+          "weight_scenic": 0.0
+        }
+      }
+    ],
+    [
+      "weight_scenic_x2",
+      {
+        "preference_overrides": {
+          "weight_scenic": 0.9
+        }
+      }
+    ],
+    [
+      "weight_quiet_x0",
+      {
+        "preference_overrides": {
+          "weight_quiet": 0.0
+        }
+      }
+    ],
+    [
+      "weight_quiet_x2",
+      {
+        "preference_overrides": {
+          "weight_quiet": 0.9
+        }
+      }
+    ],
+    [
+      "weight_slope_x0",
+      {
+        "preference_overrides": {
+          "weight_slope": 0.0
+        }
+      }
+    ],
+    [
+      "weight_slope_x2",
+      {
+        "preference_overrides": {
+          "weight_slope": 0.7
+        }
+      }
+    ],
+    [
+      "threshold_24C",
+      {
+        "threshold": 24
+      }
+    ],
+    [
+      "threshold_28C",
+      {
+        "threshold": 28
+      }
+    ],
+    [
+      "sampling_5m",
+      {
+        "spacing": 5
+      }
+    ],
+    [
+      "sampling_10m",
+      {
+        "spacing": 10
+      }
+    ],
+    [
+      "sampling_40m",
+      {
+        "spacing": 40
+      }
+    ]
+  ]
+}

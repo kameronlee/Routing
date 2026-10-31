@@ -44,8 +44,14 @@ ROUTE_SUMMARY_COLUMNS = [
     "runtime_ms",
     "expanded_labels",
     "retained_labels",
+    "route_source",
+    "search_truncated",
+    "search_stop_reason",
+    "maximum_distance_m",
+    "shade_fallback_fraction",
     "success",
     "failure_reason",
+    "failure_type",
     "raster_timestamp",
     "departure_time",
     "config_hash",
@@ -153,6 +159,7 @@ def run_route_benchmark(
                             max_labels_per_node=config.route_search_labels_per_node,
                             max_expansions=config.route_search_expansions,
                             max_seconds=config.route_search_seconds,
+                            maximum_distance_m=maximum_distance_m,
                         )
                         runtime_ms = (perf_counter() - started) * 1000.0
                         if method_config.enforce_detour and candidate.distance_m > maximum_distance_m + 1e-6:
@@ -185,6 +192,7 @@ def run_route_benchmark(
                             baseline_distance_m=baseline_distance_m,
                             runtime_ms=runtime_ms,
                             failure_reason=str(exc),
+                            failure_type=type(exc).__name__,
                             config_hash_value=hash_value,
                             run_id=run_identifier,
                         )
@@ -304,6 +312,7 @@ def run_ablation_benchmark(
                         max_labels_per_node=config.route_search_labels_per_node,
                         max_expansions=config.route_search_expansions,
                         max_seconds=config.route_search_seconds,
+                        maximum_distance_m=maximum_distance_m,
                     )
                     runtime_ms = (perf_counter() - started) * 1000.0
                     row = _candidate_row(
@@ -330,6 +339,7 @@ def run_ablation_benchmark(
                             baseline_distance_m=baseline_distance_m,
                             runtime_ms=(perf_counter() - started) * 1000.0,
                             failure_reason=str(exc),
+                            failure_type=type(exc).__name__,
                             config_hash_value=hash_value,
                             run_id=run_identifier,
                         )
@@ -595,10 +605,16 @@ def _candidate_row(
         "slope_penalty": candidate.slope_penalty,
         "route_cost": candidate.cost,
         "runtime_ms": runtime_ms,
-        "expanded_labels": "",
-        "retained_labels": "",
+        "expanded_labels": candidate.expanded_labels,
+        "retained_labels": candidate.retained_labels,
+        "route_source": candidate.route_source,
+        "search_truncated": candidate.search_truncated,
+        "search_stop_reason": candidate.search_stop_reason,
+        "maximum_distance_m": candidate.maximum_distance_m,
+        "shade_fallback_fraction": candidate.shade_fallback_fraction,
         "success": success,
         "failure_reason": failure_reason,
+        "failure_type": "",
         "raster_timestamp": config.departure_time.isoformat(),
         "departure_time": config.departure_time.isoformat(),
         "config_hash": config_hash_value,
@@ -618,6 +634,7 @@ def _failure_row(
     failure_reason: str,
     config_hash_value: str,
     run_id: str,
+    failure_type: str = "",
 ) -> dict[str, Any]:
     return {
         "study_name": config.study_name,
@@ -643,8 +660,14 @@ def _failure_row(
         "runtime_ms": runtime_ms,
         "expanded_labels": "",
         "retained_labels": "",
+        "route_source": "",
+        "search_truncated": "",
+        "search_stop_reason": "",
+        "maximum_distance_m": baseline_distance_m * (1.0 + detour_ratio),
+        "shade_fallback_fraction": "",
         "success": False,
         "failure_reason": failure_reason,
+        "failure_type": failure_type,
         "raster_timestamp": config.departure_time.isoformat(),
         "departure_time": config.departure_time.isoformat(),
         "config_hash": config_hash_value,

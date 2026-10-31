@@ -181,6 +181,10 @@ class RouteCandidateResponse(BaseModel):
     noise_score: float
     slope_penalty: float
     cost: float
+    route_source: str = "unknown"
+    search_truncated: bool = False
+    maximum_distance_m: float | None = None
+    shade_fallback_fraction: float | None = None
 
 
 class RouteResponse(BaseModel):
@@ -258,6 +262,10 @@ def _candidate_to_response(candidate: RouteCandidate) -> RouteCandidateResponse:
         noise_score=candidate.noise_score,
         slope_penalty=candidate.slope_penalty,
         cost=candidate.cost,
+        route_source=candidate.route_source,
+        search_truncated=candidate.search_truncated,
+        maximum_distance_m=candidate.maximum_distance_m,
+        shade_fallback_fraction=candidate.shade_fallback_fraction,
     )
 
 
@@ -681,6 +689,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                     max_expansions=app_settings.route_search_expansions,
                     departure_time=departure_time,
                     utci_raster_path=utci_raster,
+                    maximum_distance_m=baseline_distance_m * (1.0 + request.detour_ratio),
                 )
                 baseline_candidate = length_shortest_route_candidate(
                     feature_graph,
@@ -708,10 +717,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                     except (KeyError, ValueError):
                         # Strict UTCI coverage can remove an edge from a stored path.
                         continue
-                unique_candidates = {
-                    tuple(candidate.edge_ids): candidate
-                    for candidate in [*candidates, *path_candidates, baseline_candidate]
-                }
+                # Auxiliary candidates must satisfy the same original-graph
+                # ceiling as the constrained solver, including parallel edges.
+                maximum_distance = baseline_distance_m * (1.0 + request.detour_ratio)
+                unique_candidates = {}
+                for candidate in [*candidates, *path_candidates, baseline_candidate]:
+                    if candidate.distance_m <= maximum_distance + 1e-9:
+                        unique_candidates.setdefault(tuple(candidate.edge_ids), candidate)
                 ranked = _rank_single_priority_candidates(request, list(unique_candidates.values()))
                 if ranked is None:
                     ranked = sorted(unique_candidates.values(), key=lambda candidate: (candidate.cost, candidate.distance_m))

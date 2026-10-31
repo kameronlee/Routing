@@ -1,349 +1,41 @@
-# ClearHelp DC
+# Heat-aware pedestrian routing
 
-ClearHelp DC is a high-school-track prototype for USAII's 2026 **Help is Hard
-to Find** challenge, Direction A: Crisis-to-Action Translator. Its primary user
-is a DC parent or caregiver under financial stress who receives a confusing
-school-meal, food-benefit, or housing notice and needs to act without missing
-an important deadline.
+Code and data for my GeoHealth 2026 pilot in Washington, DC. The experiment
+compares four environmental objectives with shortest distance on 500 OD pairs
+at one modeled hour.
 
-The primary flow is intentionally simple:
+The corrected run returns all 10,000 routes within their distance budgets.
+Mean UTCI exceedance falls by 0.92–0.96 K, with 4.84–6.55% extra distance.
+Some requests use shortest-path fallback. Sampling changes many selected
+paths, and the search cap can miss better solutions. I haven't validated the
+thermal field or measured comfort or health outcomes.
 
-1. The user pastes a notice.
-2. A small on-device Naive Bayes text classifier identifies the likely support
-   category from synthetic training examples.
-3. The app extracts the likely topic, requested action, deadline, and named
-   documents, then returns a plain-language explanation, checklist, confidence
-   label, and immediate next step.
-4. The user chooses a human support resource and can request directions.
+## Start
 
-AI is needed before search because a stressed caregiver may not know what kind
-of help the letter concerns, which words matter, or what to search for. The
-on-device NLP step turns the raw notice into a likely topic, extracted deadline,
-requested action, and document list; only then does the app suggest a resource.
-
-Responsible AI is concrete in the product:
-
-- **Risk:** the small classifier can misclassify an unfamiliar notice or point
-  toward a synthetic/outdated resource.
-- **Mitigation:** text remains on-device, uncertain input receives a neutral
-  "Needs review" result, confidence is qualitative rather than a misleading
-  percentage, and every demo resource is labeled for verification.
-- **Human in the loop:** a benefits worker, school staff member, housing
-  advocate, counselor, or trusted adult confirms what the notice requires and
-  makes every eligibility, legal, medical, or safety decision.
-
-The AI does **not** decide eligibility, interpret legal rights, make medical or
-safety decisions, or verify that a resource is current. The prototype makes
-that risk visible through confidence labels, synthetic-data disclosure, and a
-human-review boundary. Demo directory records are synthetic and must be
-replaced with verified official listings before deployment.
-
-The repository also includes an advanced shade-aware routing subsystem for the
-secondary “get to help” action. It computes walking and cycling routes optimized
-for micro-climate comfort, shade, scenicness, quietness, and slope using staged
-Washington, DC data.
-
-## What Is Included
-
-- `data_ingestion.py`: OSMnx/GraphML street graph loading and LiDAR DEM elevation sampling.
-- `raster_data.py`: real GeoTIFF discovery/sampling for DEM and SOLWEIG outputs.
-- `real_features.py`: joins LiDAR canopy/building height, optional land-cover and DDOT AADT traffic data onto route edges.
-- `microclimate_model.py`: geometry densification, UTCI raster sampling and solar azimuth/altitude helpers.
-- `perception_model.py`: slope helpers and development fallback scoring utilities.
-- `preferences.py`: user preference dataclass plus descriptor-to-weight mapping.
-- `route_engine.py`: edge feature extraction, scalar utility cost and resource-constrained routing.
-- `api.py`: FastAPI app with `/health`, `/data/status`, `/route` and `/utci`.
-- `scripts/build_dc_data_bundle.py`: Washington, D.C. public-data downloader.
-- `scripts/build_lidar_products.py`: rasterizes classified NOAA COPC LAZ tiles into DSM, building DSM and tree CDSM.
-- `scripts/build_weather_forcing.py`: downloads real hourly weather/solar forcing for SOLWEIG inputs.
-- `tests/`: unit and integration tests, including explicit development fallback tests.
-
-## Install
-
-Use Python 3.10 or newer.
-
-```bash
-python -m venv .venv
-.venv\Scripts\activate
-python -m pip install -U pip
-python -m pip install -e ".[dev]"
-```
-
-For real OSM downloads, install the optional OSM stack:
-
-```bash
-python -m pip install -e ".[dev,geo]"
-```
-
-For SOLWEIG-GPU execution:
-
-```bash
-python -m pip install -e ".[solweig]"
-```
-
-On this Windows/Python 3.12 workspace, `solweig-gpu` also needed GDAL Python
-bindings from a prebuilt wheel:
-
-```bash
-python -m pip install https://wheelhouse.openquake.org/v3/windows/py312/gdal-3.10.2-cp312-cp312-win_amd64.whl
-```
-
-The API no longer uses synthetic data unless you explicitly enable development
-fallbacks with environment variables.
-
-## Build The Washington, D.C. Data Bundle
-
-The repository now includes a repeatable downloader for the DC real-data bundle:
-
-```bash
-python scripts/build_dc_data_bundle.py
-```
-
-The default run downloads/stages:
-
-- DC administrative boundary from DCGIS.
-- Geofabrik DC OSM PBF and shapefile extracts.
-- OSMnx walking GraphML for DC.
-- DDOT 2023 traffic volume GeoJSON.
-- DC 2020 tree-canopy summary and center raster tile.
-- DC 2020 generalized land-cover center raster tile.
-- NOAA-hosted DC OCTO 2022 full-city 1 m DEM.
-- NOAA LiDAR URL list, tile index metadata and one representative COPC LAZ tile.
-
-The full NOAA point-cloud catalog is intentionally opt-in because it is
-multi-GB:
-
-```bash
-python scripts/build_dc_data_bundle.py --download-all-laz
-```
-
-After downloading the full point-cloud catalog, generate the LiDAR-derived
-SOLWEIG/routing rasters:
-
-```bash
-python scripts/build_lidar_products.py
-```
-
-This builds:
-
-- `data/processed/solweig_inputs/dsm_1m.tif`
-- `data/processed/solweig_inputs/building_dsm_1m.tif`
-- `data/processed/solweig_inputs/trees_cdsm_1m.tif`
-- `data/processed/rasters/canopy_height_1m.tif`
-
-For weather forcing:
-
-```bash
-python scripts/build_weather_forcing.py --start-date 2026-05-23 --end-date 2026-05-23
-```
-
-To run SOLWEIG-GPU after the optional SOLWEIG stack is installed:
-
-```bash
-python scripts/run_solweig_gpu.py ^
-  --date 2026-05-23 ^
-  --met-file data\processed\solweig_inputs\met_forcing_2026-05-23_2026-05-23.txt ^
-  --work-dir data\processed\solweig_gpu_work ^
-  --tile-size 1000 ^
-  --publish
-```
-
-For a quick real-data smoke test before a long production run:
-
-```bash
-python scripts/run_solweig_gpu.py ^
-  --date 2026-05-23 ^
-  --met-file data\processed\solweig_inputs\met_forcing_2026-05-23_2026-05-23.txt ^
-  --work-dir data\processed\solweig_gpu_smoke ^
-  --subset-size-m 128 ^
-  --tile-size 128 ^
-  --clean-work-dir
-```
-
-The smoke output stays under `data/processed/solweig_gpu_smoke` and is not
-published to the API's strict routing UTCI directory.
-
-On Hopper, submit a one-hour production UTCI run with the included Slurm script:
-
-```bash
-sbatch scripts/run_solweig_one_hour.slurm
-```
-
-If Hopper rejects the H100 request or the H100 queue is unavailable, use the
-A100 80GB fallback:
-
-```bash
-sbatch scripts/run_solweig_one_hour_a100.slurm
-```
-
-The script defaults to `SOLWEIG_DATE=2026-05-23` and `SOLWEIG_HOUR=14`.
-Override them at submit time when generating another hour:
-
-```bash
-sbatch --export=ALL,SOLWEIG_DATE=2026-05-23,SOLWEIG_HOUR=15 scripts/run_solweig_one_hour.slurm
-```
-
-The manifest is written to `data/metadata/manifest.json`.
-
-## Run The API
-
-```bash
-uvicorn routing_backend.api:app --reload
-```
-
-On Windows, this repository also includes a file-backed launcher that works well
-when the service is started from tooling without a normal console:
-
-```bash
-python scripts/run_dev_server.py
-```
-
-Open:
-
-- `http://127.0.0.1:8000/health`
-- `http://127.0.0.1:8000/data/status`
-- `http://127.0.0.1:8000/docs`
-- `http://127.0.0.1:8000/utci`
-
-## Run The Expo App
-
-From `ClearHelp/frontend`, Expo also starts the FastAPI routing backend through
-`metro.config.js`, so the usual command brings up both services:
-
-```bash
-npx expo start
-```
-
-The Expo backend launcher uses `scripts/run_dev_server.py`, binds FastAPI to
-`0.0.0.0:8010`, automatically prefers the repository's `.venv` Python, and
-writes logs to `devserver.log` and `devserver.err.log`. Graph and elevation
-data preload in the background so `/health` can answer immediately; an early
-route request waits on the same protected cache instead of loading a duplicate.
-Set
-`EXPO_ROUTING_BACKEND_AUTOSTART=0` or `EXPO_SKIP_ROUTING_BACKEND=1` to opt out,
-and set `ROUTING_BACKEND_PYTHON` to override the detected Python interpreter.
-When today's UTCI raster is unavailable, routing uses the newest dated UTCI
-dataset and then chooses its closest available hour.
-
-Example route request:
-
-```bash
-curl -X POST http://127.0.0.1:8000/route ^
-  -H "Content-Type: application/json" ^
-  -d "{\"origin\":{\"lat\":38.8805,\"lon\":-77.0920},\"destination\":{\"lat\":38.8828,\"lon\":-77.0896},\"departure_time\":\"2026-07-01T14:00:00\",\"descriptors\":[\"heat sensitive\",\"noise averse\"],\"detour_ratio\":0.3}"
-```
-
-You can also request an OSMnx place when the optional stack and network are
-available:
-
-```json
-{
-  "origin": {"lat": 38.8895, "lon": -77.0353},
-  "destination": {"lat": 38.8977, "lon": -77.0365},
-  "city": "Washington, District of Columbia, USA",
-  "mode": "walk",
-  "descriptors": ["heat sensitive", "scenic"],
-  "detour_ratio": 0.25
-}
-```
-
-## Configuration
-
-Configuration is read from environment variables:
-
-- `ROUTING_DEFAULT_CITY`: optional OSMnx place name used when requests omit `city`.
-- `ROUTING_NETWORK_TYPE`: OSMnx network type, default `walk`.
-- `ROUTING_DATA_DIR`: local data bundle directory, default `./data`.
-- `ROUTING_PREFER_LOCAL_DATA`: set to `0` to ignore local GraphML/rasters.
-- `ROUTING_ROUTE_CLIP_BUFFER_M`: route corridor buffer around origin/destination, default `500`.
-- `ROUTING_EDGE_SAMPLE_SPACING_M`: route feature sampling interval in metres, default `60`.
-- `ROUTING_MAX_SNAP_DISTANCE_M`: reject locations farther than this from the covered street graph, default `250`.
-- `ROUTING_ROUTE_SEARCH_SECONDS`: time budget for alternative-route search, default `1.5`.
-- `ROUTING_ROUTE_SEARCH_EXPANSIONS`: maximum label expansions per route search, default `20000`.
-- `ROUTING_ROUTE_SEARCH_LABELS_PER_NODE`: maximum retained labels per graph node, default `8`.
-- `ROUTING_ROUTE_CANDIDATE_PATH_LIMIT`: maximum diversified path corridors evaluated, default `10`.
-- `ROUTING_PRELOAD_LOCAL_GRAPH`: set to `0` to skip loading the local graph/DEM at startup.
-- `ROUTING_ALLOW_SYNTHETIC_GRAPH`: development-only escape hatch; set to `1` to allow the test grid.
-- `ROUTING_ALLOW_SYNTHETIC_MICROCLIMATE`: development-only escape hatch; set to `1` to allow placeholder UTCI.
-- `ROUTING_CORS_ORIGINS`: comma-separated allowed browser origins for Expo/web clients, default `*`.
-
-No external API keys are hard-coded.
-
-## Paper Experiment: DC UTCI/Shadow Snapshot
-
-The repository includes a backend-only experiment layer for a computational
-routing paper. It evaluates one modeled UTCI/direct-shadow snapshot for
-Washington, DC and reports modeled heat exposure, not measured human comfort.
-It does not require field testing in DC and does not use frontend code.
-
-Install the figure dependency if you plan to run `make_figures.py`:
+Use Python 3.10 or newer in a virtual environment:
 
 ```bash
 python -m pip install -e ".[dev,experiments]"
+python -m pytest
 ```
 
-Run the full pipeline from the repository root:
+Rebuild the published tables and figures from the frozen records:
 
 ```bash
-python experiments/inspect_rasters.py --config configs/dc_snapshot.yaml
-python experiments/generate_od_pairs.py --config configs/dc_snapshot.yaml
-python experiments/run_route_benchmark.py --config configs/dc_snapshot.yaml
-python experiments/run_ablations.py --config configs/dc_snapshot.yaml
-python experiments/run_sensitivity.py --config configs/dc_snapshot.yaml
-python experiments/export_visual_audit.py --config configs/dc_snapshot.yaml
-python experiments/aggregate_results.py --config configs/dc_snapshot.yaml
-python experiments/make_figures.py --config configs/dc_snapshot.yaml
+python experiments/analyze_corrected_validation.py
+python experiments/make_corrected_figures.py
 ```
 
-The main experiment fails clearly if the configured real GraphML, UTCI raster,
-direct-shadow raster, canopy raster, DEM, or traffic GeoJSON is missing.
-Synthetic fallback data is disabled for the research scripts and should only be
-used in unit tests.
+## Paper and data
 
-The default config is `configs/dc_snapshot.yaml`. Update the raster paths there
-when evaluating a different timestamp.
+- [Paper (PDF)](paper/geohealth3466/main.pdf)
+- [Corrected records, checksums, and analysis](paper_assets/review3466/corrected/)
+- [Original OD pairs and historical records](paper_assets/review3466/raw/)
+- [Exact-reference checks](paper_assets/review3466/solver_validation/)
+- [Rerun instructions](experiments/README.md) and [reviewer response](paper/REVIEW_3466.md)
 
-## Testing
+Real routing needs the versioned graph and rasters, downloaded through Git
+LFS. Building heights must be derived by subtracting terrain elevation from
+the building DSM. See [setup](docs/setup.md) for the API and demo app.
 
-```bash
-pytest
-```
-
-Most tests use tiny in-memory fixtures, and development fallback tests are
-explicitly marked through settings. Runtime defaults remain strict-real-data.
-
-## Data Pipeline Notes
-
-The backend requires real UTCI rasters in
-`data/processed/solweig_outputs/utci_YYYY-MM-DD_HH.tif` and samples them along
-edges/routes. If no UTCI raster exists, `/route` and `/utci` return a 503 with
-the missing layer instead of fabricating heat values.
-
-Current all-real routing requirements:
-
-- `data/processed/streets/dc_walk_graph.graphml`
-- `data/processed/rasters/dem_1m.tif`
-- `data/processed/rasters/canopy_height_1m.tif` or another real tree-canopy raster
-- `data/raw/traffic_noise/ddot_traffic_volume_2023.geojson`
-- `data/processed/solweig_outputs/utci_YYYY-MM-DD_HH.tif`
-
-`GET /data/status` reports whether these are available. At the moment, the DC
-bundle is blocked only on real SOLWEIG/SOLWEIG-GPU UTCI output rasters.
-The SOLWEIG-GPU runner has been validated on a real clipped LiDAR subset; full
-1 m DC production runs are compute-heavy on CPU-only machines.
-
-Scenic and quiet scores now join real route-edge samples from LiDAR canopy
-height, optional land-cover rasters and DDOT AADT traffic lines. Missing
-LiDAR/canopy or traffic coverage raises an API error in strict mode.
-When a SOLWEIG direct-shadow raster is present, it is used as the route shade
-source. Otherwise the backend falls back to a solar azimuth/altitude estimate
-that combines departure time, edge bearing, street width and joined canopy or
-building heights.
-
-The routing algorithm first computes the shortest-path distance `d*`, then runs
-a label-setting constrained search to minimize weighted radiative-perceptual
-cost while enforcing:
-
-```text
-route_distance <= (1 + detour_ratio) * d*
-```
+The older ClearHelp prototype under `ClearHelp/` is separate from this study.

@@ -1,0 +1,12 @@
+{
+  "formula": "max(0, building_DSM - DEM)",
+  "units": "m",
+  "grid_resampling": false,
+  "source_dsm_sha256": "62003871416c2f3e5141a32dc7963865a1336a9d8f4710a825149b5d18182267",
+  "source_dem_sha256": "bc50862b7de761fa43f124048981d78eebc06da4fc7d9fe51272a7c02b470b7d",
+  "output_sha256": "ca255ad4f24dca8a4e503e94896524dee2fc5ecb0d2fdab9405a32ddcad51cc0",
+  "valid_cells": 209872000,
+  "cells_at_least_2m": 32691599,
+  "max_height_m": 168.36900329589844,
+  "script_sha256": "c6eeb157045285d4b458800609c340393937eee58a1edf9580fe7b1725065c99"
+}
