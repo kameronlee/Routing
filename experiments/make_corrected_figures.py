@@ -44,6 +44,12 @@ def street_labels(case_dir, context):
             point = near.centroid
             ranked.append((near.length, name, point))
     labels, points = [], []
+    # Stagger the published example's parallel street names beside their roads.
+    placements = {
+        "3RD ST NW": (.35, (9, 0)),
+        "4TH ST NW": (.80, (-7, 0)),
+        "5TH ST NW": (.35, (-9, 0)),
+    }
     for _, name, point in sorted(ranked, key=lambda x: (-x[0], x[1])):
         if any(point.distance(previous) < 250 for previous in points):
             continue
@@ -51,7 +57,8 @@ def street_labels(case_dir, context):
         label = re.sub(r"(\d+)(St|Nd|Rd|Th)\b", lambda m: m[1] + m[2].lower(), label)
         for direction in ("Nw", "Ne", "Sw", "Se"):
             label = label.replace(direction, direction.upper())
-        labels.append((name, label, .5, (0, 7)))
+        fraction, offset = placements.get(name, (.5, (0, 7)))
+        labels.append((name, label, fraction, offset))
         points.append(point)
         if len(labels) == 3:
             break

@@ -315,9 +315,9 @@ def route_comparison(cases, routes, context, out, *, case_dir=CONTEXT, street_la
                     facecolor="white", edgecolor="#007A6E", linewidth=1.3, zorder=4)
     sample_label = f"n = {len(matched)}"
     if auto_extent:
-        sample_label += f"\n{sum(r['unchanged_edges'] for r in matched)} unchanged paths"
-    scatter.text(.04, .96, sample_label, transform=scatter.transAxes,
-                 fontsize=8.5, va="top")
+        sample_label += f"; {sum(r['unchanged_edges'] for r in matched)} unchanged paths"
+    scatter.text(0, 1.025, sample_label, transform=scatter.transAxes,
+                 fontsize=8.5, va="bottom", clip_on=False)
     lower = min(-.15, delta.min() - .15) if auto_extent else min(-1.5, delta.min() - .2)
     upper = max(.5, delta.max() + .2) if auto_extent else max(3.5, delta.max() + .2)
     scatter.set(xlim=(-.6, 20.6), ylim=(lower, upper), xticks=[0, 5, 10, 15, 20],
