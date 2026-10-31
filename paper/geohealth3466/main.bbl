@@ -2,7 +2,7 @@
 %%% Do NOT edit. File created by BibTeX with style
 %%% ACM-Reference-Format-Journals [18-Jan-2012].
 
-\begin{thebibliography}{28}
+\begin{thebibliography}{27}
 
 %%% ====================================================================
 %%% NOTE TO THE USER: you can override these defaults by providing
@@ -348,22 +348,6 @@
 \newblock
 \showeprint[arxiv]{2602.02540}
 \href{https://doi.org/10.48550/arXiv.2602.02540}{doi:\nolinkurl{10.48550/arXiv.2602.02540}}
-
-
-\bibitem[Skoumas et~al\mbox{.}(2015)]%
-        {skoumas2015}
-\bibfield{author}{\bibinfo{person}{Georgios Skoumas},
-  \bibinfo{person}{Klaus~Arthur Schmid}, \bibinfo{person}{Gregor Joss{\'e}},
-  \bibinfo{person}{Matthias Schubert}, \bibinfo{person}{Mario~A. Nascimento},
-  \bibinfo{person}{Andreas Z{\"u}fle}, \bibinfo{person}{Matthias Renz}, {and}
-  \bibinfo{person}{Dieter Pfoser}.} \bibinfo{year}{2015}\natexlab{}.
-\newblock \showarticletitle{Knowledge-Enriched Route Computation}. In
-  \bibinfo{booktitle}{\emph{Advances in Spatial and Temporal Databases}}
-  \emph{(\bibinfo{series}{Lecture Notes in Computer Science},
-  Vol.~\bibinfo{volume}{9239})}. \bibinfo{publisher}{Springer},
-  \bibinfo{address}{Cham}, \bibinfo{pages}{157--176}.
-\newblock
-\href{https://doi.org/10.1007/978-3-319-22363-6_9}{doi:\nolinkurl{10.1007/978-3-319-22363-6_9}}
 
 
 \bibitem[Vartholomaios(2023)]%
