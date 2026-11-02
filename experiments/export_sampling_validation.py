@@ -15,7 +15,7 @@ import tarfile
 
 import numpy as np
 
-from export_validation_bundle import ROOT, METHODS, digest, freeze_csv
+from export_validation_bundle import ROOT, METHODS, copy_metadata, digest, freeze_csv
 
 
 def main():
@@ -36,12 +36,12 @@ def main():
         for name, checksum in manifest["outputs"].items():
             assert digest(path / name) == checksum
         manifests.append(manifest)
-        shutil.copy2(path / "manifest.json", raw / f"main_shard_{i}.json")
+        copy_metadata(path / "manifest.json", raw / f"main_shard_{i}.json")
         rescore = args.results / f"rescore-{i}"
         checks = json.loads((rescore / "rescore_manifest.json").read_text())
         assert checks["finished_utc"]
         assert digest(rescore / "reference_rescored.csv") == checks["output_sha256"]
-        shutil.copy2(rescore / "rescore_manifest.json", raw / f"rescore_shard_{i}.json")
+        copy_metadata(rescore / "rescore_manifest.json", raw / f"rescore_shard_{i}.json")
     assert all(m["source_sha256"] == manifests[0]["source_sha256"] for m in manifests)
     assert all(m["runner_sha256"] == manifests[0]["runner_sha256"] for m in manifests)
     rows = freeze_csv([args.results / f"routes-{i}/routes_summary.csv" for i in range(args.shards)],
@@ -55,11 +55,15 @@ def main():
     for i, path in enumerate(settings):
         for name, label in (("validation_protocol.json", "sensitivity"),
                             ("review_sensitivity_protocol.json", "sensitivity_reporting")):
-            shutil.copy2(path / name, raw / f"{label}_shard_{i}.json")
+            copy_metadata(path / name, raw / f"{label}_shard_{i}.json")
     for name in ("manifest.json", "baseline_distance_check.csv"):
-        shutil.copy2(args.results / "preflight" / name,
-                     raw / ("inputs.json" if name == "manifest.json" else name))
-    shutil.copy2(args.results / "protocol.json", raw / "protocol.json")
+        source = args.results / "preflight" / name
+        destination = raw / ("inputs.json" if name == "manifest.json" else name)
+        if name == "manifest.json":
+            copy_metadata(source, destination)
+        else:
+            shutil.copy2(source, destination)
+    copy_metadata(args.results / "protocol.json", raw / "protocol.json")
     index = {(r["pair_id"], float(r["detour_ratio"]), r["method"]): r for r in rows}
     assert len(index) == len(rows)
     eligible = []
@@ -100,6 +104,8 @@ def main():
         "selection_spacing_m": 5, "reference_selection_spacing_m": 20,
         "reporting_spacing_m": 5, "attempts": len(rows), "reference_paths_rescored": len(rescored),
         "source_sha256": manifests[0]["source_sha256"],
+        "path_format": "repository-relative",
+        "note": "Execution paths are repository-relative; original shard configuration and run identifiers are retained.",
         "selected_case": {"pair_id": pair, "allowance": .2, "delta_H_K": reduction,
                           "target_median_K": target, "common_cases": len(eligible)},
         "files_sha256": {p.name: digest(p) for p in raw.iterdir() if p.name != "provenance.json"}}

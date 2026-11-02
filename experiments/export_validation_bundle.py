@@ -10,7 +10,7 @@ import hashlib
 import importlib.metadata
 import io
 import json
-from pathlib import Path
+from pathlib import Path, PurePath
 import shutil
 import subprocess
 import sys
@@ -28,6 +28,24 @@ def digest(path):
         for block in iter(lambda: stream.read(8 * 1024 * 1024), b""):
             result.update(block)
     return result.hexdigest()
+
+
+def portable_metadata_bytes(content: bytes, repository_root: PurePath) -> bytes:
+    """Make repository-local paths relative without changing other file bytes."""
+
+    for root in {str(repository_root), repository_root.as_posix()}:
+        root = root.rstrip("/\\")
+        for separator in ("/", "\\"):
+            prefix = (root + separator).encode("utf-8")
+            for encoded in (prefix.replace(b"\\", b"\\\\"), prefix):
+                content = content.replace(encoded, b"")
+    return content
+
+
+def copy_metadata(source: Path, destination: Path) -> None:
+    """Copy exported metadata with execution paths relative to this repository."""
+
+    destination.write_bytes(portable_metadata_bytes(source.read_bytes(), ROOT))
 
 
 def freeze_csv(paths, output, expected):
@@ -65,20 +83,20 @@ def main():
         for name, expected in manifest["outputs"].items():
             assert digest(directory / name) == expected, (directory, name)
         manifests.append(manifest)
-        shutil.copyfile(directory / "manifest.json", output / f"main_shard_{index}.json")
+        copy_metadata(directory / "manifest.json", output / f"main_shard_{index}.json")
     assert all(m["source_sha256"] == manifests[0]["source_sha256"] for m in manifests)
     rows = freeze_csv([p / "routes_summary.csv" for p in main_dirs], output / "routes_summary.csv.gz", 10000)
     sensitivity = freeze_csv([p / "review_sensitivity_summary.csv" for p in sensitivity_dirs],
                              output / "review_sensitivity_summary.csv.gz", 1600)
     freeze_csv([p / "dense_path_check.csv" for p in sensitivity_dirs], output / "dense_path_check.csv.gz", 1600)
     for index, directory in enumerate(sensitivity_dirs):
-        shutil.copyfile(directory / "validation_protocol.json", output / f"sensitivity_shard_{index}.json")
-        shutil.copyfile(directory / "review_sensitivity_protocol.json", output / f"sensitivity_reporting_{index}.json")
-    shutil.copyfile(ROOT / "results/review3466-height-preflight/manifest.json", output / "inputs.json")
+        copy_metadata(directory / "validation_protocol.json", output / f"sensitivity_shard_{index}.json")
+        copy_metadata(directory / "review_sensitivity_protocol.json", output / f"sensitivity_reporting_{index}.json")
+    copy_metadata(ROOT / "results/review3466-height-preflight/manifest.json", output / "inputs.json")
     shutil.copyfile(ROOT / "results/review3466-height-preflight/baseline_distance_check.csv", output / "baseline_distance_check.csv")
-    shutil.copyfile(ROOT / "data/processed/rasters/building_height_1m.json", output / "building_height_derivation.json")
+    copy_metadata(ROOT / "data/processed/rasters/building_height_1m.json", output / "building_height_derivation.json")
     for name in ("raster_stats.csv", "raster_metadata.json", "raster_alignment_report.md"):
-        shutil.copyfile(ROOT / "results/review3466-raster-qc" / name, output / name)
+        copy_metadata(ROOT / "results/review3466-raster-qc" / name, output / name)
     index = {(r["pair_id"], float(r["detour_ratio"]), r["method"]): r for r in rows}
     eligible = []
     for row in rows:
@@ -113,7 +131,8 @@ def main():
                   "source_sha256": manifests[0]["source_sha256"],
                   "selected_case": {"pair_id": pair, "allowance": .2, "delta_H_K": reduction,
                       "target_median_K": target, "common_cases": len(eligible), "source_shard": shard},
-                  "note": "Frozen outputs retain each original shard configuration and run identifier.",
+                  "path_format": "repository-relative",
+                  "note": "Execution paths are repository-relative; original shard configuration and run identifiers are retained.",
                   "files_sha256": {p.name: digest(p) for p in output.iterdir() if p.is_file() and p.name != "provenance.json"}}
     (output / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n")
     archive = ROOT / "results/review3466-final-bundle.tar.gz"

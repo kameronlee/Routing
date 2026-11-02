@@ -13,7 +13,7 @@ thermal field or measured comfort or health outcomes.
 
 ## Start
 
-Use Python 3.10 or newer in a virtual environment:
+Use Python 3.11 or newer in a virtual environment:
 
 ```bash
 python -m pip install -e ".[dev,experiments]"
@@ -39,3 +39,8 @@ Real routing needs the versioned graph and rasters, downloaded through Git
 LFS. Building heights must be derived by subtracting terrain elevation from
 the building DSM. [Experiment instructions](experiments/README.md) give the
 input paths and commands.
+
+## Citation
+
+Use [CITATION.cff](CITATION.cff) when citing the code. Cite the accompanying
+paper for the experiment and its results.

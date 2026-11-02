@@ -15,7 +15,7 @@
 set -euo pipefail
 umask 0027
 
-REPO_DIR="${ROUTING_REPO_DIR:-${SLURM_SUBMIT_DIR:-/scratch/klee206/work/Routing}}"
+REPO_DIR="${ROUTING_REPO_DIR:-${SLURM_SUBMIT_DIR:-$PWD}}"
 cd "$REPO_DIR"
 
 SOLWEIG_TIMEZONE="${SOLWEIG_TIMEZONE:-America/New_York}"
@@ -34,11 +34,14 @@ module load gnu/12.3.0
 module load openmpi/4.1.6-a2
 module load gdal/3.8.5-7p
 
-source /scratch/klee206/envs/routing-venv/bin/activate
+if [[ -n "${ROUTING_VENV:-}" ]]; then
+  source "$ROUTING_VENV/bin/activate"
+fi
+ROUTING_PYTHON="${ROUTING_PYTHON:-python}"
 
 export PYTHONPATH="$PWD:$PWD/src:${PYTHONPATH:-}"
-export TMPDIR="${TMPDIR:-/scratch/klee206/tmp}"
-export PIP_CACHE_DIR="${PIP_CACHE_DIR:-/scratch/klee206/pip-cache}"
+export TMPDIR="${TMPDIR:-${SLURM_TMPDIR:-/tmp/routing-${USER:-user}}}"
+export PIP_CACHE_DIR="${PIP_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/pip}"
 
 mkdir -p "$TMPDIR" "$PIP_CACHE_DIR" "$(dirname "$SOLWEIG_WORK_DIR")"
 
@@ -58,14 +61,14 @@ if [[ ! -f "$SOLWEIG_MET_FILE" ]]; then
     exit 1
   fi
   echo "Met file not found; building weather forcing for $SOLWEIG_DATE"
-  python scripts/build_weather_forcing.py \
+  "$ROUTING_PYTHON" scripts/build_weather_forcing.py \
     --start-date "$SOLWEIG_DATE" \
     --end-date "$SOLWEIG_DATE"
 fi
 
 nvidia-smi
 
-python - <<'PY'
+"$ROUTING_PYTHON" - <<'PY'
 from osgeo import gdal
 import torch
 
@@ -89,13 +92,13 @@ if [[ "$SOLWEIG_SAVE_SHADOW" != "0" ]]; then
   SOLWEIG_RUN_ARGS+=(--save-shadow)
 fi
 
-python "${SOLWEIG_RUN_ARGS[@]}"
+"$ROUTING_PYTHON" "${SOLWEIG_RUN_ARGS[@]}"
 
 if [[ "$SOLWEIG_FILL_UTCI_NANS" != "0" ]]; then
   SOLWEIG_HOUR_PADDED="$(printf "%02d" "$SOLWEIG_HOUR")"
   PUBLISHED_UTCI="data/processed/solweig_outputs/utci_${SOLWEIG_DATE}_${SOLWEIG_HOUR_PADDED}.tif"
   if [[ -f "$PUBLISHED_UTCI" ]]; then
-    python scripts/fill_utci_nans.py \
+    "$ROUTING_PYTHON" scripts/fill_utci_nans.py \
       "$PUBLISHED_UTCI" \
       --in-place \
       --max-search-distance "$SOLWEIG_UTCI_FILL_DISTANCE"

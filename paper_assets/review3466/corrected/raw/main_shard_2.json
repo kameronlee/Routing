@@ -34,15 +34,15 @@
     "city": "Washington, District of Columbia, USA",
     "mode": "walk",
     "departure_time": "2026-06-19T14:00:00-04:00",
-    "graph_path": "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/streets/dc_walk_graph.graphml",
-    "utci_raster_path": "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/solweig_outputs/utci_2026-06-19_14.tif",
-    "shadow_raster_path": "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/solweig_outputs/shadow_2026-06-19_14.tif",
-    "dem_raster_path": "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/rasters/dem_1m.tif",
+    "graph_path": "data/processed/streets/dc_walk_graph.graphml",
+    "utci_raster_path": "data/processed/solweig_outputs/utci_2026-06-19_14.tif",
+    "shadow_raster_path": "data/processed/solweig_outputs/shadow_2026-06-19_14.tif",
+    "dem_raster_path": "data/processed/rasters/dem_1m.tif",
     "canopy_raster_paths": [
-      "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/rasters/canopy_height_1m.tif"
+      "data/processed/rasters/canopy_height_1m.tif"
     ],
-    "traffic_geojson_path": "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/raw/traffic_noise/ddot_traffic_volume_2023.geojson",
-    "output_dir": "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/results/review3466-final-2",
+    "traffic_geojson_path": "data/raw/traffic_noise/ddot_traffic_volume_2023.geojson",
+    "output_dir": "results/review3466-final-2",
     "random_seed": 42,
     "od_pair_count": 500,
     "min_shortest_distance_m": 400.0,
@@ -59,10 +59,10 @@
     "route_search_expansions": 20000,
     "route_search_labels_per_node": 8,
     "landcover_raster_paths": [
-      "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/rasters/landcover_1m_center_tile.tif"
+      "data/processed/rasters/landcover_1m_center_tile.tif"
     ],
     "building_height_raster_paths": [
-      "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/rasters/building_height_1m.tif"
+      "data/processed/rasters/building_height_1m.tif"
     ]
   },
   "limit": null,

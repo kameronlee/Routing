@@ -7,11 +7,12 @@ name = "heat-aware-pedestrian-routing"
 version = "0.1.0"
 description = "Code and experiments for the Washington, DC heat-aware routing pilot."
 readme = "README.md"
-requires-python = ">=3.10"
-authors = [{ name = "Routing contributors" }]
+requires-python = ">=3.11"
+authors = [{ name = "Kameron Lee" }]
 dependencies = [
     "laspy[lazrs]>=2.5",
     "networkx>=3.2",
+    "numpy>=1.26",
     "PyYAML>=6.0",
     "rasterio>=1.3",
     "requests>=2.32",

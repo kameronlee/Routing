@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "Please cite this repository and the accompanying manuscript when using the code or experiment records."
+type: software
+title: "Heat-aware pedestrian routing"
+version: 0.1.0
+authors:
+  - family-names: Lee
+    given-names: Kameron
+repository-code: "https://github.com/kameronlee/Routing"
+url: "https://github.com/kameronlee/Routing/blob/main/paper/geohealth3466/main.pdf"

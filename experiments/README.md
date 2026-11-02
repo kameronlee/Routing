@@ -57,3 +57,28 @@ The primary records are under `paper_assets/review3466/sampling5/`. The
 20 m corrected run and earlier execution archive remain separate. Frozen
 inputs support rerouting; incomplete original model provenance prevents exact
 regeneration of the thermal field.
+
+## Exported metadata
+
+The export scripts make repository-local execution paths relative before
+computing distribution checksums. Run identifiers, configuration identifiers,
+input hashes, and routing records remain those of the recorded experiments.
+The executed-source archives preserve the code used for each run.
+
+## Rebuild thermal fields on Hopper
+
+The SOLWEIG Slurm scripts load Hopper's compiler and GDAL modules. Submit from
+the repository root, or set `ROUTING_REPO_DIR`. Set `ROUTING_VENV` to reactivate
+your Python environment inside the job, or set `ROUTING_PYTHON` to its Python
+executable. Temporary files use `TMPDIR` or the job's `SLURM_TMPDIR`; the pip
+cache respects `PIP_CACHE_DIR` and `XDG_CACHE_HOME`.
+
+With the intended environment activated, the paper's dated snapshot can be
+requested with:
+
+```bash
+ROUTING_VENV="$VIRTUAL_ENV" sbatch --export=ALL,SOLWEIG_DATE=2026-06-19,SOLWEIG_HOUR=14 scripts/run_solweig_one_hour.slurm
+```
+
+The A100 alternative is `scripts/run_solweig_one_hour_a100.slurm`. These scripts
+run the model; they do not recover the missing historical model provenance.

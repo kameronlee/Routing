@@ -2,8 +2,8 @@
 
 This is an internal consistency check for modeled UTCI and direct-shadow rasters. It is not field validation.
 
-- UTCI raster: `/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/solweig_outputs/utci_2026-06-19_14.tif`
-- Shadow raster: `/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/solweig_outputs/shadow_2026-06-19_14.tif`
+- UTCI raster: `data/processed/solweig_outputs/utci_2026-06-19_14.tif`
+- Shadow raster: `data/processed/solweig_outputs/shadow_2026-06-19_14.tif`
 - CRS match: True
 - Bounds overlap: True
 - Paired sample count: 10000

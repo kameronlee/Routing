@@ -12,7 +12,7 @@
     "dtype": "float32",
     "height": 24000,
     "nodata": null,
-    "path": "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/solweig_outputs/shadow_2026-06-19_14.tif",
+    "path": "data/processed/solweig_outputs/shadow_2026-06-19_14.tif",
     "resolution": {
       "x": 1.0,
       "y": 1.0
@@ -32,7 +32,7 @@
     "dtype": "float32",
     "height": 24000,
     "nodata": null,
-    "path": "/scratch/klee206/work/Routing/.codex/review3466-final-20261029/data/processed/solweig_outputs/utci_2026-06-19_14.tif",
+    "path": "data/processed/solweig_outputs/utci_2026-06-19_14.tif",
     "resolution": {
       "x": 1.0,
       "y": 1.0

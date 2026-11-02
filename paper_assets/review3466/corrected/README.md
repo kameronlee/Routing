@@ -13,8 +13,9 @@ python experiments/analyze_corrected_validation.py
 python experiments/make_corrected_figures.py
 ```
 
-`raw/provenance.json` checksums the frozen files. Main manifests retain their
-original configuration/run identifiers. Matching stays within each shard.
+`raw/provenance.json` checksums the distributed files. Execution paths in the
+exported metadata are repository-relative; the original configuration/run
+identifiers and numerical routing records are retained. Matching stays within each shard.
 `inputs.json` pins the raster/graph bytes; `building_height_derivation.json`
 records DSM minus DEM. `executed_source.tar.gz` preserves the exact source
 bytes, including line endings, used for the recorded hashes.

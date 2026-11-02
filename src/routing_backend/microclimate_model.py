@@ -145,8 +145,8 @@ def get_utci_raster(x: float, y: float, hour: datetime | float | int | None) -> 
         y: Latitude in decimal degrees.
         hour: Datetime or hour of day in local time.
 
-    TODO: Replace this placeholder with a raster lookup backed by SOLWEIG-GPU
-    UTCI or mean radiant temperature products at the requested timestamp.
+    This helper is for isolated tests and explicit development fallback.
+    Research runs sample the configured SOLWEIG rasters instead.
     """
 
     h = hour_from_time(hour)
