@@ -17,24 +17,26 @@
 \affiliation{\institution{Thomas Jefferson High School for Science and Technology}\city{Alexandria}\state{Virginia}\country{USA}}
 
 \begin{abstract}
-Heat-aware walking routes trade modeled thermal exposure against extra distance. We compare four environmental objectives with shortest distance on a Washington, DC network, using Universal Thermal Climate Index (UTCI) and shadow rasters at one modeled hour. Five methods, 500 origin--destination pairs, and four distance allowances give 10,000 attempts at 5 m sampling. Mean reductions in length-weighted UTCI exceedance above $26^\circ$C are \HeatRange{} K, with \DistanceRange{}\% extra distance. Switching from 20 m to 5 m changes \FullChangedRange{}\% of environmental paths and lowers mean exceedance by \FullGainRange{} K when both sets are scored at 5 m. We report shortest-path fallback, coefficient and threshold checks, and search losses against exact references. The contribution is a reproducible comparison of objective choices within one capped solver. Results describe one modeled field and remain unvalidated against pedestrian measurements.
+Heat-aware walking routes trade modeled thermal exposure against extra distance. We compare four environmental objectives with shortest distance on a Washington, DC network, using Universal Thermal Climate Index (UTCI) and shadow rasters at one modeled hour. Five methods, 500 origin--destination pairs, and four distance allowances give 10,000 attempts at 5 m sampling. Mean reductions in length-weighted UTCI exceedance above $26^\circ$C are \HeatRange{} K, with \DistanceRange{}\% extra distance. Switching from 20 m to 5 m changes \FullChangedRange{}\% of environmental paths and lowers mean exceedance by \FullGainRange{} K when both sets are scored at 5 m. All methods share one capped solver. We report shortest-path fallback, coefficient and threshold checks, and search losses against exact references. The modeled field has not been validated against pedestrian measurements.
 \end{abstract}
 \keywords{pedestrian routing, UTCI, shade, detour constraints, computational benchmark}
 \maketitle
 
 \section{Introduction}
-Two walking routes of similar length can have different shade and thermal conditions. A route that avoids exposed streets may reduce modeled heat exposure, but a long detour also adds walking. An explicit distance allowance makes this tradeoff understandable: a traveler can ask for a cooler route no more than 10\% longer than the shortest path.
+Two walking routes of similar length can have different shade and thermal conditions. A route that avoids exposed streets may reduce modeled heat exposure, but a long detour also adds walking. A distance allowance bounds the extra walking: a 10\% allowance permits routes no more than 10\% longer than the shortest path.
 
-This paper examines that formulation in a Washington, DC pilot. It attaches modeled UTCI and direct-shadow rasters to a pedestrian graph, then compares objectives that emphasize UTCI, shade, or a composite of environmental features. We study how these objective settings behave within one capped search implementation, using established hard-detour constraints and cost--distance labels.
+In this Washington, DC pilot, we assign modeled UTCI and direct-shadow samples to pedestrian graph edges, then compare objectives that emphasize UTCI, shade, or a composite of environmental features. All use the same capped search implementation, with established hard-detour constraints and cost--distance labels.
 
 We compare five methods on the same 500 origin--destination (OD) pairs and four distance allowances, retaining shortest-path fallback in the results. The outcomes are modeled exceedance, added distance, and shade. We report both average exceedance and its length-scaled total, because a cooler average can accompany more total walking through heat. Coefficient checks, denser rerouting, and exact-reference tests examine the numerical choices behind that comparison.
 
 \section{Related Work}
-Shade-aware routing predates this study. Vartholomaios derives least-cost paths from SOLWEIG shadows \citep{vartholomaios2023}; Da et al. use image-derived shade \citep{da2024}; and Kolaxidis et al. incorporate solar exposure into pedestrian routing \citep{kolaxidis2025}. CoolWalks studies sunlit-distance penalties and the difference between centerline and detailed pedestrian networks \citep{wolf2025}. Yang et al. incorporate time-varying building shadows \citep{yang2025}, whereas this pilot holds the environmental field fixed.
+Vartholomaios derives least-cost paths from shadow rasters generated in QGIS/UMEP \citep{vartholomaios2023}; Da et al. use image-derived shade \citep{da2024}; and Kolaxidis et al. incorporate solar exposure into pedestrian routing \citep{kolaxidis2025}. CoolWalks studies sunlit-distance penalties and the difference between centerline and detailed pedestrian networks \citep{wolf2025}. Yang et al. propose a shade-aware navigation framework \citep{yang2025}.
 
-Other work uses thermal indices. Colaninno et al. combine sidewalk mobility and microclimate modeling \citep{colaninno2025}. Patel et al. rank Google Maps candidate routes using SOLWEIG-GPU UTCI \citep{patel2026}. CoolPaths minimizes summed edge length times Physiological Equivalent Temperature (PET) under a detour limit \citep{verma2026}. Here, the primary reported metric is length-normalized UTCI exceedance. The routing formulation follows established resource-constrained shortest-path methods \citep{irnich2005}.
+DeepShade uses text-conditioned diffusion to generate shade maps and demonstrates shade-aware route planning in Tempe, Arizona \citep{da2025deepshade}. ShadeBench pairs temporally varying simulated building-shade maps with satellite imagery, building geometry, and text for shade-generation and segmentation benchmarks \citep{da2026shadebench}.
 
-UTCI converts meteorological and radiative conditions into an equivalent temperature under standardized reference assumptions \citep{brode2012}. SOLWEIG models urban radiation and mean radiant temperature \citep{lindberg2008}. Evidence that heat influences route choice \citep{basu2024} and that pedestrians seek shade \citep{levenson2025} motivates these routing preferences.
+Colaninno et al. combine sidewalk mobility and microclimate modeling \citep{colaninno2025}. Patel et al. rank Google Maps candidate routes using SOLWEIG-GPU UTCI \citep{patel2026}. CoolPaths minimizes summed edge length times Physiological Equivalent Temperature (PET) under a detour limit \citep{verma2026}. Here, the primary reported metric is length-normalized UTCI exceedance. The routing formulation follows established resource-constrained shortest-path methods \citep{irnich2005}.
+
+UTCI converts meteorological and radiative conditions into an equivalent temperature under standardized reference assumptions \citep{brode2012}. SOLWEIG models urban radiation and mean radiant temperature \citep{lindberg2008}. Basu et al. examine heat's effect on pedestrian route choice \citep{basu2024}, and Levenson et al. observe shade-seeking behavior \citep{levenson2025}.
 
 \section{Routing Pipeline}
 \subsection{Graph and distance budget}
@@ -70,13 +72,13 @@ Reported route quantities are length-weighted edge summaries:
 $H$ is mean positive UTCI exceedance, expressed in kelvins; $\bar U$ and $U^{\max}$ are UTCI values in degrees Celsius. $S$ is a shade fraction. Because sampling restarts at segment boundaries, these quantities are numerical proxies rather than uniform line integrals. As a post hoc check of normalization, we also calculate $J(P)=L(P)H(P)$, an exceedance--distance index in K\,m. It tests whether a lower route average offsets added distance. Neither $H$ nor $J$ is a validated physiological dose.
 
 \subsection{Objectives and method variants}
-We define the composite cost as an engineering score. It combines distance and time with thermal, scenic, traffic, and slope penalties; Appendix~\ref{app:cost} specifies the terms and normalizations. All are nonnegative. The thermal term is
+The composite cost combines distance and time with thermal, scenic, traffic, and slope penalties; Appendix~\ref{app:cost} specifies the terms and normalizations. All are nonnegative. The thermal term is
 \begin{equation}\label{eq:thermal}
  \phi_e=\frac{[\bar u_e-\tau]_+}{8\,\mathrm K}+\frac{[u_e^{\max}-\tau]_+}{10\,\mathrm K}+\frac{h_e}{6\,\mathrm K}+0.45(1-s_e),
 \end{equation}
 where $[x]_+=\max(0,x)$. Its correlated UTCI and shade components can count related radiative information more than once. Neither its coefficients nor the contextual proxies are fitted to route-choice or physiological observations.
 
-Table~\ref{tab:methods} defines the four objective variants of this implementation. Distance and time remain active in all four. The focused methods are therefore not pure single-feature optimizations. For reporting, selected routes are evaluated with full features; the hybrid shade outcome remains a surrogate and is not comparable with direct shade.
+Table~\ref{tab:methods} defines the four environmental variants and the shortest-distance baseline. Distance and time remain active in all four environmental variants, including the focused methods. For reporting, selected routes are evaluated with full features; the hybrid shade outcome remains a surrogate and is not comparable with direct shade.
 
 \begin{table}[t]
 \caption{Configured objective variants. $A_e$ is the distance--time term in Appendix~\ref{app:cost}; all environmental penalties also use its edge-length scale.}
@@ -99,7 +101,7 @@ The dominance registry retains at most eight labels per node, ordered by cost th
 
 We record whether a returned route came from the unconstrained cost path, label search, or shortest-path fallback, along with cap termination and failure type. The caps preclude a general optimality guarantee and do not bound end-to-end latency. Appendix~\ref{app:oracle} compares the search with exact enumeration on small graphs.
 
-The implementation propagates the original-network ceiling, chooses shortest parallel edges for fallback, preserves sampled exceedance through objective projection, and uses above-ground building heights. These corrections matter numerically: $\mathbb E[\max(0,U-\tau)]$ cannot be replaced with $\max(0,\mathbb E[U]-\tau)$. The earlier execution archive is retained separately.
+The implementation propagates the original-network ceiling, chooses shortest parallel edges for fallback, preserves sampled exceedance through objective projection, and uses above-ground building heights. Preserving exceedance requires the samples: $\mathbb E[\max(0,U-\tau)]$ cannot be replaced with $\max(0,\mathbb E[U]-\tau)$. The earlier execution archive is retained separately.
 
 \section{Data and Analysis}
 \subsection{Study domain and inputs}
@@ -152,7 +154,7 @@ On the first 100 serialized OD pairs at a 20\% allowance, we test 16 composite s
 
 \section{Results}
 \subsection{Feasibility and route sources}
-The corrected run returns \AcceptedCount{} routes from 10,000 attempts, all within their original-network distance ceilings. Environmental fallback accounts for \FallbackRange{}\% of attempts across the four settings. These are feasible walking routes; fallback does not establish that a cooler route was found. The common comparison includes every such fallback. Recorded end-to-end medians range from \RuntimeMedianRange{} s, with 90th percentiles of \RuntimePninetyRange{} s and a maximum of \RuntimeMaximum{} s. These measurements include corridor and feature extraction; shared caches, fixed method order, and host differences preclude a controlled speed ranking.
+The corrected run returns \AcceptedCount{} routes from 10,000 attempts, all within their original-network distance ceilings. Environmental fallback accounts for \FallbackRange{}\% of attempts across the four settings. Fallback routes meet the distance budget but may offer no exposure reduction; all remain in the common comparison. Recorded end-to-end medians range from \RuntimeMedianRange{} s, with 90th percentiles of \RuntimePninetyRange{} s and a maximum of \RuntimeMaximum{} s. These measurements include corridor and feature extraction; shared caches, fixed method order, and host differences preclude a controlled speed ranking.
 
 \subsection{Exposure and added distance}
 Table~\ref{tab:common} compares the same \CommonCases{} OD--budget cases for every method. Mean exceedance reductions range from \HeatRange{} K, with \DistanceRange{}\% extra distance. The shortest-route mean is \BaselineH{} K. The \HeatCompositeWinner{} has \HeatCompositeContrast{} K lower mean $H$ than the \HeatCompositeLoser{} (OD-cluster interval \HeatCompositeCI{} K). \HeatCompositeIntervalNote{} The \HeatShadowWinner{} has \HeatShadowContrast{} K lower mean $H$ than the \HeatShadowLoser{} (interval \HeatShadowCI{} K). \HeatShadowIntervalNote{}
@@ -188,7 +190,7 @@ Changing the selection threshold to 24 and $28^\circ$C changes \ThresholdLowChan
 Table~\ref{tab:full-sampling} compares the complete 20 m and 5 m cohorts on the common 5 m field. The composite changes \FullCompositeChangedPct{}\% of its paths. The 100-pair check separately finds a median same-path error of \SpacingMedian{} K at 20 m, with a 90th percentile of \SpacingPninety{} K. The repeated 5 m reference changes \ControlChanges{} paths. These checks distinguish changes in the selected routes from changes in their reported exposure.
 
 \section{Discussion and Limitations}
-The experiment compares engineering objectives within one search implementation. The fixed cohort and explicit fallback records support paired comparisons of those objectives; independent routing algorithms remain untested. The exact checks expose cap-induced losses even on 33-node networks (Appendix~\ref{app:oracle}); no optimality gap is available for the DC requests. A city-scale comparison with an exact or tightly bounded constrained-path solver remains necessary before claiming search quality.
+The paired results compare objectives within one search implementation; independent routing algorithms remain untested. The exact checks expose cap-induced losses even on 33-node networks (Appendix~\ref{app:oracle}); no optimality gap is available for the DC requests. Comparing the DC routes with an exact or tightly bounded constrained-path solver would measure those search losses at city scale.
 
 The spatial and temporal scope is one modeled DC hour. The study cannot establish transfer across cities, seasons, neighborhoods, or times of day, and the fixed field ignores changes during a walk. The OD sample targets covered network nodes rather than observed demand. It therefore cannot estimate population benefits or typical pedestrian trips.
 
@@ -199,7 +201,7 @@ The composite remains uncalibrated. Thermal terms overlap, scenic and traffic sc
 The study has no field transects, participant study, or health measurements. Mean exceedance and exceedance--distance can disagree. Independent measurements and sidewalk-level networks are needed to test the modeled differences at pedestrian height and position before they support route advice.
 
 \section*{Code and Data Availability}
-The \href{https://github.com/kameronlee/Routing/tree/\ArtifactCommit}{code and experiment files} includes code, the exact OD pairs, compressed route records, source/input checksums, analysis scripts, and figure inputs. Git LFS stores the versioned graph and rasters. The README gives rerun and analysis commands. Manifests preserve each shard's configuration and the routing source hashes; the original execution environment and thermal-field generation are only partly documented. The archived run and joint-weight exploration are retained separately and do not enter the revised result tables.
+The \href{https://github.com/kameronlee/Routing/tree/\ArtifactCommit}{repository} contains the code, exact OD pairs, compressed route records, source/input checksums, analysis scripts, and figure inputs. Git LFS stores the versioned graph and rasters. The README gives rerun and analysis commands. Manifests preserve each shard's configuration and routing source hashes; the original execution environment and thermal-field generation are only partly documented. The archived run and joint-weight exploration are retained separately and do not enter the revised result tables.
 
 \begin{acks}
 Computations used George Mason University's Office of Research Computing resources, supported in part by National Science Foundation award 2018631.

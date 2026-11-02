@@ -1,4 +1,4 @@
-"""Redraw serialized OD endpoints in metric coordinates, without inventing OD data."""
+"""Plot recorded OD endpoints in metric coordinates."""
 import argparse
 import csv
 from pathlib import Path

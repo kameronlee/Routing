@@ -67,7 +67,7 @@ class EdgeTraversal:
 
 @dataclass(frozen=True)
 class RouteCandidate:
-    """A routed path and its aggregated comfort/perception statistics."""
+    """A routed path with modeled UTCI, shade, contextual scores, and cost."""
 
     geometry: list[Coordinate]
     edge_ids: list[str]
@@ -261,7 +261,7 @@ def build_edge_features(
     utci_raster_path: str | Path | None = None,
     real_feature_context: Any | None = None,
 ) -> EdgeFeatures:
-    """Compute the radiative-perceptual feature vector for one edge."""
+    """Compute thermal, shade, and contextual features for one edge."""
 
     points = edge_geometry_points(graph, u, v, data)
     length_m = float(data.get("length") or _edge_length_from_geometry(points))

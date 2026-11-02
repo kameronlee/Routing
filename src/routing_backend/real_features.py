@@ -272,7 +272,7 @@ class TrafficIndex:
         self.tree = STRtree(geometries)
 
     def nearest_score(self, points: Sequence[Coordinate]) -> tuple[float, float, float]:
-        """Return normalized traffic noise score, nearest AADT and angular distance."""
+        """Return the normalized AADT proxy, nearest AADT, and distance in degrees."""
 
         if not points:
             raise RealDataMissingError("Cannot join traffic to an empty edge geometry")
@@ -292,7 +292,7 @@ class TrafficIndex:
 
 
 class RealFeatureContext:
-    """Context object that joins real rasters/vectors onto edges."""
+    """Raster and traffic samplers used to assign edge features."""
 
     def __init__(self, paths: RealFeaturePaths, *, disabled_layers: Iterable[str] = ()) -> None:
         disabled = frozenset(disabled_layers)
@@ -434,7 +434,7 @@ class RealFeatureContext:
         edge_data: dict[str, Any],
         _length_m: float,
     ) -> dict[str, float]:
-        """Compute real edge-level perceptual/noise attributes."""
+        """Compute edge-level canopy, greenery, building, water, and traffic proxies."""
 
         samples = densify_geometry(points, spacing_m=20.0)
         canopy_height_values = [] if self._is_disabled("canopy") else self.canopy_height.sample(samples)

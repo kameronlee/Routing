@@ -23,7 +23,7 @@ Original shortest distances and common-field baseline scores agree exactly.
 
 The rerun fixes the original-network ceiling, shortest parallel-edge fallback,
 and sampled exceedance. The hybrid proxy now uses building height above
-ground (`max(0, DSM - DEM)`), not absolute surface elevation. 70 research tests pass;
+ground (`max(0, DSM - DEM)`), not absolute surface elevation. 73 tests pass;
 two optional Torch tests are skipped.
 
 Exact enumeration agrees on 2,400 small reference cases. A separate set of
@@ -33,10 +33,9 @@ checks, not estimates of the DC optimality gap.
 
 ## Remaining limits
 
-This is a reproducible pilot. Its remaining limits are one city/hour,
-uncalibrated weights, no independent environmental measurements, and unknown
-city-scale search gaps. The modeled results do not establish pedestrian
-comfort, safety, or health benefit.
+The study covers one modeled DC hour, with uncalibrated weights, no independent
+environmental measurements, and unknown city-scale search gaps. The modeled
+results do not establish pedestrian comfort, safety, or health benefit.
 
 [Experiment commands](../experiments/README.md) reproduce the artifacts.
 Historical records remain separate from the corrected result tables.
