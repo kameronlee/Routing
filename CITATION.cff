@@ -6,5 +6,5 @@ version: 0.1.0
 authors:
   - family-names: Lee
     given-names: Kameron
-repository-code: "https://github.com/kameronlee/Routing"
-url: "https://github.com/kameronlee/Routing/blob/main/paper/geohealth3466/main.pdf"
+repository-code: "https://github.com/kameronlee/heat-aware-pedestrian-routing"
+url: "https://github.com/kameronlee/heat-aware-pedestrian-routing/blob/main/paper/geohealth3466/main.pdf"
