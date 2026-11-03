@@ -4,6 +4,12 @@ The paper uses the original 500 OD pairs, five methods, four distance
 allowances, and the frozen June 19 thermal fields. The primary run samples at
 5 m. Every recorded 20 m path is rescored at 5 m for the sampling comparison.
 
+The current workflow uses `configs/dc_snapshot_review3466.yaml`. Its default
+spacing is the 20 m reference; pass `--sample-spacing 5` for the primary run,
+as shown below. The older pilot configurations and plotting wrappers have
+been removed. Frozen records and executed-source archives remain available
+for auditing the experiments.
+
 ## Rebuild the results
 
 These commands use the small frozen records and map inputs:

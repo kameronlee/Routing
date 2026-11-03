@@ -12,6 +12,7 @@ devserver.err.log
 cache/
 .npm-cache/
 data/raw/**/*.tmp
+data/raw/lidar/laz/
 data/processed/**/*.tmp
 data/processed/solweig_gpu_work/
 data/processed/solweig_gpu_work_*/

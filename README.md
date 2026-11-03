@@ -33,12 +33,21 @@ python experiments/make_corrected_figures.py --raw paper_assets/review3466/sampl
 - [Corrected records, checksums, and analysis](paper_assets/review3466/sampling5/)
 - [Original OD pairs and historical records](paper_assets/review3466/raw/)
 - [Exact-reference checks](paper_assets/review3466/solver_validation/)
-- [Rerun instructions](experiments/README.md) and [reviewer response](paper/REVIEW_3466.md)
+- [Rerun instructions](experiments/README.md)
+
+`paper_assets/review3466/` contains experiment data, not peer-review correspondence.
+The 5 m run, 20 m reference, original records, and exact checks remain separate
+so the published comparisons can be audited. The tests check routing budgets,
+parallel-edge fallback, raster sampling, and result calculations.
 
 Real routing needs the versioned graph and rasters, downloaded through Git
 LFS. Building heights must be derived by subtracting terrain elevation from
 the building DSM. [Experiment instructions](experiments/README.md) give the
 input paths and commands.
+
+Raw LiDAR point-cloud downloads are generated inputs and are not tracked in
+the current tree. Source URLs and processing metadata remain under
+`data/metadata/`; the input builder can download them again when needed.
 
 ## Citation
 
